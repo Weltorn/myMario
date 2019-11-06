@@ -12,6 +12,7 @@
 #include "T_Map.h"
 #include "T_Layer.h"
 #include "T_Sprite.h"
+#include "Player.h"
 
 typedef struct
 {
@@ -27,10 +28,11 @@ class T_Scene
 {
 protected:
 
-	SCENE_LAYERS sceneLayers;		// 保存游戏中全部图层的vector容器
-	T_Map* pBarrier;				// 碰撞图层指针
-	T_Map* pMask;					// 遮罩层指针
-	T_Sprite* pPlayer;				// 玩家指针
+	SCENE_LAYERS sceneLayers;		// 保存游戏中场景图层的vector容器
+	T_Map* pBarrier;				// 碰撞图层指针，包含在sceneLayers中
+	T_Map* pMask;					// 遮罩层指针，包含在sceneLayers中
+
+	Player* pPlayer;				// 玩家指针,不包含在sceneLayers
 
 	int SceneWidth, SceneHeight;	// 整个场景的宽、高
 	int WinWidth, WinHeight;		// 窗口的宽、高

@@ -262,6 +262,13 @@ void T_Scene::ScrollScene(T_Sprite* player)
 // 添加图层
 void T_Scene::Append(GAMELAYER gm_layer)
 {
+	if (gm_layer.layer->GetLayerTypeID == LAYER_PLY)
+	{
+		if (pPlayer != NULL)delete pPlayer;
+		pPlayer = (Player*)gm_layer.layer;
+	}
+		
+
 	sceneLayers.push_back(gm_layer);
 	LayerChanged = true;
 }
@@ -584,38 +591,19 @@ bool T_Scene::LoadTxtMap(const char* txtmap_path)
 // 整个游戏场景的绘制
 void T_Scene::Draw(HDC hdc)
 {	
-	// 计算场景当前坐标与场景上一次坐标的差值
-	int offsetX =0;
-	int offsetY =0;
-	offsetX = (abs(lastSceneX) - abs(SceneX));
-	offsetY = (abs(lastSceneY) - abs(SceneY));
-	// 如果图层发生过任何变化
-	if(LayerChanged == true)
+	if (pPlayer->IsVisible() == true)
 	{
-		SortLayers();//对图层重新排序
+		pPlayer->Draw(hdc);
 	}
-		
-	int pX, pY;
-	// 遍历全部图层
 	SCENE_LAYERS::iterator p;
 	for (p = sceneLayers.begin(); p != sceneLayers.end(); p++) 
-	{
-		// 计算每个图层要平移的步长
-		pX = (*p).layer->GetX();
-		pX += offsetX;
-		pY = (*p).layer->GetY();
-		pY += offsetY;
-		(*p).layer->SetPosition(pX, pY);//图层相对场景位置不变，相对窗口位置偏移
+	{			
 		// 如果图层可见,将其绘制出来
 		if((*p).layer->IsVisible() == true)
 		{
 			(*p).layer->Draw(hdc);//调用图层自己的绘制方法
 		}
 	}
-
-	//将数据复位
-	lastSceneX = SceneX;
-	lastSceneY = SceneY;
 }
 
 
