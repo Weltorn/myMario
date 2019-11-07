@@ -78,6 +78,4 @@ public:
 	void DisplayInfo(HDC hdc);						// 游戏信息显示
 	void ReleaseDXBuffer(AudioDXBuffer* dxBuf);		// 释放声音缓冲
 
-
-
 };

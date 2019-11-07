@@ -112,6 +112,7 @@
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MarioGame.cpp" />
+    <ClCompile Include="Minion.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="T_AI.cpp" />
     <ClCompile Include="T_Audio.cpp" />
@@ -127,6 +128,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MarioGame.h" />
+    <ClInclude Include="Minion.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="T_AI.h" />
