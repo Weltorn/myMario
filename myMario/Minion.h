@@ -14,11 +14,17 @@ enum MINION_TYPE
 class Minion :
 	public T_Sprite
 {
+private:
+	MINION_TYPE minionType;		//怪物类型
 public:
 	Minion(LPCTSTR imgPath, int frameWidth, int frameHeight);
 	~Minion();
-	virtual void update();
+	
 	virtual bool CollideWith(IN T_Map* map);
 	virtual bool CollideWith(T_Sprite* target, int distance = 0);
+	MINION_TYPE getMinionType() { return minionType; }
+
+	//更新怪物状态
+	virtual void update();
 };
 
