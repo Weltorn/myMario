@@ -124,60 +124,74 @@ void MarioGame::GameEnd()
 	
 }
 
-//游戏按键处理
+//游戏按键处理,keys[] true:按下，false:释放
+//键按下时会持续发出WM_KEYDOWN消息
 void MarioGame::GameKeyAction(int Action)
 {
 	switch (gameStatus)
 	{
 	case GAME_START:		//游戏开始菜单
-	{
+	{		
+		if (Action == KEY_DOWN)		//按下键
+		{
+			if (keys[VK_RETURN])		//Enter键
+			{
+				Util::myprintf(L"press key enter\n");
+			}
+			else if(keys[VK_UP])		//PgUp
+			{
+				Util::myprintf(L"release key up\n");
+			}
+			else if (keys[VK_DOWN])		//PgDn
+			{
 
+			}
+		}
+		else if (Action == KEY_UP)	//释放键
+		{
+			Util::myprintf(L"release key \n");
+		}
 		break;
 	}
 	case GAME_RUN:			//游戏进行时界面
 	{
-		switch (Action)
+		if (Action == KEY_DOWN)		//按下键
 		{
-			case VK_A:
-				if (keys[VK_A] == true)		//true: 按下键，false:释放键
-				{
+			if (keys[VK_A])		
+			{
 
-				}
-				else if(keys[VK_A] == false)
-				{
+			}
+			else if (keys[VK_D])		
+			{
 
-				}
-				break;
-			case VK_D:
-				if (keys[VK_D] == true)
-				{
+			}
+			else if (keys[VK_S])		
+			{
 
-				}
-				else if (keys[VK_D] == false)
-				{
+			}
+			else if (keys[VK_SHIFT])		
+			{
 
-				}
-				break;
-			case VK_S:
-				if (keys[VK_S] == true)
-				{
+			}
+		}
+		else if (Action == KEY_UP)	//释放键
+		{
+			if (keys[VK_A])
+			{
 
-				}
-				else if (keys[VK_S] == false)
-				{
+			}
+			else if (keys[VK_D])
+			{
 
-				}
-				break;
-			case VK_SHIFT:
-				if (keys[VK_SHIFT] == true)
-				{
+			}
+			else if (keys[VK_S])
+			{
 
-				}
-				else if (keys[VK_SHIFT] == false)
-				{
+			}
+			else if (keys[VK_SHIFT])
+			{
 
-				}
-				break;
+			}
 		}
 		break;
 	}
