@@ -10,6 +10,9 @@
 
 #include "T_Scene.h"
 
+T_Map* T_Scene::pBarrier = NULL;			// 碰撞图层指针，包含在sceneLayers中
+T_Map* T_Scene::pMask = NULL;			// 遮罩层指针，包含在sceneLayers中
+
 // 构造函数
 T_Scene::T_Scene()
 {
@@ -254,7 +257,6 @@ void T_Scene::ScrollScene(T_Sprite* player)
 	if (scn_scrolling == true) 
 	{
 		MoveScene((int)speedX, (int)speedY);
-		
 	}
 }
 
@@ -262,13 +264,11 @@ void T_Scene::ScrollScene(T_Sprite* player)
 // 添加图层
 void T_Scene::Append(GAMELAYER gm_layer)
 {
-	if (gm_layer.layer->GetLayerTypeID == LAYER_PLY)
+	if (gm_layer.layer->GetLayerTypeID() == LAYER_PLY)
 	{
 		if (pPlayer != NULL)delete pPlayer;
 		pPlayer = (Player*)gm_layer.layer;
 	}
-		
-
 	sceneLayers.push_back(gm_layer);
 	LayerChanged = true;
 }
@@ -609,8 +609,9 @@ void T_Scene::Draw(HDC hdc)
 
 void  T_Scene::update()
 {
-	pPlayer->update();
-	ScrollScene(pPlayer);	
+	pPlayer->update();				//玩家位置、帧图更新、地图碰撞检测
+	ScrollScene(pPlayer);			//根据玩家位置，滚动场景
+
 	//更新图层
 	SCENE_LAYERS::iterator p;
 	for (p = sceneLayers.begin(); p != sceneLayers.end(); p++)

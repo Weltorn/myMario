@@ -143,9 +143,9 @@ public:
 	// 获得缩放后的实际碰撞检测矩形区域
 	RECT* GetCollideRect();	
 	// 检测角色碰撞, distance检测碰撞的距离
-	bool CollideWith(T_Sprite* target, int distance=0);
+	virtual bool CollideWith(T_Sprite* target, int distance=0);
 	// 检测地图碰撞
-	bool CollideWith(IN T_Map* map);	
+	virtual bool CollideWith(IN T_Map* map);	
 	// 获取碰撞到障碍时的位置
 	POINT GetMapBlockPT(){ return mapBlockPT; }				
 

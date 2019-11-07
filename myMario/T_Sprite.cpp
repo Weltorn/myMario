@@ -108,7 +108,7 @@ void T_Sprite::LoopFrame(bool ahead)
 bool T_Sprite::LoopFrameOnce(bool ahead)
 {
 	loopForward = ahead;
-	if(totalFrames<=0) return true;
+	if(totalFrames<=0) return true;//非帧图，返回
 	if(totalFrames>0)
 	{
 		if(ahead == true)
@@ -386,7 +386,7 @@ bool T_Sprite::CollideWith(IN T_Map* map)
 	int tW = map->getTileWidth();
 	int tH = map->getTileHeight();
 
-	// 计算当前角色的矩形范围
+	// 计算当前角色的矩形范围（碰撞区域）
 	int spLeft = this->GetCollideRect()->left;
 	int spTop = this->GetCollideRect()->top;
 	int spRight =this->GetCollideRect()->right;

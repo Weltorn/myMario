@@ -157,8 +157,13 @@ void MarioGame::GameMouseAction(int x, int y, int Action)
 void MarioGame::LoadMap()
 {
 	t_scene->LoadTxtMap("res\\game\\tankmap.txt");
-	scn_width = t_scene->getSceneLayers()->back().layer->GetWidth();
-	scn_height = t_scene->getSceneLayers()->back().layer->GetHeight();
+	if (t_scene->getBarrier() == NULL)
+	{
+		Util::myprintf(L"Load map failure!\n");
+		exit(1);
+	}
+	scn_width = t_scene->getBarrier()->GetWidth();
+	scn_height = t_scene->getBarrier()->GetHeight();
 
 	// 视图初始位置以地图作为参照
 	int scn_x = 0;

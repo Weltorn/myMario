@@ -29,17 +29,16 @@ class T_Scene
 protected:
 
 	SCENE_LAYERS sceneLayers;		// 保存游戏中场景图层的vector容器
-	T_Map* pBarrier;				// 碰撞图层指针，包含在sceneLayers中
-	T_Map* pMask;					// 遮罩层指针，包含在sceneLayers中
-
-	Player* pPlayer;				// 玩家指针,不包含在sceneLayers
-
+	static T_Map* pBarrier;			// 碰撞图层指针，包含在sceneLayers中
+	static T_Map* pMask;			// 遮罩层指针，包含在sceneLayers中
+	Player* pPlayer;
+	
 	int SceneWidth, SceneHeight;	// 整个场景的宽、高
 	int WinWidth, WinHeight;		// 窗口的宽、高
 	int lastSceneX, lastSceneY;		// 场景上一次的坐标位置
 	int SceneX, SceneY;				// 场景当前的坐标位置
 	bool LayerChanged;				// 图层是否发生变化(添加图层后，置为true)
-
+	
 	//图层排序比较函数（该函数必须为静态函数）
 	static bool SortByZorder(const GAMELAYER &l1, const GAMELAYER &l2);
 	
@@ -59,9 +58,9 @@ public:
 	// 获取场景上一次Y坐标
 	int getlastSceneY(){ return lastSceneY; }
 	// 获取场景中地图障碍图层
-	T_Map* getBarrier(){ return pBarrier; }
+	static T_Map* getBarrier(){ return pBarrier; }
 	// 获取场景中地图遮罩图层
-	T_Map* getMask(){ return pMask; }
+	static T_Map* getMask(){ return pMask; }
 	// 场景中图层总数
 	int GetTotalLayers(){ return (int)(sceneLayers.size()); }
 	// 获取场景图层容器对象
