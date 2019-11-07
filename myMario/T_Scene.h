@@ -31,7 +31,7 @@ protected:
 	SCENE_LAYERS sceneLayers;		// 保存游戏中场景图层的vector容器
 	static T_Map* pBarrier;			// 碰撞图层指针，包含在sceneLayers中
 	static T_Map* pMask;			// 遮罩层指针，包含在sceneLayers中
-	Player* pPlayer;
+	Player* pPlayer;				// 玩家指针，包含在sceneLayers中
 	
 	int SceneWidth, SceneHeight;	// 整个场景的宽、高
 	int WinWidth, WinHeight;		// 窗口的宽、高

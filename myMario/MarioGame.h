@@ -75,7 +75,7 @@ public:
 
 	//音频播放，信息显示
 	void PlayGameSound();							// 管理游戏中各时间段背景声音播放
-	void DisplayInfo(HDC hdc);						// 游戏信息显示
+	void DisplayInfo(HDC hdc);						//显示顶部游戏状态信息
 	void ReleaseDXBuffer(AudioDXBuffer* dxBuf);		// 释放声音缓冲
 
 };

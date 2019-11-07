@@ -24,7 +24,6 @@ void MarioGame::GameInit()
 	gameStatus = GAME_START;
 	LoadGameLevel(gameLevel);		//加载关卡资源、地图、玩家
 	LoadGameMenu(gameStatus);		//加载主菜单
-	PlayGameSound();				//播放音乐
 }
 
 //游戏逻辑处理(处理GameState)

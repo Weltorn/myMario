@@ -591,10 +591,6 @@ bool T_Scene::LoadTxtMap(const char* txtmap_path)
 // 整个游戏场景的绘制
 void T_Scene::Draw(HDC hdc)
 {	
-	if (pPlayer->IsVisible() == true)
-	{
-		pPlayer->Draw(hdc);
-	}
 	SCENE_LAYERS::iterator p;
 	for (p = sceneLayers.begin(); p != sceneLayers.end(); p++) 
 	{			
@@ -609,15 +605,13 @@ void T_Scene::Draw(HDC hdc)
 
 void  T_Scene::update()
 {
-	pPlayer->update();				//玩家位置、帧图更新、地图碰撞检测
-	ScrollScene(pPlayer);			//根据玩家位置，滚动场景
-
 	//更新图层
 	SCENE_LAYERS::iterator p;
 	for (p = sceneLayers.begin(); p != sceneLayers.end(); p++)
 	{
 		p->layer->update();			
 	}
+	ScrollScene(pPlayer);			//根据玩家位置，滚动场景
 
 	//怪物与玩家的碰撞
 
