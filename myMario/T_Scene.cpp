@@ -616,8 +616,12 @@ void  T_Scene::update()
 	SCENE_LAYERS::iterator p;
 	for (p = sceneLayers.begin(); p != sceneLayers.end(); p++)
 	{
-		p->layer->update();
+		p->layer->update();			
 	}
+
+	//怪物与玩家的碰撞
+
+
 	// 如果图层发生过任何变化
 	if (LayerChanged == true)
 	{

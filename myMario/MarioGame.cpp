@@ -34,15 +34,14 @@ void MarioGame::GameLogic()
 	{
 		case GAME_START:		//游戏开始菜单
 		{
-			
+			//gameMenu->update();
 			break;
 		}
 		case GAME_RUN:			//游戏进行时界面
 		{
 			gameTime = GetTickCount();		//更新游戏已运行时间
-			//player->update();
-			//t_scene->update();		//更新地图状态
-
+			
+			t_scene->update();				//更新场景、玩家状态
 			break;
 		}
 		case GAME_PAUSE:		//暂停游戏界面
@@ -76,30 +75,44 @@ void MarioGame::GamePaint(HDC hdc)
 	{
 	case GAME_START:		//游戏开始菜单
 	{
+		t_scene->Draw(hdc);
+		DisplayInfo(hdc);		//显示顶部游戏状态信息
+		gameMenu->DrawMenu(hdc);
 		break;
 	}
 	case GAME_RUN:			//游戏进行时界面
 	{
+		t_scene->Draw(hdc);
+		DisplayInfo(hdc);		//显示顶部游戏状态信息
 		break;
 	}
 	case GAME_PAUSE:		//暂停游戏界面
 	{
+		t_scene->Draw(hdc);
+		DisplayInfo(hdc);		//显示顶部游戏状态信息
+		gameMenu->DrawMenu(hdc);
 		break;
 	}
 	case GAME_UPGRADE:		//新关卡加载界面
 	{
+		//显示加载界面
+		DisplayInfo(hdc);		//显示顶部游戏状态信息
 		break;
 	}
 	case GAME_OVER:			//游戏结束界面
 	{
+		//显示加载界面
+		DisplayInfo(hdc);		//显示顶部游戏状态信息
 		break;
 	}
 	case GAME_HELP:			//游戏帮助界面
 	{
+		//显示加载界面
 		break;
 	}
 	case GAME_ABOUT:		//游戏制作信息界面
 	{
+		//显示加载界面
 		break;
 	}
 	}
@@ -182,23 +195,23 @@ void MarioGame::LoadMap()
 void MarioGame::LoadPlayer()
 {
 	GAMELAYER gameLayer;
-	SPRITEINFO tank_Info;
+	SPRITEINFO player_Info;
 	player = new Player(L".\\res\\sprite\\playertank.png", 40, 40);	
 
-	tank_Info.Active = false;
-	tank_Info.Dead = false;
-	tank_Info.Dir = DIR_UP;
-	tank_Info.Rotation = TRANS_NONE;
-	tank_Info.Ratio = 1.0f;
-	tank_Info.Level = 0;
-	tank_Info.Score = 0;
-	tank_Info.SpeedX = 2;
-	tank_Info.SpeedY = 0;
-	tank_Info.Alpha = 220;
-	tank_Info.X = wnd_width / 5;
-	tank_Info.Y = (wnd_height - player->GetHeight()) / 2;
-	tank_Info.Visible = true;
-	player->Initiate(tank_Info);
+	player_Info.Active = false;
+	player_Info.Dead = false;
+	player_Info.Dir = DIR_RIGHT;
+	player_Info.Rotation = TRANS_NONE;
+	player_Info.Ratio = 1.0f;
+	player_Info.Level = 0;
+	player_Info.Score = 0;
+	player_Info.SpeedX = 2;
+	player_Info.SpeedY = 0;
+	player_Info.Alpha = 220;
+	player_Info.X = wnd_width / 5;
+	player_Info.Y = (wnd_height - player->GetHeight()) / 2;
+	player_Info.Visible = true;
+	player->Initiate(player_Info);
 	//player->SetSequence(TANK_FRAME_UP, 4);
 	player->SetLayerTypeID(LAYER_PLY);
 
@@ -214,6 +227,8 @@ void MarioGame::LoadPlayer()
 void MarioGame::LoadGameMenu(int type)
 {
 	if (gameMenu == NULL) gameMenu = new T_Menu();
+	delete gameMenu;
+
 	gameMenu->SetMenuIndex(-1);
 	int btnwidth = 200, btnheight = 80;
 	if (type == GAME_START)

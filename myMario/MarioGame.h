@@ -42,7 +42,7 @@ private:
 	
 	// 与游戏对象类相关的变量
 	Player* player;								// 游戏玩家
-	T_Scene* t_scene;							// 游戏地图场景
+	T_Scene* t_scene;							// 游戏场景
 	T_Menu* gameMenu;							//游戏菜单
 	
 public:
