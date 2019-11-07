@@ -115,6 +115,13 @@ enum LAYER_TYPE
 	LAYER_BONUS,				// 游戏中的奖励
 	LAYER_NONE					// 游戏中非游戏对象
 };
+// 图层类型
+enum VK_KEYVALUE
+{
+	VK_A = 0x41,					
+	VK_B,VK_C,VK_D,VK_E,VK_F,VK_G,VK_H,VK_I,VK_J,VK_K,VK_L,VK_M,
+	VK_N,VK_O,VK_P,VK_Q,VK_R,VK_S,VK_T,VK_U,VK_V,VK_W,VK_X, VK_Y, VK_Z
+};
 
 // 游戏角色关键信息(每个新增角色必须设置全部值)
 typedef struct

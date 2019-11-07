@@ -34,7 +34,7 @@ T_Engine::T_Engine(HINSTANCE hInstance, LPCTSTR szWindowClass, LPCTSTR szTitle,
 
 	p_disp = new T_Display();	
 
-	for(int i=0; i<256; i++)
+	for(int i=0; i<256; i++)	//按键状态，true为按下，false为释放
 	{
 		keys[i] = false;
 	}

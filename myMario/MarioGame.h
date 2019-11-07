@@ -13,12 +13,12 @@ class MarioGame:public T_Engine
 private:	
 	int scn_width, scn_height;						// 地图场景宽高
 	int wnd_width, wnd_height;						// 游戏窗口宽高
-	GAME_STATE gameStatus;							//游戏状态
-	int gameTime;									//游戏已进行时间
+	GAME_STATE gameStatus;							// 游戏状态
+	int gameTime;									// 游戏已进行时间
 
 	//游戏常量
 	static const int TOTAL_LEVEL = 5;			// 游戏总关数
-	static const int SUPER_TIME = 5000;			// 玩家角色无敌时间
+	static const int SUPER_TIME = 5000;			// 玩家角色无敌时间/ms
 	static const int BEGIN_TIME = 5000;			// 游戏开始音乐播放时间
 	static const int WARN_TIME = 15000;			// 游戏时间即将耗尽，剩余时间
 
@@ -43,7 +43,7 @@ private:
 	// 与游戏对象类相关的变量
 	Player* player;								// 游戏玩家
 	T_Scene* t_scene;							// 游戏场景
-	T_Menu* gameMenu;							//游戏菜单
+	T_Menu* gameMenu;							// 游戏菜单
 	
 public:
 	

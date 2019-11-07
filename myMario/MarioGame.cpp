@@ -136,6 +136,49 @@ void MarioGame::GameKeyAction(int Action)
 	}
 	case GAME_RUN:			//游戏进行时界面
 	{
+		switch (Action)
+		{
+			case VK_A:
+				if (keys[VK_A] == true)		//true: 按下键，false:释放键
+				{
+
+				}
+				else if(keys[VK_A] == false)
+				{
+
+				}
+				break;
+			case VK_D:
+				if (keys[VK_D] == true)
+				{
+
+				}
+				else if (keys[VK_D] == false)
+				{
+
+				}
+				break;
+			case VK_S:
+				if (keys[VK_S] == true)
+				{
+
+				}
+				else if (keys[VK_S] == false)
+				{
+
+				}
+				break;
+			case VK_SHIFT:
+				if (keys[VK_SHIFT] == true)
+				{
+
+				}
+				else if (keys[VK_SHIFT] == false)
+				{
+
+				}
+				break;
+		}
 		break;
 	}
 	case GAME_PAUSE:		//暂停游戏界面
