@@ -38,8 +38,7 @@ void MarioGame::GameLogic()
 		}
 		case GAME_RUN:			//游戏进行时界面
 		{
-			gameTime = GetTickCount();		//更新游戏已运行时间
-			
+			gameTime = GetTickCount();		//更新游戏已运行时间		
 			t_scene->update();				//更新场景、玩家状态
 			break;
 		}
@@ -225,8 +224,7 @@ void MarioGame::GameMouseAction(int x, int y, int Action)
 // 加载游戏地图场景,可包括背景、障碍、遮罩层
 void MarioGame::LoadMap()
 {
-	t_scene->LoadTxtMap("res\\game\\tankmap.txt");
-	if (t_scene->getBarrier() == NULL)
+	if (!t_scene->LoadTxtMap("res\\game\\tankmap.txt"))
 	{
 		Util::myprintf(L"Load map failure!\n");
 		exit(1);

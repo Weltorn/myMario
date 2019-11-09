@@ -303,13 +303,15 @@ void T_Engine::StartEngine()
 			{
 				// 判读游戏循环的时间
 				nowTick = GetTickCount();
+
+				//处理游戏逻辑
+				GameLogic();
+				//在内存中绘制内容
+				GamePaint(bufferDC);
+
 				if (nowTick > TickElapsed)
 				{
 					TickElapsed = nowTick + GetInterval();
-					//处理游戏逻辑
-					GameLogic();
-					//在内存中绘制内容
-					GamePaint(bufferDC);
 					//获取游戏窗口句柄及绘图设备
 					HDC hDC = GetDC(m_hWnd);
 					//将内存设备中绘制的内容绘到屏幕上

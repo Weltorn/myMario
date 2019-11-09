@@ -6,9 +6,10 @@ class Player :
 {
 private:
 	// ----- STATUS
-	bool bMove;
-	bool bSquat;
-	bool bJump;
+	bool bMove;		//是否可水平移动状态
+	bool bSquat;	//是否下蹲状态
+	bool bJump;		//是否跳跃状态
+	int jumpStatus;	//跳跃状态0：上升，1：下降
 
 	// ----- MOVE
 	bool dirChanged;	
@@ -23,19 +24,24 @@ private:
 public:
 	Player(LPCTSTR imgPath, int frameWidth = 0, int frameHeight = 0);
 	~Player();
+	virtual string ClassName() { return "Player"; }
 
 	//运动控制方法
 	// ----- MOVE
 	void startMove();			//设置为正常移动状态
 	
 	void startSpeedup();		//设置为加速状态
-	void Player::resetSpeedup();//恢复为正常移动状态
+	void resetSpeedup();		//恢复为正常移动状态
 
 	void stopMove(bool immediately);			//停止水平移动，immediately：是否含惯性处理
 
 	//------JUMP
 	void startJump(int iH);
 	void resetJump();
+
+	// ----- SQUAT
+	bool getSquat() { return bSquat; }
+	void setSquat(bool bSquat) { this->bSquat = bSquat; }
 
 	//更新玩家坐标
 	void updatePosition();

@@ -60,6 +60,9 @@
     <ClCompile Include="Minion.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="MinionFactory.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MarioGame.h">
@@ -111,6 +114,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Minion.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MinionFactory.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

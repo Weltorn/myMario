@@ -13,6 +13,7 @@
 #include "T_Layer.h"
 #include "T_Sprite.h"
 #include "Player.h"
+#include "Minion.h"
 
 typedef struct
 {
@@ -23,7 +24,7 @@ typedef struct
 
 // 游戏中的图层容器类型
 typedef vector<GAMELAYER> SCENE_LAYERS;
-
+typedef vector<Minion*> LMinion;
 class T_Scene
 {
 protected:
@@ -32,6 +33,7 @@ protected:
 	static T_Map* pBarrier;			// 碰撞图层指针，包含在sceneLayers中
 	static T_Map* pMask;			// 遮罩层指针，包含在sceneLayers中
 	Player* pPlayer;				// 玩家指针，包含在sceneLayers中
+	LMinion pMinions;				// 怪物、奖励指针，包含在sceneLayers中
 	
 	int SceneWidth, SceneHeight;	// 整个场景的宽、高
 	int WinWidth, WinHeight;		// 窗口的宽、高

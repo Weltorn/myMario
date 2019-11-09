@@ -113,7 +113,8 @@ enum LAYER_TYPE
 	LAYER_EXPLOSION,			// 爆炸效果图层
 	LAYER_TARGET,				// 攻击和保护的目标
 	LAYER_BONUS,				// 游戏中的奖励
-	LAYER_NONE					// 游戏中非游戏对象
+	LAYER_NONE,					// 游戏中非游戏对象
+	LAYER_BRICK
 };
 // 图层类型
 enum VK_KEYVALUE

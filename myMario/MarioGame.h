@@ -13,7 +13,7 @@ class MarioGame:public T_Engine
 private:	
 	int scn_width, scn_height;						// 地图场景宽高
 	int wnd_width, wnd_height;						// 游戏窗口宽高
-	GAME_STATE gameStatus = GAME_START;							// 游戏状态
+	GAME_STATE gameStatus = GAME_START;				// 游戏状态
 	int gameTime;									// 游戏已进行时间
 
 	//游戏常量
@@ -24,7 +24,7 @@ private:
 
 	//关卡相关数据
 	int timeLimit = 300000;						// 关卡时间限制
-	int gameLevel;								//当前关卡
+	int gameLevel;								// 当前关卡
 
 	//资源文件
 	//声音

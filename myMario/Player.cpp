@@ -13,6 +13,22 @@ Player::~Player()
 //更新玩家坐标
 void Player::updatePosition()
 {
+	//根据方向设置速度符号
+	int ispeedX;
+	int ispeedY;
+	if (dir = DIR_LEFT)
+		ispeedX = -abs(speedX);
+	else if(dir = DIR_RIGHT)
+		ispeedX = abs(speedX);
+
+	if (!bSquat)
+	{
+		if (bMove)
+		{
+			X += ispeedX;
+		}
+	}
+
 	CollideWith(T_Scene::getBarrier());	//玩家与障碍层碰撞检测
 }
 //更新帧图
