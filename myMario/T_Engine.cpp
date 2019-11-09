@@ -14,6 +14,7 @@
 HWND T_Engine::m_hWnd = NULL;				// 窗口句柄
 HINSTANCE T_Engine::m_hInstance = NULL;		// 实例句柄
 T_Engine* T_Engine::pEngine = NULL;			// 引擎类指针
+int T_Engine::GameState = GAME_START;		//游戏状态
 
 // 构造函数(更新: 2019-09-28)初始化成员变量
 T_Engine::T_Engine(HINSTANCE hInstance, LPCTSTR szWindowClass, LPCTSTR szTitle, 

@@ -42,7 +42,7 @@ protected:
 	HDC bufferDC;						// 内存缓冲设备
 
 	bool keys[256];						// 记录键盘状态的数组
-	int GameState;						// 游戏状态(为GAME_STATE常量值)
+	static int GameState;				// 游戏状态(为GAME_STATE常量值)
 
 public:
 	// 构造函数(更新: 2019-09-28)
@@ -52,6 +52,8 @@ public:
 		           COLORREF bkColor = WIN_BKCLR); // 更新: 2019-09-28(添加窗口背景色参数)
 	// 析构函数
 	virtual ~T_Engine();
+	static void setGameState(int state) { GameState = state; }
+	static int getGameState() { return GameState; }
 	// 获取游戏帧刷新间隔时间
 	int GetInterval() { return IntervalTime; }
 	// 设置游戏帧刷新间隔时间

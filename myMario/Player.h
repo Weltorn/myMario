@@ -5,11 +5,17 @@ class Player :
 	public T_Sprite
 {
 private:
-	// ----- STATUS
+	// ----- role status
+	int lifeCount;
+
+	// ----- MOVE STATUS
 	bool bMove;		//是否可水平移动状态
 	bool bSquat;	//是否下蹲状态
 	bool bJump;		//是否跳跃状态
 	int jumpStatus;	//跳跃状态0：上升，1：下降
+
+	bool isInEnvnt;	//是否在游戏事件中
+	int eventId;
 
 	// ----- MOVE
 	bool dirChanged;	
@@ -26,6 +32,8 @@ public:
 	~Player();
 	virtual string ClassName() { return "Player"; }
 
+	void setLifeCount(int lifeCount) { this->lifeCount = lifeCount; }
+	int  getLifeCount() { return lifeCount; }
 	//运动控制方法
 	// ----- MOVE
 	void startMove();			//设置为正常移动状态

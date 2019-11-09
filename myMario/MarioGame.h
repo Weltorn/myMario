@@ -1,8 +1,7 @@
 #pragma once
 
 #include "T_Engine.h"
-#include "T_Scene.h"
-#include "T_Sprite.h" 
+#include "GameScene.h"
 #include "T_AI.h"
 #include "T_Audio.h"
 #include "T_Menu.h"
@@ -13,7 +12,6 @@ class MarioGame:public T_Engine
 private:	
 	int scn_width, scn_height;						// 地图场景宽高
 	int wnd_width, wnd_height;						// 游戏窗口宽高
-	GAME_STATE gameStatus = GAME_START;				// 游戏状态
 	int gameTime;									// 游戏已进行时间
 
 	//游戏常量
@@ -42,7 +40,7 @@ private:
 	
 	// 与游戏对象类相关的变量
 	Player* player;								// 游戏玩家
-	T_Scene* t_scene;							// 游戏场景
+	GameScene* gameScene;						// 游戏场景
 	T_Menu* gameMenu;							// 游戏菜单
 	
 public:

@@ -604,39 +604,3 @@ void T_Scene::Draw(HDC hdc)
 }
 
 
-void  T_Scene::update()
-{
-	//更新图层
-	SCENE_LAYERS::iterator p1;
-	SCENE_LAYERS::iterator p2;
-	for (p1 = sceneLayers.begin(); p1 != sceneLayers.end();)
-	{
-		if (p1->layer->IsVisible())
-			p1->layer->update();
-		else if (!p1->layer->IsVisible())		//删除死亡对象（死亡对象设置为不可见），特殊情况根据layerType判断
-		{
-			if (p1->layer->GetLayerTypeID == LAYER_BRICK)
-			{
-				
-			}
-			else
-			{
-				p2 = p1;
-				p1 = sceneLayers.erase(p2);
-			}		
-		}			
-	}
-	ScrollScene(pPlayer);				//根据玩家位置，滚动场景
-
-	//怪物与玩家的碰撞
-	LMinion::iterator pm;
-	for (pm = pMinions.begin(); pm != pMinions.end(); pm++)
-	{
-		(*pm)->CollideWith(pPlayer);	//设置怪物、玩家碰撞后状态（如死亡、升/降级）
-	}
-	// 如果图层发生过任何变化
-	if (LayerChanged == true)
-	{
-		SortLayers();//对图层重新排序
-	}
-}

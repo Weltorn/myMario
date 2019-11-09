@@ -24,17 +24,15 @@ typedef struct
 
 // 游戏中的图层容器类型
 typedef vector<GAMELAYER> SCENE_LAYERS;
-typedef vector<Minion*> LMinion;
+
 class T_Scene
 {
 protected:
-
 	SCENE_LAYERS sceneLayers;		// 保存游戏中场景图层的vector容器
+	Player* pPlayer;				// 玩家指针，包含在sceneLayers中
 	static T_Map* pBarrier;			// 碰撞图层指针，包含在sceneLayers中
 	static T_Map* pMask;			// 遮罩层指针，包含在sceneLayers中
-	Player* pPlayer;				// 玩家指针，包含在sceneLayers中
-	LMinion pMinions;				// 怪物、奖励指针，包含在sceneLayers中
-	
+
 	int SceneWidth, SceneHeight;	// 整个场景的宽、高
 	int WinWidth, WinHeight;		// 窗口的宽、高
 	int lastSceneX, lastSceneY;		// 场景上一次的坐标位置
@@ -111,9 +109,8 @@ public:
 	// 将解析后的地图数据保存到第二个参数的data元素中
 	void parseCsvData(wstring csv_data, LAYERINFO& m_LayerInfo);
 	// 加载参数指定的地图文件，解析其中的地图数据，并保存到场景图层中
-	bool LoadTxtMap(const char* txtmap_path);
+	virtual bool LoadTxtMap(const char* txtmap_path);
 	
-	void update();
 	//……………………………………………………………………………………
 	// 负责整个场景绘制的函数
 	//……………………………………………………………………………………

@@ -21,15 +21,15 @@ MarioGame::~MarioGame(void)
 void MarioGame::GameInit() 
 {
 	gameLevel = 1;
-	gameStatus = GAME_START;
+	GameState = GAME_START;
 	LoadGameLevel(gameLevel);		//加载关卡资源、地图、玩家
-	LoadGameMenu(gameStatus);		//加载主菜单
+	LoadGameMenu(GameState);		//加载主菜单
 }
 
 //游戏逻辑处理(处理GameState)
 void MarioGame::GameLogic()	
 {
-	switch (gameStatus)
+	switch (GameState)
 	{
 		case GAME_START:		//游戏开始菜单
 		{
@@ -38,8 +38,25 @@ void MarioGame::GameLogic()
 		}
 		case GAME_RUN:			//游戏进行时界面
 		{
-			gameTime = GetTickCount();		//更新游戏已运行时间		
-			t_scene->update();				//更新场景、玩家状态
+			gameTime = GetTickCount();		//更新游戏已运行时间	
+
+			//更新玩家	
+			if (!player->IsDead() && player->IsVisible())	//未死亡或播放死亡动画未播放完
+				player->update();
+			if (player->IsDead() && !player->IsVisible())	//玩家死亡，死亡动画播放完
+			{
+				if (player->getLifeCount() == 0)
+				{
+					GameState = GAME_OVER;				//玩家生命值为0，游戏结束
+				}
+				else
+				{
+					GameState = GAME_UPGRADE;			//玩家生命值不为0，继续游戏
+					//加载复活点
+				}
+			}
+			gameScene->ScrollScene(player);				//根据玩家位置，滚动场景
+			gameScene->update();						//更新地图、怪物、玩家状态
 			break;
 		}
 		case GAME_PAUSE:		//暂停游戏界面
@@ -69,24 +86,24 @@ void MarioGame::GameLogic()
 //游戏显示
 void MarioGame::GamePaint(HDC hdc)	
 {
-	switch (gameStatus)
+	switch (GameState)
 	{
 	case GAME_START:		//游戏开始菜单
 	{
-		t_scene->Draw(hdc);
+		gameScene->Draw(hdc);
 		DisplayInfo(hdc);		//显示顶部游戏状态信息
 		gameMenu->DrawMenu(hdc);
 		break;
 	}
 	case GAME_RUN:			//游戏进行时界面
 	{
-		t_scene->Draw(hdc);
+		gameScene->Draw(hdc);
 		DisplayInfo(hdc);		//显示顶部游戏状态信息
 		break;
 	}
 	case GAME_PAUSE:		//暂停游戏界面
 	{
-		t_scene->Draw(hdc);
+		gameScene->Draw(hdc);
 		DisplayInfo(hdc);		//显示顶部游戏状态信息
 		gameMenu->DrawMenu(hdc);
 		break;
@@ -126,7 +143,7 @@ void MarioGame::GameEnd()
 //键按下时会持续发出WM_KEYDOWN消息
 void MarioGame::GameKeyAction(int Action)
 {
-	switch (gameStatus)
+	switch (GameState)
 	{
 	case GAME_START:		//游戏开始菜单
 	{		
@@ -153,44 +170,48 @@ void MarioGame::GameKeyAction(int Action)
 	}
 	case GAME_RUN:			//游戏进行时界面
 	{
-		if (Action == KEY_DOWN)		//按下键
-		{
-			if (keys[VK_A])		
+		if(player->IsActive())	//玩家处于活跃状态，监听用户按键
+		{ 
+			if (Action == KEY_DOWN)		//按下键
 			{
+				if (keys[VK_A])
+				{
 
+				}
+				else if (keys[VK_D])
+				{
+
+				}
+				else if (keys[VK_S])
+				{
+
+				}
+				else if (keys[VK_SHIFT])
+				{
+
+				}
 			}
-			else if (keys[VK_D])		
+			else if (Action == KEY_UP)	//释放键
 			{
+				if (keys[VK_A])
+				{
 
-			}
-			else if (keys[VK_S])		
-			{
+				}
+				else if (keys[VK_D])
+				{
 
-			}
-			else if (keys[VK_SHIFT])		
-			{
+				}
+				else if (keys[VK_S])
+				{
 
-			}
-		}
-		else if (Action == KEY_UP)	//释放键
-		{
-			if (keys[VK_A])
-			{
+				}
+				else if (keys[VK_SHIFT])
+				{
 
+				}
 			}
-			else if (keys[VK_D])
-			{
-
-			}
-			else if (keys[VK_S])
-			{
-
-			}
-			else if (keys[VK_SHIFT])
-			{
-
-			}
-		}
+		}		
+		
 		break;
 	}
 	case GAME_PAUSE:		//暂停游戏界面
@@ -224,23 +245,23 @@ void MarioGame::GameMouseAction(int x, int y, int Action)
 // 加载游戏地图场景,可包括背景、障碍、遮罩层
 void MarioGame::LoadMap()
 {
-	if (!t_scene->LoadTxtMap("res\\game\\tankmap.txt"))
+	if (!gameScene->LoadTxtMap("res\\game\\tankmap.txt"))
 	{
 		Util::myprintf(L"Load map failure!\n");
 		exit(1);
 	}
-	scn_width = t_scene->getBarrier()->GetWidth();
-	scn_height = t_scene->getBarrier()->GetHeight();
+	scn_width = gameScene->getBarrier()->GetWidth();
+	scn_height = gameScene->getBarrier()->GetHeight();
 
 	// 视图初始位置以地图作为参照
 	int scn_x = 0;
-	int scn_y = -t_scene->getBarrier()->getTileHeight()/2;
+	int scn_y = -gameScene->getBarrier()->getTileHeight()/2;
 	// 将游戏地图初始化
-	t_scene->InitScene(scn_x, scn_y, scn_width, scn_height, wnd_width, wnd_height);
+	gameScene->InitScene(scn_x, scn_y, scn_width, scn_height, wnd_width, wnd_height);
 
 	// 将所有地图图层定位
 	SCENE_LAYERS::iterator p;
-	for (p = t_scene->getSceneLayers()->begin(); p != t_scene->getSceneLayers()->end(); p++)
+	for (p = gameScene->getSceneLayers()->begin(); p != gameScene->getSceneLayers()->end(); p++)
 	{
 		if (p->layer->ClassName() == "T_Map") p->layer->SetPosition(scn_x, scn_y);
 	}
@@ -271,9 +292,9 @@ void MarioGame::LoadPlayer()
 
 	gameLayer.layer = player;
 	gameLayer.type_id = LAYER_PLY;
-	gameLayer.z_order = t_scene->getSceneLayers()->size() + 1;
+	gameLayer.z_order = gameScene->getSceneLayers()->size() + 1;
 	gameLayer.layer->setZorder(gameLayer.z_order);
-	t_scene->Append(gameLayer);
+	gameScene->Append(gameLayer);
 	player->SetStartTime(GetTickCount());
 }
 
@@ -349,9 +370,9 @@ void MarioGame::ReleaseDXBuffer(AudioDXBuffer* dxBuf)
 void MarioGame::LoadGameLevel(int level)
 {
 	SetFrame(FRAME_SPEED);
-	t_scene = NULL;
+	gameScene = NULL;
 
-	if (t_scene == NULL) t_scene = new T_Scene();
+	if (gameScene == NULL) gameScene = new GameScene();
 	if (gameMenu == NULL) gameMenu = new T_Menu();
 
 	LoadSound(m_hWnd);
@@ -373,7 +394,7 @@ void MarioGame::DisplayInfo(HDC hdc)
 	int FontHeight = 0;//字号
 	Gdiplus::RectF rect;
 	wstring Content = L"";
-	switch (gameStatus)
+	switch (GameState)
 	{
 	case GAME_START:
 		break;
