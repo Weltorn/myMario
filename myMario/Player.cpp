@@ -42,7 +42,7 @@ void Player::update()
 	updateFrame();		//更新帧图
 }
 
-//设置为正常移动状态
+//设置为正常移动状态，初速度和速度上限
 void Player::startMove() {
 	startTime = GetTickCount();
 	endTime = GetTickCount();

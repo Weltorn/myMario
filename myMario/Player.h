@@ -7,23 +7,28 @@ class Player :
 private:
 	// ----- role status
 	int lifeCount;
+	bool isInEnvnt;	//是否在游戏事件中
+	int eventId;
 
 	// ----- MOVE STATUS
 	bool bMove;		//是否可水平移动状态
 	bool bSquat;	//是否下蹲状态
 	bool bJump;		//是否跳跃状态
+
+	// -----JUMP STATUS
 	int jumpStatus;	//跳跃状态0：上升，1：下降
-
-	bool isInEnvnt;	//是否在游戏事件中
-	int eventId;
-
+	bool isBooting;	//是否跳跃加速状态
+		
 	// ----- MOVE
-	bool dirChanged;	
-	const int maxMoveSpeedX = 4;
-	const int maxRunSpeedX = 6;
+	bool dirChanged;
+	const int maxMoveSpeedX;
+	const int maxRunSpeedX;
 	int currentMaxSpeed;
 
 	// ----- JUMP
+	int originSpeedY;		//跳跃初始速度
+	int maxBootTime;		//最大加速时间（按住跳跃键的有效时间）
+	int gravity;			//基础重力加速度
 
 
 
