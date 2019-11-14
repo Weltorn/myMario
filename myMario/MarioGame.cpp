@@ -170,7 +170,7 @@ void MarioGame::GameKeyAction(int Action)
 	}
 	case GAME_RUN:			//游戏进行时界面
 	{
-		if(player->IsActive())	//玩家处于活跃状态，监听用户按键
+		if(player->IsActive()&&!player->isInEvent())	//玩家处于活跃状态，监听用户按键
 		{ 
 			if (Action == KEY_DOWN)		//按下键
 			{
@@ -187,6 +187,10 @@ void MarioGame::GameKeyAction(int Action)
 
 				}
 				else if (keys[VK_SHIFT])
+				{
+
+				}
+				else if (keys[VK_SPACE])
 				{
 
 				}
@@ -208,6 +212,10 @@ void MarioGame::GameKeyAction(int Action)
 				else if (keys[VK_SHIFT])
 				{
 
+				}
+				else if (keys[VK_SPACE])
+				{
+					player->stopBooting();		//释放键，停止加速
 				}
 			}
 		}		

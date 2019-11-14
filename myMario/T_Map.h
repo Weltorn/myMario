@@ -45,5 +45,5 @@ public:
 	void Redraw(HDC hdc);							// 重新绘制当前图层全部图块
 	void Draw(HDC hdc);								// 重载父类中的同名函数,处理图层绘制
 
-	virtual void update();
+	virtual void update(){}
 };

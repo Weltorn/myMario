@@ -9,6 +9,7 @@ private:
 	int lifeCount;
 	bool isInEnvnt;	//是否在游戏事件中
 	int eventId;
+	unsigned timer;		//定时器
 
 	// ----- MOVE STATUS
 	bool bMove;		//是否可水平移动状态
@@ -20,15 +21,15 @@ private:
 	bool isBooting;	//是否跳跃加速状态
 		
 	// ----- MOVE
-	bool dirChanged;
-	const int maxMoveSpeedX;
-	const int maxRunSpeedX;
+	int maxMoveSpeedX;
+	int maxRunSpeedX;
 	int currentMaxSpeed;
+	int friction;		//水平摩擦，控制惯性滑行距离
 
 	// ----- JUMP
-	int originSpeedY;		//跳跃初始速度
+	int originJumpSpeedY;		//跳跃初始速度
 	int maxBootTime;		//最大加速时间（按住跳跃键的有效时间）
-	int gravity;			//基础重力加速度
+	float gravity;			//基础重力加速度
 
 
 
@@ -48,13 +49,55 @@ public:
 
 	void stopMove(bool immediately);			//停止水平移动，immediately：是否含惯性处理
 
+	void updatePositionX();			//水平移动
+
 	//------JUMP
-	void startJump(int iH);
-	void resetJump();
+	void startJump();		//起跳，设置为加速状态
+	void resetJump();		//落地，设置水平、竖直静止
+	void updatePositionY();			//竖直移动
+	void  Player::gravityEffect();
+	
+	//垂直加速状态设置
+	bool getBooting() { return isBooting; }
+	void stopBooting()
+	{
+		isBooting = false;
+	}
+
+	//是否在游戏事件中
+	bool isInEvent() { return isInEnvnt; }
+	bool setEvent(int eventId)
+	{ 
+		if (eventId == 0)		//设置事件结束
+		{
+			isInEnvnt = false;
+		}
+		else
+		{
+			isInEnvnt = true;	//设置事件开始
+		}
+		this->eventId = eventId;
+	}
 
 	// ----- SQUAT
 	bool getSquat() { return bSquat; }
-	void setSquat(bool bSquat) { this->bSquat = bSquat; }
+	void setSquat(bool bSquat)
+	{
+		if (this->bSquat == bSquat)
+		{
+			return;
+		}
+		else if (this->bSquat == false && bSquat == true)//蹲下
+		{
+			this->Y = this->Y + 32;		//16： 蹲下和站起来帧图的高度差
+			this->bSquat = bSquat;
+		}
+		else if (this->bSquat == true && bSquat == false)//站起来
+		{
+			this->Y = this->Y - 32;		//16： 蹲下和站起来帧图的高度差
+			this->bSquat = bSquat;
+		}
+	}
 
 	//更新玩家坐标
 	void updatePosition();
