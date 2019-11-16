@@ -170,15 +170,15 @@ void MarioGame::GameKeyAction(int Action)
 	}
 	case GAME_RUN:			//游戏进行时界面
 	{
-		if(player->IsActive()&&!player->isInEvent())	//玩家处于活跃状态，监听用户按键
-		{ 
+		if (player->IsActive() && !player->isInEvent())	//玩家处于活跃状态，监听用户按键
+		{
 			if (Action == KEY_DOWN)		//按下键
 			{
 				if (keys[VK_A])
 				{
 					if (!keys[VK_D]) {
 						player->SetDir(DIR_LEFT);
-						if (!preA){					//如果是第一次按下键A,设置为开始移动
+						if (!preA) {					//如果是第一次按下键A,设置为开始移动
 							player->startMove();
 							preA = true;
 						}
@@ -196,11 +196,23 @@ void MarioGame::GameKeyAction(int Action)
 				}
 				if (keys[VK_S])
 				{
-
+					if (!keys[VK_A] && !keys[VK_D] && !keys[VK_SPACE]) {
+						if (!preS)
+						{
+							player->setSquat(true);
+							preS = true;
+						}
+					}
 				}
 				if (keys[VK_SHIFT])
 				{
-
+					if (keys[VK_A] || keys[VK_D]) {
+						if (!preShift)
+						{
+							player->startSpeedup();
+							preShift = true;
+						}
+					}
 				}
 				if (keys[VK_SPACE])
 				{
@@ -208,36 +220,43 @@ void MarioGame::GameKeyAction(int Action)
 				}
 			}
 			else if (Action == KEY_UP)	//释放键
-			{
-				if (!keys[VK_A])
 				{
-					preA = false;
-					if (player->GetDir() == DIR_LEFT) {
-						player->stopMove(false);
+					if (!keys[VK_A])
+					{
+						preA = false;
+						if (player->GetDir() == DIR_LEFT) {
+							player->stopMove(false);
+						}
+					}
+					if (!keys[VK_D])
+					{
+						preD = false;
+						if (player->GetDir() == DIR_RIGHT) {
+							player->stopMove(false);
+						}
+					}
+					if (!keys[VK_S])
+					{
+						preS = false;
+						if (player->getSquat() == true)
+						{
+							player->setSquat(false);
+						}
+					}
+					if (!keys[VK_SHIFT])
+					{
+						preShift = false;
+						if (player->isSpeedUp() == true)
+						{
+							player->resetSpeedup();
+						}
+					}
+					if (!keys[VK_SPACE])
+					{
+						player->stopBooting();		//释放键，停止加速
 					}
 				}
-				if (!keys[VK_D])
-				{
-					preD = false;
-					if (player->GetDir() == DIR_RIGHT) {
-						player->stopMove(false);
-					}
-				}
-				if (!keys[VK_S])
-				{
-
-				}
-				if (!keys[VK_SHIFT])
-				{
-
-				}
-				if (!keys[VK_SPACE])
-				{
-					player->stopBooting();		//释放键，停止加速
-				}
-			}
-		}		
-		
+		}
 		break;
 	}
 	case GAME_PAUSE:		//暂停游戏界面

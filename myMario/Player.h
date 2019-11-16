@@ -25,12 +25,20 @@ private:
 	int maxMoveSpeedX;
 	int maxRunSpeedX;
 	int currentMaxSpeed;
-	int friction;		//水平摩擦，控制惯性滑行距离
+	int basicSpeedX;
+	float friction;		//水平摩擦，控制惯性滑行距离
 
 	// ----- JUMP
 	int originJumpSpeedY;		//跳跃初始速度
 	int maxBootTime;		//最大加速时间（按住跳跃键的有效时间）
 	float gravity;			//基础重力加速度
+
+	// ----- SQUAT
+	int squatHeight;			//下蹲时大小
+	int squatWidth;
+
+	int normalWidth;			//站立、跳跃时大小
+	int normalHeight;
 
 	// ----- COLLISION
 	int lastX;			//上一次打印位置横坐标
@@ -60,7 +68,7 @@ public:
 	void startJump();		//起跳，设置为加速状态
 	void resetJump();		//落地，设置水平、竖直静止
 	void updatePositionY();			//竖直移动
-	void  Player::gravityEffect();
+	void gravityEffect();
 	
 	//垂直加速状态设置
 	bool getBooting() { return isBooting; }
@@ -94,16 +102,19 @@ public:
 		}
 		else if (this->bSquat == false && bSquat == true)//蹲下
 		{
-			this->Y = this->Y + 32;		//16： 蹲下和站起来帧图的高度差
+			this->Y = this->Y+(normalHeight- squatHeight);		//蹲下和站起来帧图的高度差
+			SetHeight(squatHeight);
 			this->bSquat = bSquat;
 		}
 		else if (this->bSquat == true && bSquat == false)//站起来
 		{
-			this->Y = this->Y - 32;		//16： 蹲下和站起来帧图的高度差
+			this->Y = this->Y - (normalHeight - squatHeight);		// 蹲下和站起来帧图的高度差
+			SetHeight(normalHeight);
 			this->bSquat = bSquat;
 		}
 	}
-
+	//是否加速状态（shift）
+	bool isSpeedUp() { return currentMaxSpeed == maxRunSpeedX; }
 	//更新玩家坐标
 	void updatePosition();
 	//更新帧图

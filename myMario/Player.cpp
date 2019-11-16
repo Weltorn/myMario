@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "T_Scene.h"
+#include "Util.h"
 Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	:T_Sprite(imgPath, frameWidth, frameHeight)
 {
@@ -26,15 +27,23 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	isBooting = false;	//是否跳跃加速状态
 
 	// ----- MOVE--------------------------------------------------暂不确定，待初始化
-	maxMoveSpeedX = 4;
-	maxRunSpeedX = 6;
+	maxMoveSpeedX = 6;
+	maxRunSpeedX = 8;
 	currentMaxSpeed = maxMoveSpeedX;
+	basicSpeedX = 2;
 	friction = 1;		//水平摩擦，控制惯性滑行距离
 
 	// ----- JUMP--------------------------------------------------暂不确定，待初始化
 	originJumpSpeedY;		//跳跃初始速度
 	maxBootTime;		//最大加速时间（按住跳跃键的有效时间）
 	gravity;			//基础重力加速度
+
+	// ----- SQUAT
+	squatHeight = Height*2/3;
+	squatWidth = Width;
+
+	normalWidth = Width;			//站立、跳跃时大小
+	normalHeight = Height;
 }
 
 
@@ -44,17 +53,31 @@ Player::~Player()
 //更新玩家横坐标
 void Player::updatePositionX()
 {
+	Util::myprintf(L"current speedx: %d\n",speedX);
 	if (!bSquat)		//非下蹲状态下可水平移动
 	{
 		if (!bMove)		//水平静止或惯性滑行状态
 		{
 			if (speedX > 0){		//惯性滑行状态，减速
 				speedX -= friction;
+			
+				if (speedX < 0)			//恢复水平静止
+				{
+					speedX = 0;
+				}
 			}
-			else {				//恢复水平静止
+			else
+			{
 				speedX = 0;
 			}
-		}	
+		}
+		else if(bMove)
+		{
+			if (GetTickCount() - (100 + 35 * speedX) >= GetTickCount()- startTime && speedX < currentMaxSpeed)		//加速过程
+			{
+				++speedX;
+			}
+		}
 
 		int ispeedX;
 		//根据方向设置速度符号
@@ -151,7 +174,7 @@ void Player::update()
 void Player::startMove() {
 	startTime = GetTickCount();
 	endTime = GetTickCount();
-	speedX = 3;
+	speedX = basicSpeedX;
 	currentMaxSpeed = maxMoveSpeedX;
 	bMove = true;
 }
@@ -288,6 +311,7 @@ bool Player::CollideWith(IN T_Map* map)
 
 void Player::Draw(HDC hdc) {
 	int frmIndex;
+	
 	if (!bMove && !bJump && !bSquat)
 	{
 		if (speedX != 0)		//急停帧
@@ -310,9 +334,19 @@ void Player::Draw(HDC hdc) {
 	{
 		frmIndex = frameSequence[forward];
 	}		
-	spImg.PaintFrame(
-		spImg.GetBmpHandle(), hdc, (int)X, (int)Y, frmIndex,
-		frameCols, Width, Height, frameRatio, frameRotate, frameAlpha
-	);
+	Util::myprintf(L"current frame: %d\n",frmIndex);
+	if (bSquat)
+	{
+		spImg.PaintRegion(spImg.GetBmpHandle(),hdc,X,Y,normalWidth*frmIndex,normalHeight-squatHeight,squatWidth,squatHeight,
+			frameRatio, frameRotate, frameAlpha);
+	}
+	else
+	{
+		spImg.PaintFrame(
+			spImg.GetBmpHandle(), hdc, (int)X, (int)Y, frmIndex,
+			frameCols, Width, Height, frameRatio, frameRotate, frameAlpha
+		);
+	}
+	
 }
 
