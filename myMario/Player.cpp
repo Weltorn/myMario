@@ -9,7 +9,7 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	eventId = -1;
 	timer = GetTickCount();
 
-	dir = DIR_RIGHT;		//初始化方向
+	dir = DIR_RIGHT;		//初始化方向,向右
 
 	//------------------------------------------------------------初始化位置，暂不确定
 	X;
@@ -26,10 +26,10 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	isBooting = false;	//是否跳跃加速状态
 
 	// ----- MOVE--------------------------------------------------暂不确定，待初始化
-	maxMoveSpeedX;
-	maxRunSpeedX;
-	currentMaxSpeed;
-	friction;		//水平摩擦，控制惯性滑行距离
+	maxMoveSpeedX = 4;
+	maxRunSpeedX = 6;
+	currentMaxSpeed = maxMoveSpeedX;
+	friction = 1;		//水平摩擦，控制惯性滑行距离
 
 	// ----- JUMP--------------------------------------------------暂不确定，待初始化
 	originJumpSpeedY;		//跳跃初始速度
@@ -58,21 +58,26 @@ void Player::updatePositionX()
 
 		int ispeedX;
 		//根据方向设置速度符号
-		if (dir = DIR_LEFT)
+		if (dir == DIR_LEFT)
 			ispeedX = -abs(speedX);
-		else if (dir = DIR_RIGHT)
+		else if (dir == DIR_RIGHT)
 			ispeedX = abs(speedX);
 
+		lastX = X;
 		X += ispeedX;
 	}
 }
 //更新玩家纵坐标
 void Player::updatePositionY()
 {
-	gravityEffect();
+	gravityEffect();		//重力作用
+	lastY = Y;
 	Y = Y + speedY;
-	if (speedY <= 0)		//速度小于零（向下），设置为下落状态
+	if (speedY < 0)		//速度小于零（向下），设置为下落状态
+	{
+		//bJump = true;		//行走下落和跳跃下落，处理方式相同
 		jumpStatus = 1;
+	}
 }
 //开始跳跃
 void Player::startJump()
@@ -117,12 +122,20 @@ void Player::updatePosition()
 	}	
 	updatePositionX();
 	updatePositionY();
-	CollideWith(T_Scene::getBarrier());	//玩家与障碍层碰撞检测
+	//CollideWith(T_Scene::getBarrier());	//玩家与障碍层碰撞检测
 }
 //更新帧图
 void Player::updateFrame()
 {
-	
+	if (dir == DIR_LEFT)
+	{
+		frameRotate = TRANS_HFLIP_NOROT;
+	}
+	else if (dir == DIR_RIGHT)
+	{
+		frameRotate = TRANS_NONE;
+	}
+	LoopFrame();
 }
 void Player::update()
 {
@@ -138,7 +151,7 @@ void Player::update()
 void Player::startMove() {
 	startTime = GetTickCount();
 	endTime = GetTickCount();
-	speedX = 1;
+	speedX = 3;
 	currentMaxSpeed = maxMoveSpeedX;
 	bMove = true;
 }
@@ -168,5 +181,138 @@ void Player::stopMove(bool immediately) {
 	{
 		bMove = false;
 	}
+}
+
+bool Player::CollideWith(IN T_Map* map)
+{
+	// 如果背景为图片则不检测地图碰撞
+	if (map->getMapRows() == 0 && map->getMapCols() == 0)
+	{
+		mapBlockPT.x = -1;
+		mapBlockPT.y = -1;
+		return false;
+	}
+
+	// 如果地图不可见或角色不可见不检测地图碰撞
+	if ((!(map->IsVisible())) || (!(this->IsVisible())))
+	{
+		mapBlockPT.x = -1;
+		mapBlockPT.y = -1;
+		return false;
+	}
+
+	// 计算当前地图图层的矩形范围
+	int mapLeft = map->GetX();
+	int mapTop = map->GetY();
+	int mapRight = mapLeft + map->GetWidth();
+	int mapBottom = mapTop + map->GetHeight();
+
+	// 获得地图图层中使用的图块的宽高
+	int tW = map->getTileWidth();
+	int tH = map->getTileHeight();
+
+	// 计算当前角色的矩形范围（碰撞区域）
+	int spLeft = this->GetCollideRect()->left;
+	int spTop = this->GetCollideRect()->top;
+	int spRight = this->GetCollideRect()->right;
+	int spBottom = this->GetCollideRect()->bottom;
+
+	// 获得当前地图中图块的总列数
+	int tNumCols = map->getMapCols();
+	// 获得当前地图中图块的总行数
+	int tNumRows = map->getMapRows();
+
+	// 计算当前角色的实际的宽高
+	int spW = spRight - spLeft;
+	int spH = spBottom - spTop;
+
+	RECT lprcDst;
+	// 根据以上计算的图层的矩形范围和角色的矩形范围构造两个矩形对象
+	RECT mapRect = { mapLeft, mapTop, mapRight, mapBottom };
+	RECT spRect = { spLeft, spTop, spRight, spBottom };
+	// 如果两个矩形对象没有发生任何碰撞，则退出函数
+	if ((IntersectRect(&lprcDst, &mapRect, &spRect)) == FALSE)
+	{
+		mapBlockPT.x = -1;
+		mapBlockPT.y = -1;
+		return false;
+	}
+
+	// 如果两个矩形对象发生了碰撞，首先计算角色矩形上、下、左、右的矩形区域
+	int startRow = (spTop <= mapTop) ? 0 : (spTop - mapTop) / tH;
+	int endRow = (spBottom < mapBottom) ? (spBottom - 1 - mapTop) / tH : tNumRows - 1;	//-1，边缘判断
+	int startCol = (spLeft <= mapLeft) ? 0 : (spLeft - mapLeft) / tW;
+	int endCol = (spRight < mapRight) ? (spRight - 1 - mapLeft) / tW : tNumCols - 1;
+
+	// 根据角色矩形上、下、左、右的矩形区域判断哪个矩形区域为障碍
+	for (int row = startRow; row <= endRow; ++row)
+	{
+		for (int col = startCol; col <= endCol; ++col)
+		{
+			// 如果当前矩形所在的图块在地图数据中为非0，就表示是障碍
+			if (map->getTile(col, row) != 0)
+			{
+				mapBlockPT.x = col;	// 记录当前障碍图块的列
+				mapBlockPT.y = row;	// 记录当前障碍图块的行
+
+				// 根据角色当前的方向计算碰撞前的位置
+				int x = GetX(), y = GetY();
+				switch (GetDir())
+				{
+				case DIR_LEFT:
+					x = (col + 1)*map->getTileWidth() + 1;	//紧靠障碍右侧
+					y = GetY();
+					break;
+				case DIR_RIGHT:
+					x = col*map->getTileWidth() - GetWidth() - 1;  //紧靠障碍左侧
+					y = GetY();
+					break;
+				case DIR_UP:
+					x = GetX();
+					y = (row + 1)*map->getTileHeight() + 1;		//紧靠障碍下侧
+					break;
+				case DIR_DOWN:
+					x = GetX();
+					y = row*map->getTileHeight() - GetHeight() - 1;  //紧靠障碍上侧
+					break;
+				}
+				// 将角色定位在障碍物边界
+				SetPosition(x, y);
+				return true;
+			}
+		}
+	}
+	return false;
+
+}
+
+void Player::Draw(HDC hdc) {
+	int frmIndex;
+	if (!bMove && !bJump && !bSquat)
+	{
+		if (speedX != 0)		//急停帧
+		{
+			frmIndex = 4;
+		}
+		else {					//静止帧
+			frmIndex = 0;
+		}
+	}
+	else if (bSquat)
+	{
+		frmIndex = 6;
+	}
+	else if (bMove && !bJump)
+	{
+		frmIndex = frameSequence[forward];		
+	}
+	else if (bJump)
+	{
+		frmIndex = frameSequence[forward];
+	}		
+	spImg.PaintFrame(
+		spImg.GetBmpHandle(), hdc, (int)X, (int)Y, frmIndex,
+		frameCols, Width, Height, frameRatio, frameRotate, frameAlpha
+	);
 }
 

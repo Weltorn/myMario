@@ -14,6 +14,14 @@ private:
 	int wnd_width, wnd_height;						// 游戏窗口宽高
 	int gameTime;									// 游戏已进行时间
 
+	//前一步按键状态
+	bool preA;
+	bool preS;
+	bool preD;
+	bool preSpace;
+	bool preShift;
+
+
 	//游戏常量
 	static const int TOTAL_LEVEL = 5;			// 游戏总关数
 	static const int SUPER_TIME = 5000;			// 玩家角色无敌时间/ms

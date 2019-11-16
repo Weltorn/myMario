@@ -10,6 +10,7 @@ private:
 	bool isInEnvnt;	//是否在游戏事件中
 	int eventId;
 	unsigned timer;		//定时器
+	
 
 	// ----- MOVE STATUS
 	bool bMove;		//是否可水平移动状态
@@ -31,6 +32,10 @@ private:
 	int maxBootTime;		//最大加速时间（按住跳跃键的有效时间）
 	float gravity;			//基础重力加速度
 
+	// ----- COLLISION
+	int lastX;			//上一次打印位置横坐标
+	int lastY;			//上一次打印位置纵坐标
+	int collisionStatus;
 
 
 public:
@@ -106,8 +111,10 @@ public:
 	// 检测角色碰撞, distance检测碰撞的距离
 	virtual bool CollideWith(T_Sprite* target, int distance = 0)override { return false; }
 	// 检测地图碰撞
-	virtual bool CollideWith(IN T_Map* map)override { return false; }
+	virtual bool CollideWith(IN T_Map* map)override;
 	//根据根据玩家状态信息，更新位置、帧图，检测地图碰撞
 	virtual void update();
+
+	virtual void Draw(HDC hdc);
 };
 

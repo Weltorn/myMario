@@ -191,7 +191,6 @@ LRESULT T_Engine::GameEvent(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 		GameInit();
 		return 0;
 	case WM_LBUTTONDOWN: //鼠标左键按下的处理	
-		Util::myprintf(L"WM_LBUTTONDOWN\n");
 		GameMouseAction(LOWORD(lParam), HIWORD(lParam), MOUSE_LCLICK);
 		return 0;
 	case WM_MOUSEMOVE: //鼠标移动处理
@@ -205,7 +204,6 @@ LRESULT T_Engine::GameEvent(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
 		GameKeyAction(KEY_DOWN);
 		// 附加按键行为处理
 		SubKeyAction(wParam);
-
 		return 0;
 	case WM_KEYUP:  //释放按键处理
 		keys[wParam] = false;
@@ -305,14 +303,13 @@ void T_Engine::StartEngine()
 				// 判读游戏循环的时间
 				nowTick = GetTickCount();
 
-				//处理游戏逻辑
-				GameLogic();
-				//在内存中绘制内容
-				GamePaint(bufferDC);
-
 				if (nowTick > TickElapsed)
 				{
 					TickElapsed = nowTick + GetInterval();
+					//处理游戏逻辑
+					GameLogic();
+					//在内存中绘制内容
+					GamePaint(bufferDC);
 					//获取游戏窗口句柄及绘图设备
 					HDC hDC = GetDC(m_hWnd);
 					//将内存设备中绘制的内容绘到屏幕上

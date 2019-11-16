@@ -183,7 +183,9 @@ public:
 	// 设置新的帧序列
 	void SetSequence(int* sequence, int length)			
 	{ 
-		frameSequence = sequence; 
+		frameSequence = (int*)malloc(sizeof(int)*length);
+		memcpy(frameSequence, sequence,sizeof(int)*length);
+
 		totalFrames = length;
 	}
 
@@ -205,7 +207,7 @@ public:
 	// 初始化本类对象
 	void Initiate(SPRITEINFO spInfo);
 	// 本类对象绘制
-	void Draw(HDC hdc);	
+	virtual void Draw(HDC hdc);	
 
 	//继承的接口，暂无实现
 	virtual void update() {}

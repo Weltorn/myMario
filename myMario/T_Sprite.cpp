@@ -415,7 +415,7 @@ bool T_Sprite::CollideWith(IN T_Map* map)
 
 	// 如果两个矩形对象发生了碰撞，首先计算角色矩形上、下、左、右的矩形区域
 	int startRow = (spTop <= mapTop) ? 0 : (spTop - mapTop) / tH;
-	int endRow = (spBottom < mapBottom) ? (spBottom - 1 - mapTop) / tH : tNumRows - 1;
+	int endRow = (spBottom < mapBottom) ? (spBottom - 1 - mapTop) / tH : tNumRows - 1;	//-1，边缘判断
 	int startCol = (spLeft <= mapLeft) ? 0 : (spLeft - mapLeft) / tW;
 	int endCol = (spRight < mapRight) ? (spRight - 1 - mapLeft) / tW : tNumCols - 1;
 

@@ -21,9 +21,9 @@ MarioGame::~MarioGame(void)
 void MarioGame::GameInit() 
 {
 	gameLevel = 1;
-	GameState = GAME_START;
+	GameState = GAME_RUN;			//调试准备，跳过菜单
 	LoadGameLevel(gameLevel);		//加载关卡资源、地图、玩家
-	LoadGameMenu(GameState);		//加载主菜单
+	//LoadGameMenu(GameState);		//加载主菜单	
 }
 
 //游戏逻辑处理(处理GameState)
@@ -38,6 +38,7 @@ void MarioGame::GameLogic()
 		}
 		case GAME_RUN:			//游戏进行时界面
 		{
+			//GameKeyAction();
 			gameTime = GetTickCount();		//更新游戏已运行时间	
 
 			//更新玩家	
@@ -55,8 +56,8 @@ void MarioGame::GameLogic()
 					//加载复活点
 				}
 			}
-			gameScene->ScrollScene(player);				//根据玩家位置，滚动场景
-			gameScene->update();						//更新地图、怪物、玩家状态
+			//gameScene->ScrollScene(player);				//根据玩家位置，滚动场景
+			//gameScene->update();						//更新地图、怪物、玩家状态
 			break;
 		}
 		case GAME_PAUSE:		//暂停游戏界面
@@ -90,34 +91,36 @@ void MarioGame::GamePaint(HDC hdc)
 	{
 	case GAME_START:		//游戏开始菜单
 	{
-		gameScene->Draw(hdc);
-		DisplayInfo(hdc);		//显示顶部游戏状态信息
-		gameMenu->DrawMenu(hdc);
+		//gameScene->Draw(hdc);
+		//DisplayInfo(hdc);		//显示顶部游戏状态信息
+		//gameMenu->DrawMenu(hdc);
 		break;
 	}
 	case GAME_RUN:			//游戏进行时界面
 	{
-		gameScene->Draw(hdc);
-		DisplayInfo(hdc);		//显示顶部游戏状态信息
+		//gameScene->Draw(hdc);
+		//DisplayInfo(hdc);		//显示顶部游戏状态信息
+		T_Graph::PaintBlank(hdc,0,0,wnd_width,wnd_height,RGB(200,200,200),255);
+		player->Draw(hdc);
 		break;
 	}
 	case GAME_PAUSE:		//暂停游戏界面
 	{
-		gameScene->Draw(hdc);
-		DisplayInfo(hdc);		//显示顶部游戏状态信息
-		gameMenu->DrawMenu(hdc);
+		//gameScene->Draw(hdc);
+		//DisplayInfo(hdc);		//显示顶部游戏状态信息
+		//gameMenu->DrawMenu(hdc);
 		break;
 	}
 	case GAME_UPGRADE:		//新关卡加载界面
 	{
 		//显示加载界面
-		DisplayInfo(hdc);		//显示顶部游戏状态信息
+		//DisplayInfo(hdc);		//显示顶部游戏状态信息
 		break;
 	}
 	case GAME_OVER:			//游戏结束界面
 	{
 		//显示加载界面
-		DisplayInfo(hdc);		//显示顶部游戏状态信息
+		//DisplayInfo(hdc);		//显示顶部游戏状态信息
 		break;
 	}
 	case GAME_HELP:			//游戏帮助界面
@@ -151,11 +154,9 @@ void MarioGame::GameKeyAction(int Action)
 		{
 			if (keys[VK_RETURN])		//Enter键
 			{
-				Util::myprintf(L"press key enter\n");
 			}
 			else if(keys[VK_UP])		//PgUp
 			{
-				Util::myprintf(L"release key up\n");
 			}
 			else if (keys[VK_DOWN])		//PgDn
 			{
@@ -164,7 +165,6 @@ void MarioGame::GameKeyAction(int Action)
 		}
 		else if (Action == KEY_UP)	//释放键
 		{
-			Util::myprintf(L"release key \n");
 		}
 		break;
 	}
@@ -176,44 +176,62 @@ void MarioGame::GameKeyAction(int Action)
 			{
 				if (keys[VK_A])
 				{
-
+					if (!keys[VK_D]) {
+						player->SetDir(DIR_LEFT);
+						if (!preA){					//如果是第一次按下键A,设置为开始移动
+							player->startMove();
+							preA = true;
+						}
+					}
 				}
-				else if (keys[VK_D])
+				if (keys[VK_D])
+				{
+					if (!keys[VK_A]) {
+						player->SetDir(DIR_RIGHT);
+						if (!preD) {					//如果是第一次按下键D,设置为开始移动
+							player->startMove();
+							preD = true;
+						}
+					}
+				}
+				if (keys[VK_S])
 				{
 
 				}
-				else if (keys[VK_S])
+				if (keys[VK_SHIFT])
 				{
 
 				}
-				else if (keys[VK_SHIFT])
-				{
-
-				}
-				else if (keys[VK_SPACE])
+				if (keys[VK_SPACE])
 				{
 
 				}
 			}
 			else if (Action == KEY_UP)	//释放键
 			{
-				if (keys[VK_A])
+				if (!keys[VK_A])
+				{
+					preA = false;
+					if (player->GetDir() == DIR_LEFT) {
+						player->stopMove(false);
+					}
+				}
+				if (!keys[VK_D])
+				{
+					preD = false;
+					if (player->GetDir() == DIR_RIGHT) {
+						player->stopMove(false);
+					}
+				}
+				if (!keys[VK_S])
 				{
 
 				}
-				else if (keys[VK_D])
+				if (!keys[VK_SHIFT])
 				{
 
 				}
-				else if (keys[VK_S])
-				{
-
-				}
-				else if (keys[VK_SHIFT])
-				{
-
-				}
-				else if (keys[VK_SPACE])
+				if (!keys[VK_SPACE])
 				{
 					player->stopBooting();		//释放键，停止加速
 				}
@@ -279,23 +297,24 @@ void MarioGame::LoadPlayer()
 {
 	GAMELAYER gameLayer;
 	SPRITEINFO player_Info;
-	player = new Player(L".\\res\\sprite\\playertank.png", 40, 40);	
+	player = new Player(L".\\res\\sprite\\bMario.png", 32, 64);	
+	int sequence[6] = {1,2,2,3,3,1};
 
-	player_Info.Active = false;
+	player_Info.Active = true;
 	player_Info.Dead = false;
 	player_Info.Dir = DIR_RIGHT;
 	player_Info.Rotation = TRANS_NONE;
 	player_Info.Ratio = 1.0f;
 	player_Info.Level = 0;
 	player_Info.Score = 0;
-	player_Info.SpeedX = 2;
+	player_Info.SpeedX = 0;
 	player_Info.SpeedY = 0;
 	player_Info.Alpha = 220;
 	player_Info.X = wnd_width / 5;
 	player_Info.Y = (wnd_height - player->GetHeight()) / 2;
 	player_Info.Visible = true;
 	player->Initiate(player_Info);
-	//player->SetSequence(TANK_FRAME_UP, 4);
+	player->SetSequence(sequence, 6);
 	player->SetLayerTypeID(LAYER_PLY);
 
 	gameLayer.layer = player;
@@ -383,10 +402,10 @@ void MarioGame::LoadGameLevel(int level)
 	if (gameScene == NULL) gameScene = new GameScene();
 	if (gameMenu == NULL) gameMenu = new T_Menu();
 
-	LoadSound(m_hWnd);
-	LoadImageRes();
+	//LoadSound(m_hWnd);
+	//LoadImageRes();
 
-	LoadMap();
+	//LoadMap();
 	LoadPlayer();
 }
 

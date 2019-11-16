@@ -13,7 +13,9 @@
 class T_Layer
 {
 public:
-	T_Layer(){};
+	T_Layer(){
+		Visible = true;
+	};
 	virtual ~T_Layer(void){};
 
 protected:
