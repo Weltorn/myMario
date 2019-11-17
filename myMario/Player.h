@@ -65,6 +65,7 @@ public:
 	void updatePositionX();			//水平移动
 
 	//------JUMP
+	bool isJump() { return bJump; }
 	void startJump();		//起跳，设置为加速状态
 	void resetJump();		//落地，设置水平、竖直静止
 	void updatePositionY();			//竖直移动

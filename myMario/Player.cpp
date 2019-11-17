@@ -15,7 +15,8 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	//------------------------------------------------------------初始化位置，暂不确定
 	X;
 	Y;
-
+	speedX = 0;
+	speedY = 0;
 
 	// ----- MOVE STATUS
 	bMove = false;		//是否水平移动状态
@@ -23,7 +24,7 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	bJump = false;		//是否跳跃状态
 
 	// -----JUMP STATUS
-	jumpStatus =-1;	//跳跃状态0：上升，1：下降
+	jumpStatus =-1;		//跳跃状态0：上升，1：下降
 	isBooting = false;	//是否跳跃加速状态
 
 	// ----- MOVE--------------------------------------------------暂不确定，待初始化
@@ -34,9 +35,9 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	friction = 1;		//水平摩擦，控制惯性滑行距离
 
 	// ----- JUMP--------------------------------------------------暂不确定，待初始化
-	originJumpSpeedY;		//跳跃初始速度
-	maxBootTime;		//最大加速时间（按住跳跃键的有效时间）
-	gravity;			//基础重力加速度
+	originJumpSpeedY = 10;		//跳跃初始速度
+	maxBootTime = 1500;			//最大加速时间（按住跳跃键的有效时间）
+	gravity = 6.0/50;				//基础重力加速度
 
 	// ----- SQUAT
 	squatHeight = Height*2/3;
@@ -95,7 +96,16 @@ void Player::updatePositionY()
 {
 	gravityEffect();		//重力作用
 	lastY = Y;
-	Y = Y + speedY;
+	
+	if (Y <= 500) {
+		Y = Y - speedY;
+	}
+	if(Y >= 500)
+	{
+		Y = 500;
+		resetJump();
+	}
+	Util::myprintf(L"current SpeedY: %d\n",speedY);
 	if (speedY < 0)		//速度小于零（向下），设置为下落状态
 	{
 		//bJump = true;		//行走下落和跳跃下落，处理方式相同
@@ -120,7 +130,7 @@ void Player::resetJump()
 	speedY = 0;				//设置竖直速度置零
 	isBooting = false;		//加速状态结束
 
-	stopMove(false);	//水平静止,有惯性
+	//stopMove(false);	//水平静止,有惯性
 }
 //重力作用
 void  Player::gravityEffect()
@@ -128,13 +138,14 @@ void  Player::gravityEffect()
 	float currentGravity = gravity;		//单击跳跃
 	if (jumpStatus == 0 && isBooting)	//长按跳跃
 	{
-		currentGravity = gravity*0.6f;	//减小重力（等价于提供动力）
+		currentGravity = gravity*0.4f;	//减小重力（等价于提供动力）
 	}
 	else if (jumpStatus == 1)			//跳跃的下落阶段
 	{
-		currentGravity = gravity*2;		//重力增大，加快下落
+		currentGravity = gravity*1.0;		//重力增大，加快下落
 	}
-	speedY = (int)round(speedY - gravity);	//四舍五入
+
+	speedY = (int)round(speedY - (GetTickCount()-timer)/20* currentGravity);	//四舍五入
 }
 //更新玩家坐标
 void Player::updatePosition()
@@ -325,19 +336,26 @@ void Player::Draw(HDC hdc) {
 	else if (bSquat)
 	{
 		frmIndex = 6;
-	}
+	}	
 	else if (bMove && !bJump)
 	{
 		frmIndex = frameSequence[forward];		
 	}
 	else if (bJump)
 	{
-		frmIndex = frameSequence[forward];
+		frmIndex = 5;
 	}		
+
+
 	Util::myprintf(L"current frame: %d\n",frmIndex);
 	if (bSquat)
 	{
 		spImg.PaintRegion(spImg.GetBmpHandle(),hdc,X,Y,normalWidth*frmIndex,normalHeight-squatHeight,squatWidth,squatHeight,
+			frameRatio, frameRotate, frameAlpha);
+	}
+	else if (bJump)
+	{
+		spImg.PaintRegion(spImg.GetBmpHandle(), hdc, X, Y, Width*frmIndex, 0, Width, Height,
 			frameRatio, frameRotate, frameAlpha);
 	}
 	else

@@ -10,7 +10,7 @@ int WINAPI WinMain(HINSTANCE h_instance, HINSTANCE hPrevInstance,
 	MarioGame* game = new MarioGame(h_instance,WIN_CLASS,WinTitle, 
 		                            IDI_TANKNEW, IDI_TANKNEW, WIN_WIDTH, WIN_HEIGHT);
 	T_Engine::pEngine = game;
-	game->SetFrame(10);
+	game->SetFrame(5);
 
 	game->StartEngine();
 

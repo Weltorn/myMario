@@ -216,7 +216,11 @@ void MarioGame::GameKeyAction(int Action)
 				}
 				if (keys[VK_SPACE])
 				{
-
+					if (!player->getSquat()&& !player->isJump())
+					{
+						player->startJump();
+						preSpace = true;
+					}
 				}
 			}
 			else if (Action == KEY_UP)	//释放键
@@ -253,7 +257,11 @@ void MarioGame::GameKeyAction(int Action)
 					}
 					if (!keys[VK_SPACE])
 					{
-						player->stopBooting();		//释放键，停止加速
+						preSpace = false;
+						if (player->getBooting())
+						{
+							player->stopBooting();		//释放键，停止加速
+						}
 					}
 				}
 		}

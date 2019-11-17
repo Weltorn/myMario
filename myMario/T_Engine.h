@@ -57,7 +57,7 @@ public:
 	// 获取游戏帧刷新间隔时间
 	int GetInterval() { return IntervalTime; }
 	// 设置游戏帧刷新间隔时间
-	void SetFrame(int iTime) { IntervalTime = 1000 / iTime; }
+	void SetFrame(int fps) { IntervalTime = 1000 / fps; }
 	// 获取窗口是否为焦点状态
 	BOOL GetSleep() { return isAsleep; }
 	// 设置窗口是否为焦点状态
