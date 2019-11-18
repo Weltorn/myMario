@@ -22,8 +22,8 @@ protected:
 	// 与角色图像相关的属性
 	//……………………………………………………………………………………
 
-	T_Graph	spImg;					// 原始角色图片
-	T_Graph	spOldImg;				// 修改前角色图片
+	T_Graph*	spImg;					// 原始角色图片
+	T_Graph*	spOldImg;				// 修改前角色图片
 	int		frameCols;				// 原始帧图片总列数
 	int		frameRows;				// 原始帧图片总行数
 	int		rawFrames;				// 原始帧图片总帧数
@@ -79,8 +79,8 @@ public:
 	// 与图像相关的操作
 	//……………………………………………………………………………………
 
-	T_Graph* GetImage(){ return &spImg; }				// 获得本类T_Graph对象
-	void SetImage(T_Graph* pImg){ spImg = *pImg; }		// 设置本类T_Graph对象
+	T_Graph* GetImage(){ return spImg; }				// 获得本类T_Graph对象
+	void SetImage(T_Graph* pImg){ spImg = pImg; }		// 设置本类T_Graph对象
 	void ResetImage(){ spImg = spOldImg; }				// 恢复本类T_Graph对象
 
 	float GetRatio(){ return frameRatio; }				// 获得缩放比

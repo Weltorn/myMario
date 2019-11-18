@@ -11,10 +11,12 @@
 
 T_Sprite::T_Sprite(LPCTSTR imgPath, int frameWidth, int frameHeight)
 {
+	spImg = (T_Graph*)malloc(sizeof(T_Graph));
+	spOldImg = (T_Graph*)malloc(sizeof(T_Graph));
 	if(wcslen(imgPath)>0)
 	{
-		spImg.LoadImageFile(imgPath);
-		spOldImg = spImg;
+		spImg->LoadImageFile(imgPath);
+		spOldImg->LoadImageFile(imgPath);
 	}
 	else
 	{
@@ -24,8 +26,8 @@ T_Sprite::T_Sprite(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	// 无动画的角色图片
 	if(frameWidth==0 && frameHeight==0)
 	{
-		SetWidth(spImg.GetImageWidth());
-		SetHeight(spImg.GetImageHeight());
+		SetWidth(spImg->GetImageWidth());
+		SetHeight(spImg->GetImageHeight());
 
 		totalFrames = rawFrames = 0; // 动画总帧数
 	}
@@ -34,8 +36,8 @@ T_Sprite::T_Sprite(LPCTSTR imgPath, int frameWidth, int frameHeight)
 		SetWidth(frameWidth);
 		SetHeight(frameHeight);
 
-		frameCols = spImg.GetImageWidth()/frameWidth;		// 动画帧图片总列数
-		frameRows = spImg.GetImageHeight()/frameHeight;	// 动画帧图片总行数
+		frameCols = spImg->GetImageWidth()/frameWidth;		// 动画帧图片总列数
+		frameRows = spImg->GetImageHeight()/frameHeight;	// 动画帧图片总行数
 		totalFrames = frameCols*frameRows;					// 动画总帧数
 		rawFrames = frameCols*frameRows;					// 记录原始动画总帧数
 		forward = 0;									// 当前帧计数初始化
@@ -52,6 +54,8 @@ T_Sprite::T_Sprite(LPCTSTR imgPath, int frameWidth, int frameHeight)
 
 T_Sprite::~T_Sprite(void)
 {
+	delete spImg;
+	delete spOldImg;
 	delete frameSequence;
 }
 
@@ -166,15 +170,15 @@ void T_Sprite::Draw(HDC hdc)
 		{
 			if(totalFrames==0)
 			{
-				spImg.PaintRegion(
-					spImg.GetBmpHandle(), hdc, (int)X, (int)Y, 
+				spImg->PaintRegion(
+					spImg->GetBmpHandle(), hdc, (int)X, (int)Y,
 					0, 0, Width, Height, frameRatio, frameRotate, frameAlpha
 				);
 			}
 			else
 			{
-				spImg.PaintFrame(
-					spImg.GetBmpHandle(), hdc, (int)X, (int)Y, frmIndex,  
+				spImg->PaintFrame(
+					spImg->GetBmpHandle(), hdc, (int)X, (int)Y, frmIndex,
 					frameCols, Width, Height, frameRatio, frameRotate, frameAlpha
 				);
 			}

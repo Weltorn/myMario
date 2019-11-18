@@ -349,18 +349,18 @@ void Player::Draw(HDC hdc) {
 	Util::myprintf(L"current frame: %d\n",frmIndex);
 	if (bSquat)
 	{
-		spImg.PaintRegion(spImg.GetBmpHandle(),hdc,X,Y,bigWidth*frmIndex,bigHeight-squatHeight,squatWidth,squatHeight,
+		spImg->PaintRegion(spImg->GetBmpHandle(),hdc,X,Y,bigWidth*frmIndex,bigHeight-squatHeight,squatWidth,squatHeight,
 			frameRatio, frameRotate, frameAlpha);
 	}
 	else if (bJump)
 	{
-		spImg.PaintRegion(spImg.GetBmpHandle(), hdc, X, Y, Width*frmIndex, 0, Width, Height,
+		spImg->PaintRegion(spImg->GetBmpHandle(), hdc, X, Y, Width*frmIndex, 0, Width, Height,
 			frameRatio, frameRotate, frameAlpha);
 	}
 	else
 	{
-		spImg.PaintFrame(
-			spImg.GetBmpHandle(), hdc, (int)X, (int)Y, frmIndex,
+		spImg->PaintFrame(
+			spImg->GetBmpHandle(), hdc, (int)X, (int)Y, frmIndex,
 			frameCols, Width, Height, frameRatio, frameRotate, frameAlpha
 		);
 	}
