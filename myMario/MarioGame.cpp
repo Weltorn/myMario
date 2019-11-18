@@ -216,7 +216,7 @@ void MarioGame::GameKeyAction(int Action)
 				}
 				if (keys[VK_SPACE])
 				{
-					if (!player->getSquat()&& !player->isJump())
+					if (!player->getSquat()&& !player->isJump()&&!preSpace)
 					{
 						player->startJump();
 						preSpace = true;
@@ -325,7 +325,7 @@ void MarioGame::LoadPlayer()
 	GAMELAYER gameLayer;
 	SPRITEINFO player_Info;
 	player = new Player(L".\\res\\sprite\\bMario.png", 32, 64);	
-	int sequence[6] = {1,2,2,3,3,1};
+	int sequence[9] = {1,1,2,2,2,3,3,3,1};
 
 	player_Info.Active = true;
 	player_Info.Dead = false;
@@ -341,7 +341,7 @@ void MarioGame::LoadPlayer()
 	player_Info.Y = (wnd_height - player->GetHeight()) / 2;
 	player_Info.Visible = true;
 	player->Initiate(player_Info);
-	player->SetSequence(sequence, 6);
+	player->SetSequence(sequence, 9);
 	player->SetLayerTypeID(LAYER_PLY);
 
 	gameLayer.layer = player;

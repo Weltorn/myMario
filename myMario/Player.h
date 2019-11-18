@@ -1,16 +1,40 @@
 #pragma once
 #include "T_Sprite.h"
+
+enum PLAYERSTATUS {
+	PLAYER_NORMAL,
+	PLAYER_REDBIGGER,
+	PLAYER_GREENBIGGER,
+};
 class T_Scene;
 class Player :
 	public T_Sprite
 {
 private:
-	// ----- role status
-	int lifeCount;
-	bool isInEnvnt;	//是否在游戏事件中
-	int eventId;
-	unsigned timer;		//定时器
+	// ----- PLAYER STATUS
+	int lifeCount;					//生命值
+	bool isInEnvnt;					//是否在游戏事件中
+	int eventId;					//变大、变小、死亡
+	PLAYERSTATUS playerStatus;		//角色展示状态
+	bool starStatus;				//是否无敌（星星）状态
 	
+	// ----- PLAYER SIZE
+	int squatHeight;			//(变大时)下蹲大小
+	int squatWidth;
+
+	int bigWidth;			//变大时站立、跳跃的人物大小
+	int bigHeight;	
+
+	int smallWidth;			//变小时站立、跳跃的人物大小
+	int smallHeight;
+
+	//PLAYER FRAME
+	int* bigFrameSequence;
+	T_Graph* bigRedFrame;
+	T_Graph* bigGreenFrame;
+
+	int* smallFrameSequence;
+	T_Graph* smallFrame;
 
 	// ----- MOVE STATUS
 	bool bMove;		//是否可水平移动状态
@@ -20,6 +44,7 @@ private:
 	// -----JUMP STATUS
 	int jumpStatus;	//跳跃状态0：上升，1：下降
 	bool isBooting;	//是否跳跃加速状态
+	unsigned timer;		//定时器
 		
 	// ----- MOVE
 	int maxMoveSpeedX;
@@ -29,21 +54,15 @@ private:
 	float friction;		//水平摩擦，控制惯性滑行距离
 
 	// ----- JUMP
-	int originJumpSpeedY;		//跳跃初始速度
+	int originJumpSpeedY;	//跳跃初始速度
 	int maxBootTime;		//最大加速时间（按住跳跃键的有效时间）
 	float gravity;			//基础重力加速度
 
-	// ----- SQUAT
-	int squatHeight;			//下蹲时大小
-	int squatWidth;
-
-	int normalWidth;			//站立、跳跃时大小
-	int normalHeight;
+	
 
 	// ----- COLLISION
 	int lastX;			//上一次打印位置横坐标
 	int lastY;			//上一次打印位置纵坐标
-	int collisionStatus;
 
 
 public:
@@ -103,14 +122,14 @@ public:
 		}
 		else if (this->bSquat == false && bSquat == true)//蹲下
 		{
-			this->Y = this->Y+(normalHeight- squatHeight);		//蹲下和站起来帧图的高度差
+			this->Y = this->Y+(bigHeight- squatHeight);		//蹲下和站起来帧图的高度差
 			SetHeight(squatHeight);
 			this->bSquat = bSquat;
 		}
 		else if (this->bSquat == true && bSquat == false)//站起来
 		{
-			this->Y = this->Y - (normalHeight - squatHeight);		// 蹲下和站起来帧图的高度差
-			SetHeight(normalHeight);
+			this->Y = this->Y - (bigHeight - squatHeight);		// 蹲下和站起来帧图的高度差
+			SetHeight(bigHeight);
 			this->bSquat = bSquat;
 		}
 	}

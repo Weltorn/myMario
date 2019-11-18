@@ -8,7 +8,7 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	lifeCount = 3;
 	isInEnvnt = false;
 	eventId = -1;
-	timer = GetTickCount();
+
 
 	dir = DIR_RIGHT;		//初始化方向,向右
 
@@ -28,23 +28,24 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	isBooting = false;	//是否跳跃加速状态
 
 	// ----- MOVE--------------------------------------------------暂不确定，待初始化
-	maxMoveSpeedX = 6;
-	maxRunSpeedX = 8;
+	maxMoveSpeedX = 4;
+	maxRunSpeedX = 6;
 	currentMaxSpeed = maxMoveSpeedX;
 	basicSpeedX = 2;
-	friction = 1;		//水平摩擦，控制惯性滑行距离
+	friction = 1.0;		//水平摩擦，控制惯性滑行距离
 
 	// ----- JUMP--------------------------------------------------暂不确定，待初始化
-	originJumpSpeedY = 10;		//跳跃初始速度
+	originJumpSpeedY = 6;		//跳跃初始速度
 	maxBootTime = 1500;			//最大加速时间（按住跳跃键的有效时间）
-	gravity = 6.0/50;				//基础重力加速度
+	gravity = 9.8;				//基础重力加速度
+	timer = GetTickCount();
 
 	// ----- SQUAT
 	squatHeight = Height*2/3;
 	squatWidth = Width;
 
-	normalWidth = Width;			//站立、跳跃时大小
-	normalHeight = Height;
+	bigWidth = Width;			//站立、跳跃时大小
+	bigHeight = Height;
 }
 
 
@@ -59,22 +60,19 @@ void Player::updatePositionX()
 	{
 		if (!bMove)		//水平静止或惯性滑行状态
 		{
-			if (speedX > 0){		//惯性滑行状态，减速
-				speedX -= friction;
+			if (speedX > 0 && (currentMaxSpeed - speedX)*80 <= GetTickCount() - endTime){		//惯性滑行状态，减速
+				speedX-=(int)friction;
 			
 				if (speedX < 0)			//恢复水平静止
 				{
 					speedX = 0;
 				}
 			}
-			else
-			{
-				speedX = 0;
-			}
+			
 		}
 		else if(bMove)
 		{
-			if (GetTickCount() - (100 + 35 * speedX) >= GetTickCount()- startTime && speedX < currentMaxSpeed)		//加速过程
+			if ((100 + 35 * speedX) <= GetTickCount()- startTime && speedX < currentMaxSpeed)		//加速过程,100ms后加速
 			{
 				++speedX;
 			}
@@ -138,14 +136,14 @@ void  Player::gravityEffect()
 	float currentGravity = gravity;		//单击跳跃
 	if (jumpStatus == 0 && isBooting)	//长按跳跃
 	{
-		currentGravity = gravity*0.4f;	//减小重力（等价于提供动力）
+		currentGravity = gravity*0.6f;	//减小重力（等价于提供动力）
 	}
 	else if (jumpStatus == 1)			//跳跃的下落阶段
 	{
-		currentGravity = gravity*1.0;		//重力增大，加快下落
+		currentGravity = gravity*1.0f;		//重力增大，加快下落
 	}
 
-	speedY = (int)round(speedY - (GetTickCount()-timer)/20* currentGravity);	//四舍五入
+	speedY = (int)round(originJumpSpeedY - (float)(GetTickCount()-timer)* currentGravity / 500);	//四舍五入
 }
 //更新玩家坐标
 void Player::updatePosition()
@@ -206,6 +204,7 @@ void Player::resetSpeedup() {
 }
 //停止水平移动
 void Player::stopMove(bool immediately) {
+	endTime = GetTickCount();
 	if (immediately)
 	{
 		speedX = 0;
@@ -350,7 +349,7 @@ void Player::Draw(HDC hdc) {
 	Util::myprintf(L"current frame: %d\n",frmIndex);
 	if (bSquat)
 	{
-		spImg.PaintRegion(spImg.GetBmpHandle(),hdc,X,Y,normalWidth*frmIndex,normalHeight-squatHeight,squatWidth,squatHeight,
+		spImg.PaintRegion(spImg.GetBmpHandle(),hdc,X,Y,bigWidth*frmIndex,bigHeight-squatHeight,squatWidth,squatHeight,
 			frameRatio, frameRotate, frameAlpha);
 	}
 	else if (bJump)
