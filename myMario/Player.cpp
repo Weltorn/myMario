@@ -8,20 +8,9 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	lifeCount = 3;
 	isInEnvnt = false;
 	eventId = -1;
-	playerStatus = PLAYER_NORMAL;		//角色展示状态
-	starStatus = false;				//是否无敌（星星）状态
+	playerStatus = PLAYER_NORMAL;		//角色模式
+	starStatus = false;					//是否无敌（星星）状态
 	
-
-	// ----- PLAYER SIZE
-	bigWidth = 32;			//站立、跳跃时大小
-	bigHeight = 64;
-
-	squatHeight = bigHeight * 2 / 3;
-	squatWidth = bigWidth;
-
-	smallWidth = 32;			//变小时站立、跳跃的人物大小
-	smallHeight = 32;
-
 	//------------------------------------------------------------初始化位置，暂不确定
 	X;
 	Y;
@@ -37,21 +26,13 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	jumpStatus =-1;		//跳跃状态0：上升，1：下降
 	isBooting = false;	//是否跳跃加速状态
 
-	// ----- MOVE--------------------------------------------------暂不确定，待初始化
-	maxMoveSpeedX = 4;
-	maxRunSpeedX = 6;
-	currentMaxSpeed = maxMoveSpeedX;
-	basicSpeedX = 2;
+	// ----- MOVE--------------------------------------------------暂不确定，待初始化	
 	friction = 1.0;		//水平摩擦，控制惯性滑行距离
 	dir = DIR_RIGHT;		//初始化方向,向右
 
 	// ----- JUMP--------------------------------------------------暂不确定，待初始化
-	originJumpSpeedY = 6;		//跳跃初始速度
-	maxBootTime = 1500;			//最大加速时间（按住跳跃键的有效时间）
 	gravity = 9.8;				//基础重力加速度
-	timer = GetTickCount();
-
-	// ----- SQUAT
+	timer = GetTickCount();	
 	
 }
 
@@ -67,7 +48,7 @@ void Player::updatePositionX()
 	{
 		if (!bMove)		//水平静止或惯性滑行状态
 		{
-			if (speedX > 0 && (currentMaxSpeed - speedX)*80 <= GetTickCount() - endTime){		//惯性滑行状态，减速
+			if (speedX > 0 && (currentMaxSpeedX - speedX)*80 <= GetTickCount() - endTime){		//惯性滑行状态，减速
 				speedX-=(int)friction;
 			
 				if (speedX < 0)			//恢复水平静止
@@ -79,7 +60,7 @@ void Player::updatePositionX()
 		}
 		else if(bMove)
 		{
-			if ((100 + 35 * speedX) <= GetTickCount()- startTime && speedX < currentMaxSpeed)		//加速过程,100ms后加速
+			if ((100 + 35 * speedX) <= GetTickCount()- startTime && speedX < currentMaxSpeedX)		//加速过程,100ms后加速
 			{
 				++speedX;
 			}
@@ -125,7 +106,7 @@ void Player::startJump()
 	bJump = true;		//设置跳跃状态
 	jumpStatus = 0;		//设置为上升阶段
 	isBooting = true;
-	speedY = originJumpSpeedY;	//设置跳跃初始速度
+	speedY = currentMode->basicJumpSpeedY;	//设置跳跃初始速度
 }
 //落地
 void Player::resetJump()
@@ -150,7 +131,7 @@ void  Player::gravityEffect()
 		currentGravity = gravity*1.0f;		//重力增大，加快下落
 	}
 
-	speedY = (int)round(originJumpSpeedY - (float)(GetTickCount()-timer)* currentGravity / 500);	//四舍五入
+	speedY = (int)round(currentMode->basicJumpSpeedY - (float)(GetTickCount()-timer)* currentGravity / 500);	//四舍五入
 }
 //更新玩家坐标
 void Player::updatePosition()
@@ -178,7 +159,7 @@ void Player::updateFrame()
 }
 void Player::update()
 {
-	if (isBooting && timer + maxBootTime <= GetTickCount())	//跳跃加速时间结束
+	if (isBooting && timer +currentMode->maxBootTime <= GetTickCount())	//跳跃加速时间结束
 	{
 		isBooting = false;
 	}
@@ -190,23 +171,23 @@ void Player::update()
 void Player::startMove() {
 	startTime = GetTickCount();
 	endTime = GetTickCount();
-	speedX = basicSpeedX;
-	currentMaxSpeed = maxMoveSpeedX;
+	currentMaxSpeedX = currentMode->maxMoveSpeedX;
+	speedX = currentMaxSpeedX;
 	bMove = true;
 }
 
 //按住shift键，提高加速上限
 void Player::startSpeedup() {
-	currentMaxSpeed = maxRunSpeedX;
+	currentMaxSpeedX = currentMode->maxRunSpeedX;
 }
 
 //松开shift键，恢复加速上限
 //若当前速度大于正常移动速度上限，将速度设置为正常移动上限
 void Player::resetSpeedup() {
-	currentMaxSpeed = maxMoveSpeedX;
-	if (speedX > maxMoveSpeedX)
+	currentMaxSpeedX = currentMode->maxMoveSpeedX;
+	if (speedX > currentMaxSpeedX)
 	{
-		speedX = maxMoveSpeedX;
+		speedX = currentMaxSpeedX;
 	}
 }
 //停止水平移动
@@ -325,42 +306,18 @@ bool Player::CollideWith(IN T_Map* map)
 	return false;
 
 }
-void Player::setBigRedFrame(LPCTSTR imgPath, int frameWidth, int frameHeight,int* sequence,int nframes)
+void Player::initBigRedMode(PLAYERMODE* bigRedMode)
 {
-	if (wcslen(imgPath)>0)
-	{
-		bigRedFrame = (T_Graph*)malloc(sizeof(T_Graph));
-		bigRedFrame->LoadImageFile(imgPath);
-	}
-	else
-	{
-		throw L"图像路径为空!";
-	}	
-	bigWidth = frameWidth;
-	bigHeight = frameHeight;
-	nbigFrames = nframes;
-	bigFrameSequence = (int*)malloc(sizeof(int)*nframes);
-	memcpy(bigFrameSequence,sequence,nframes);
+	this->bigRedMode = (PLAYERMODE*)malloc(sizeof(PLAYERMODE));
+	memcpy(this->bigRedMode, bigRedMode, sizeof(PLAYERMODE));
 
 }
-void Player::setSmallFrame(LPCTSTR imgPath, int frameWidth, int frameHeight, int* sequence, int nframes)
+void Player::initNormaldMode(PLAYERMODE* normalMode)
 {
-	if (wcslen(imgPath)>0)
-	{
-		smallFrame = (T_Graph*)malloc(sizeof(T_Graph));
-		smallFrame->LoadImageFile(imgPath);
-	}
-	else
-	{
-		throw L"图像路径为空!";
-	}
-	smallWidth = frameWidth;
-	smallHeight = frameHeight;
-	nsmallFrames = nframes;
-	smallFrameSequence = (int*)malloc(sizeof(int)*nframes);
-	memcpy(smallFrameSequence, sequence, nframes);
+	this->normalMode = (PLAYERMODE*)malloc(sizeof(PLAYERMODE));
+	memcpy(this->normalMode, normalMode, sizeof(PLAYERMODE));
 }
-void  Player::setPlayerStatus(PLAYERSTATUS status)
+void  Player::setPlayerMode(PLAYERSTATUS status)
 {
 	if (playerStatus == status) {
 		return;
@@ -369,80 +326,40 @@ void  Player::setPlayerStatus(PLAYERSTATUS status)
 	{
 	case PLAYER_NORMAL:
 	{		
-		if (smallFrame == NULL) {
-			Util::myprintf(L"Player::setPlayerStatus : smallFrame == NULL\n");
+		if (normalMode == NULL) {
+			Util::myprintf(L"Player::setPlayerMode : normalMode == NULL\n");
 		}
-		SetImage(smallFrame);
-		SetWidth(smallWidth);
-		SetHeight(smallHeight);
-
-		frameCols = smallFrame->GetImageWidth() / smallWidth;		// 动画帧图片总列数
-		frameRows = smallFrame->GetImageHeight() / smallHeight;		// 动画帧图片总行数
-		totalFrames = frameCols*frameRows;							// 动画总帧数
-		rawFrames = frameCols*frameRows;							// 记录原始动画总帧数
-		forward = 0;												// 当前帧计数初始化
-		backward = totalFrames - 1;
-
-		frameSequence = smallFrameSequence;
-		loopForward = true;
-
-		//恢复静止状态		
-		stopMove(true);
-		resetJump();
-		setSquat(false);
+		currentMode = normalMode;
 		break;
 	}
-	case PLAYER_REDBIGGER:
+	case PLAYER_BIGREDGER:
 	{
-		if (bigRedFrame == NULL) {
-			Util::myprintf(L"Player::setPlayerStatus : bigRedFrame == NULL\n");
+		if (bigRedMode == NULL) {
+			Util::myprintf(L"Player::setPlayerMode : bigRedMode == NULL\n");
 		}
-		SetImage(bigRedFrame);
-		SetWidth(bigWidth);
-		SetHeight(bigHeight);
-
-		frameCols = bigRedFrame->GetImageWidth() / bigWidth;		// 动画帧图片总列数
-		frameRows = bigRedFrame->GetImageHeight() / bigHeight;	// 动画帧图片总行数
-		totalFrames = frameCols*frameRows;					// 动画总帧数
-		rawFrames = frameCols*frameRows;					// 记录原始动画总帧数
-		forward = 0;									// 当前帧计数初始化
-		backward = totalFrames - 1;
-
-		frameSequence = bigFrameSequence;
-		loopForward = true;
-
-		//恢复静止状态		
-		stopMove(true);
-		resetJump();
-		setSquat(false);
+		currentMode = bigRedMode;
 		break;
+	}	
 	}
-	case PLAYER_GREENBIGGER:
-	{
-		if (bigGreenFrame == NULL) {
-			Util::myprintf(L"Player::setPlayerStatus : bigGreenFrame == NULL\n");
-		}
-		SetImage(bigGreenFrame);
-		SetWidth(bigWidth);
-		SetHeight(bigHeight);
+	SetImage(&(currentMode->frameMode->img));
+	SetWidth(currentMode->frameMode->frameWidth);
+	SetHeight(currentMode->frameMode->frameHeight);
 
-		frameCols = bigGreenFrame->GetImageWidth() / bigWidth;		// 动画帧图片总列数
-		frameRows = bigGreenFrame->GetImageHeight() / bigHeight;	// 动画帧图片总行数
-		totalFrames = frameCols*frameRows;					// 动画总帧数
-		rawFrames = frameCols*frameRows;					// 记录原始动画总帧数
-		forward = 0;									// 当前帧计数初始化
-		backward = totalFrames - 1;
+	frameCols = currentMode->frameMode->img.GetImageWidth() / GetWidth();		// 动画帧图片总列数
+	frameRows = currentMode->frameMode->img.GetImageHeight() / GetHeight();		// 动画帧图片总行数
+	
+	rawFrames = frameCols*frameRows;							// 记录原始动画总帧数
+	forward = 0;												// 当前帧计数初始化
+	backward = totalFrames - 1;
 
-		frameSequence = bigFrameSequence;
-		loopForward = true;
+	frameSequence = currentMode->frameMode->runFrmSequence;
+	totalFrames = currentMode->frameMode->nRunFrames;			// 动画总帧数
+	loopForward = true;
 
-		//恢复静止状态		
-		stopMove(true);
-		resetJump();
-		setSquat(false);
-		break;
-	}
-	}
+	//恢复静止状态		
+	stopMove(true);
+	resetJump();
+	setSquat(false);
 }
 void Player::Draw(HDC hdc) {
 	int frmIndex;
@@ -451,15 +368,15 @@ void Player::Draw(HDC hdc) {
 	{
 		if (speedX != 0)		//急停帧
 		{
-			frmIndex = 4;
+			frmIndex = currentMode->frameMode->speedDownFrame;
 		}
 		else {					//静止帧
-			frmIndex = 0;
+			frmIndex = currentMode->frameMode->stopFrame;
 		}
 	}
-	else if (bSquat)
+	else if (currentMode->canSquat && bSquat)
 	{
-		frmIndex = 6;
+		frmIndex = currentMode->frameMode->squatHeight;
 	}	
 	else if (bMove && !bJump)
 	{
@@ -474,8 +391,9 @@ void Player::Draw(HDC hdc) {
 	Util::myprintf(L"current frame: %d\n",frmIndex);
 	if (bSquat)
 	{
-		spImg.PaintRegion(spImg.GetBmpHandle(),hdc,X,Y,bigWidth*frmIndex,bigHeight-squatHeight,squatWidth,squatHeight,
-			frameRatio, frameRotate, frameAlpha);
+		spImg.PaintRegion(spImg.GetBmpHandle(),hdc,X,Y,currentMode->frameMode->frameWidth *frmIndex, 
+			currentMode->frameMode->frameHeight - currentMode->frameMode->squatHeight,
+			currentMode->frameMode->frameHeight, currentMode->frameMode->squatHeight,frameRatio, frameRotate, frameAlpha);
 	}
 	else if (bJump)
 	{

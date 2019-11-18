@@ -356,8 +356,11 @@ void MarioGame::LoadPlayer()
 {
 	GAMELAYER gameLayer;
 	SPRITEINFO player_Info;
+	PLAYERFRAME player_frame;
+	PLAYERMODE player_mode;
+
 	player = new Player(L".\\res\\sprite\\sMario.png", 32, 32);	
-	int sequence[9] = {1,1,2,2,2,3,3,3,1};
+	int sequence[10] = {1,1,6,6,1,1,1,6,6,1};
 
 	player_Info.Active = true;
 	player_Info.Dead = false;
@@ -373,8 +376,22 @@ void MarioGame::LoadPlayer()
 	player_Info.Y = (wnd_height - player->GetHeight()) / 2;
 	player_Info.Visible = true;
 	player->Initiate(player_Info);
-	player->SetSequence(sequence, 9);
+	player->SetSequence(sequence, 10);
 	player->SetLayerTypeID(LAYER_PLY);
+
+	player_frame.frameHeight = 32;
+	player_frame.frameHeight = 32;
+	player_frame.img = T_Graph(L".\\res\\sprite\\sMario.png");
+	player_frame.jumpFrame = 7;
+	player_frame.nRunFrames = 10;
+	player_frame.runFrmSequence = (int*)malloc(sizeof(int)*player_frame.nRunFrames);
+	memcpy(player_frame.runFrmSequence, sequence, sizeof(int)*player_frame.nRunFrames);
+
+	player_frame.speedDownFrame = 3;
+	player_frame.squatFrame = 0;
+	player_frame.squatHeight = 32;
+	player_frame.stopFrame = 0;
+
 
 	gameLayer.layer = player;
 	gameLayer.type_id = LAYER_PLY;
