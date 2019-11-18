@@ -30,10 +30,12 @@ private:
 
 	//PLAYER FRAME
 	int* bigFrameSequence;
+	int nbigFrames;
 	T_Graph* bigRedFrame;
 	T_Graph* bigGreenFrame;
 
 	int* smallFrameSequence;
+	int nsmallFrames;
 	T_Graph* smallFrame;
 
 	// ----- MOVE STATUS
@@ -72,6 +74,10 @@ public:
 
 	void setLifeCount(int lifeCount) { this->lifeCount = lifeCount; }
 	int  getLifeCount() { return lifeCount; }
+	//PLAYER FRAME
+	void setBigRedFrame(LPCTSTR imgPath, int frameWidth, int frameHeight, int* sequence, int nframes);
+	void setSmallFrame(LPCTSTR imgPath, int frameWidth, int frameHeight, int* sequence, int nframes);
+
 	//运动控制方法
 	// ----- MOVE
 	void startMove();			//设置为正常移动状态
@@ -146,6 +152,7 @@ public:
 	//根据根据玩家状态信息，更新位置、帧图，检测地图碰撞
 	virtual void update();
 
+	void setPlayerStatus(PLAYERSTATUS status);
 	virtual void Draw(HDC hdc);
 };
 

@@ -8,9 +8,19 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	lifeCount = 3;
 	isInEnvnt = false;
 	eventId = -1;
+	playerStatus = PLAYER_NORMAL;		//角色展示状态
+	starStatus = false;				//是否无敌（星星）状态
+	
 
+	// ----- PLAYER SIZE
+	bigWidth = 32;			//站立、跳跃时大小
+	bigHeight = 64;
 
-	dir = DIR_RIGHT;		//初始化方向,向右
+	squatHeight = bigHeight * 2 / 3;
+	squatWidth = bigWidth;
+
+	smallWidth = 32;			//变小时站立、跳跃的人物大小
+	smallHeight = 32;
 
 	//------------------------------------------------------------初始化位置，暂不确定
 	X;
@@ -33,6 +43,7 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	currentMaxSpeed = maxMoveSpeedX;
 	basicSpeedX = 2;
 	friction = 1.0;		//水平摩擦，控制惯性滑行距离
+	dir = DIR_RIGHT;		//初始化方向,向右
 
 	// ----- JUMP--------------------------------------------------暂不确定，待初始化
 	originJumpSpeedY = 6;		//跳跃初始速度
@@ -41,11 +52,7 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	timer = GetTickCount();
 
 	// ----- SQUAT
-	squatHeight = Height*2/3;
-	squatWidth = Width;
-
-	bigWidth = Width;			//站立、跳跃时大小
-	bigHeight = Height;
+	
 }
 
 
@@ -318,7 +325,125 @@ bool Player::CollideWith(IN T_Map* map)
 	return false;
 
 }
+void Player::setBigRedFrame(LPCTSTR imgPath, int frameWidth, int frameHeight,int* sequence,int nframes)
+{
+	if (wcslen(imgPath)>0)
+	{
+		bigRedFrame = (T_Graph*)malloc(sizeof(T_Graph));
+		bigRedFrame->LoadImageFile(imgPath);
+	}
+	else
+	{
+		throw L"图像路径为空!";
+	}	
+	bigWidth = frameWidth;
+	bigHeight = frameHeight;
+	nbigFrames = nframes;
+	bigFrameSequence = (int*)malloc(sizeof(int)*nframes);
+	memcpy(bigFrameSequence,sequence,nframes);
 
+}
+void Player::setSmallFrame(LPCTSTR imgPath, int frameWidth, int frameHeight, int* sequence, int nframes)
+{
+	if (wcslen(imgPath)>0)
+	{
+		smallFrame = (T_Graph*)malloc(sizeof(T_Graph));
+		smallFrame->LoadImageFile(imgPath);
+	}
+	else
+	{
+		throw L"图像路径为空!";
+	}
+	smallWidth = frameWidth;
+	smallHeight = frameHeight;
+	nsmallFrames = nframes;
+	smallFrameSequence = (int*)malloc(sizeof(int)*nframes);
+	memcpy(smallFrameSequence, sequence, nframes);
+}
+void  Player::setPlayerStatus(PLAYERSTATUS status)
+{
+	if (playerStatus == status) {
+		return;
+	}
+	switch (status)
+	{
+	case PLAYER_NORMAL:
+	{		
+		if (smallFrame == NULL) {
+			Util::myprintf(L"Player::setPlayerStatus : smallFrame == NULL\n");
+		}
+		SetImage(smallFrame);
+		SetWidth(smallWidth);
+		SetHeight(smallHeight);
+
+		frameCols = smallFrame->GetImageWidth() / smallWidth;		// 动画帧图片总列数
+		frameRows = smallFrame->GetImageHeight() / smallHeight;		// 动画帧图片总行数
+		totalFrames = frameCols*frameRows;							// 动画总帧数
+		rawFrames = frameCols*frameRows;							// 记录原始动画总帧数
+		forward = 0;												// 当前帧计数初始化
+		backward = totalFrames - 1;
+
+		frameSequence = smallFrameSequence;
+		loopForward = true;
+
+		//恢复静止状态		
+		stopMove(true);
+		resetJump();
+		setSquat(false);
+		break;
+	}
+	case PLAYER_REDBIGGER:
+	{
+		if (bigRedFrame == NULL) {
+			Util::myprintf(L"Player::setPlayerStatus : bigRedFrame == NULL\n");
+		}
+		SetImage(bigRedFrame);
+		SetWidth(bigWidth);
+		SetHeight(bigHeight);
+
+		frameCols = bigRedFrame->GetImageWidth() / bigWidth;		// 动画帧图片总列数
+		frameRows = bigRedFrame->GetImageHeight() / bigHeight;	// 动画帧图片总行数
+		totalFrames = frameCols*frameRows;					// 动画总帧数
+		rawFrames = frameCols*frameRows;					// 记录原始动画总帧数
+		forward = 0;									// 当前帧计数初始化
+		backward = totalFrames - 1;
+
+		frameSequence = bigFrameSequence;
+		loopForward = true;
+
+		//恢复静止状态		
+		stopMove(true);
+		resetJump();
+		setSquat(false);
+		break;
+	}
+	case PLAYER_GREENBIGGER:
+	{
+		if (bigGreenFrame == NULL) {
+			Util::myprintf(L"Player::setPlayerStatus : bigGreenFrame == NULL\n");
+		}
+		SetImage(bigGreenFrame);
+		SetWidth(bigWidth);
+		SetHeight(bigHeight);
+
+		frameCols = bigGreenFrame->GetImageWidth() / bigWidth;		// 动画帧图片总列数
+		frameRows = bigGreenFrame->GetImageHeight() / bigHeight;	// 动画帧图片总行数
+		totalFrames = frameCols*frameRows;					// 动画总帧数
+		rawFrames = frameCols*frameRows;					// 记录原始动画总帧数
+		forward = 0;									// 当前帧计数初始化
+		backward = totalFrames - 1;
+
+		frameSequence = bigFrameSequence;
+		loopForward = true;
+
+		//恢复静止状态		
+		stopMove(true);
+		resetJump();
+		setSquat(false);
+		break;
+	}
+	}
+}
 void Player::Draw(HDC hdc) {
 	int frmIndex;
 	
@@ -349,18 +474,18 @@ void Player::Draw(HDC hdc) {
 	Util::myprintf(L"current frame: %d\n",frmIndex);
 	if (bSquat)
 	{
-		spImg->PaintRegion(spImg->GetBmpHandle(),hdc,X,Y,bigWidth*frmIndex,bigHeight-squatHeight,squatWidth,squatHeight,
+		spImg.PaintRegion(spImg.GetBmpHandle(),hdc,X,Y,bigWidth*frmIndex,bigHeight-squatHeight,squatWidth,squatHeight,
 			frameRatio, frameRotate, frameAlpha);
 	}
 	else if (bJump)
 	{
-		spImg->PaintRegion(spImg->GetBmpHandle(), hdc, X, Y, Width*frmIndex, 0, Width, Height,
+		spImg.PaintRegion(spImg.GetBmpHandle(), hdc, X, Y, Width*frmIndex, 0, Width, Height,
 			frameRatio, frameRotate, frameAlpha);
 	}
 	else
 	{
-		spImg->PaintFrame(
-			spImg->GetBmpHandle(), hdc, (int)X, (int)Y, frmIndex,
+		spImg.PaintFrame(
+			spImg.GetBmpHandle(), hdc, (int)X, (int)Y, frmIndex,
 			frameCols, Width, Height, frameRatio, frameRotate, frameAlpha
 		);
 	}
