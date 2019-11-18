@@ -320,11 +320,43 @@ void MarioGame::LoadMap()
 	}
 }
 // 加载游戏玩家角色
+//void MarioGame::LoadPlayer()
+//{
+//	GAMELAYER gameLayer;
+//	SPRITEINFO player_Info;
+//	player = new Player(L".\\res\\sprite\\bMario.png", 32, 64);	
+//	int sequence[9] = {1,1,2,2,2,3,3,3,1};
+//
+//	player_Info.Active = true;
+//	player_Info.Dead = false;
+//	player_Info.Dir = DIR_RIGHT;
+//	player_Info.Rotation = TRANS_NONE;
+//	player_Info.Ratio = 1.0f;
+//	player_Info.Level = 0;
+//	player_Info.Score = 0;
+//	player_Info.SpeedX = 0;
+//	player_Info.SpeedY = 0;
+//	player_Info.Alpha = 220;
+//	player_Info.X = wnd_width / 5;
+//	player_Info.Y = (wnd_height - player->GetHeight()) / 2;
+//	player_Info.Visible = true;
+//	player->Initiate(player_Info);
+//	player->SetSequence(sequence, 9);
+//	player->SetLayerTypeID(LAYER_PLY);
+//
+//	gameLayer.layer = player;
+//	gameLayer.type_id = LAYER_PLY;
+//	gameLayer.z_order = gameScene->getSceneLayers()->size() + 1;
+//	gameLayer.layer->setZorder(gameLayer.z_order);
+//	gameScene->Append(gameLayer);
+//	player->SetStartTime(GetTickCount());
+//}
+ //加载游戏玩家角色
 void MarioGame::LoadPlayer()
 {
 	GAMELAYER gameLayer;
 	SPRITEINFO player_Info;
-	player = new Player(L".\\res\\sprite\\bMario.png", 32, 64);	
+	player = new Player(L".\\res\\sprite\\sMario.png", 32, 32);	
 	int sequence[9] = {1,1,2,2,2,3,3,3,1};
 
 	player_Info.Active = true;

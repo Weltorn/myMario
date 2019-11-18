@@ -1,12 +1,25 @@
 #pragma once
 #include "T_Sprite.h"
+class T_Scene;
 
 enum PLAYERSTATUS {
 	PLAYER_NORMAL,
 	PLAYER_REDBIGGER,
 	PLAYER_GREENBIGGER,
 };
-class T_Scene;
+typedef struct {
+	T_Graph img;
+	int frameWidth;
+	int frameHeight;
+	int* runFrmSequence;
+	int nRunFrames;
+	int stopFrame;
+	int speedDownFrame;
+	int squatFrame;
+	int jumpFrame;
+}PLAYERFRAME;
+
+
 class Player :
 	public T_Sprite
 {
