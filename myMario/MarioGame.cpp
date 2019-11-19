@@ -176,7 +176,7 @@ void MarioGame::GameKeyAction(int Action)
 			{
 				if (keys[VK_A])
 				{
-					if (!keys[VK_D]) {
+					if (!keys[VK_D] && !player->isSliding()) {
 						player->SetDir(DIR_LEFT);
 						if (!preA) {					//如果是第一次按下键A,设置为开始移动
 							player->startMove();
@@ -186,7 +186,7 @@ void MarioGame::GameKeyAction(int Action)
 				}
 				if (keys[VK_D])
 				{
-					if (!keys[VK_A]) {
+					if (!keys[VK_A] && !player->isSliding()) {
 						player->SetDir(DIR_RIGHT);
 						if (!preD) {					//如果是第一次按下键D,设置为开始移动
 							player->startMove();
@@ -427,7 +427,7 @@ void MarioGame::LoadPlayer()
 	player_mode.maxRunSpeedX = 6;
 	player->initBigRedMode(&player_mode);
 
-	player->setPlayerMode(PLAYER_BIGRED);
+	player->setPlayerMode(PLAYER_NORMAL);
 	gameLayer.layer = player;
 	gameLayer.type_id = LAYER_PLY;
 	gameLayer.z_order = gameScene->getSceneLayers()->size() + 1;

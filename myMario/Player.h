@@ -11,7 +11,7 @@ enum PLAYERSTATUS {
 typedef struct {
 	T_Graph img;			//图片
 	int frameWidth;			//帧宽度
-	int frameHeight;		//高度
+	int frameHeight;		//帧高度
 	int squatHeight;		//下蹲时高度
 	int* runFrmSequence;	//奔跑帧序列
 	int nRunFrames;			//奔跑帧序列长度
@@ -32,7 +32,7 @@ typedef struct {
 	int basicJumpSpeedY;	//跳跃初始速度
 	int maxBootTime;		//最大加速时间（按住跳跃键的有效时间）
 
-	bool canSquat;
+	bool canSquat;			//是否可下蹲
 }PLAYERMODE;
 
 
@@ -53,9 +53,10 @@ private:
 	PLAYERMODE* bigRedMode;
 
 	// ----- MOVE STATUS
-	bool bMove;		//是否可水平移动状态
-	bool bSquat;	//是否下蹲状态
-	bool bJump;		//是否跳跃状态
+	bool bMove;		//水平移动状态
+	bool bSquat;	//下蹲状态
+	bool bJump;		//跳跃状态
+	bool bSlide;	//减速滑行状态 暂不使用
 
 	// -----JUMP STATUS
 	int jumpStatus;	//跳跃状态0：上升，1：下降
@@ -166,6 +167,7 @@ public:
 		}
 	}
 
+	bool isSliding() { return bSlide; }
 	//是否加速状态（shift）
 	bool isSpeedUp() { return currentMaxSpeedX == currentMode->maxRunSpeedX; }
 	//更新玩家坐标

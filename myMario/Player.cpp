@@ -48,19 +48,20 @@ void Player::updatePositionX()
 	{
 		if (!bMove)		//水平静止或惯性滑行状态
 		{
-			if (speedX > 0 && (currentMaxSpeedX - speedX)*80 <= GetTickCount() - endTime){		//惯性滑行状态，减速
+			if (bSlide && (currentMaxSpeedX - speedX)*20 <= GetTickCount() - endTime){		//惯性滑行状态，减速
 				speedX-=(int)friction;
 			
 				if (speedX < 0)			//恢复水平静止
 				{
 					speedX = 0;
+					bSlide = false;
 				}
 			}
 			
 		}
 		else if(bMove)
 		{
-			if ((200 + 35 * speedX) <= GetTickCount()- startTime && speedX < currentMaxSpeedX)		//加速过程,100ms后加速
+			if ((100 + 35 * speedX) <= GetTickCount()- startTime && speedX < currentMaxSpeedX)		//加速过程,100ms后加速
 			{
 				++speedX;
 			}
@@ -193,7 +194,8 @@ void Player::resetSpeedup() {
 //停止水平移动
 void Player::stopMove(bool immediately) {
 	endTime = GetTickCount();
-	if (immediately)
+	
+	if (speedX <= 2||immediately)
 	{
 		speedX = 0;
 		bMove = false;
@@ -201,6 +203,7 @@ void Player::stopMove(bool immediately) {
 	else
 	{
 		bMove = false;
+		bSlide = true;
 	}
 }
 
@@ -368,7 +371,7 @@ void Player::Draw(HDC hdc) {
 	
 	if (!bMove && !bJump && !bSquat)
 	{
-		if (speedX != 0)		//急停帧
+		if (bSlide)		//急停帧
 		{
 			frmIndex = currentMode->frameMode.speedDownFrame;
 		}
