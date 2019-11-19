@@ -32,7 +32,7 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 
 	// ----- JUMP--------------------------------------------------暂不确定，待初始化
 	gravity = 9.8;				//基础重力加速度
-	timer = GetTickCount();	
+	timer = GetTickCount();
 	
 }
 
@@ -131,7 +131,7 @@ void  Player::gravityEffect()
 		currentGravity = gravity*1.0f;		//重力增大，加快下落
 	}
 
-	speedY = (int)round(currentMode->basicJumpSpeedY - (float)(GetTickCount()-timer)* currentGravity / 500);	//四舍五入
+	speedY = (int)round(currentMode->basicJumpSpeedY - (float)(GetTickCount()- timer)* currentGravity / 500);	//四舍五入
 }
 //更新玩家坐标
 void Player::updatePosition()
@@ -312,7 +312,7 @@ void Player::initBigRedMode(PLAYERMODE* bigRedMode)
 	memcpy(this->bigRedMode, bigRedMode, sizeof(PLAYERMODE));
 
 }
-void Player::initNormaldMode(PLAYERMODE* normalMode)
+void Player::initNormalMode(PLAYERMODE* normalMode)
 {
 	this->normalMode = (PLAYERMODE*)malloc(sizeof(PLAYERMODE));
 	memcpy(this->normalMode, normalMode, sizeof(PLAYERMODE));
@@ -333,7 +333,7 @@ void  Player::setPlayerMode(PLAYERSTATUS status)
 		playerStatus = status;
 		break;
 	}
-	case PLAYER_BIGREDGER:
+	case PLAYER_BIGRED:
 	{
 		if (bigRedMode == NULL) {
 			Util::myprintf(L"Player::setPlayerMode : bigRedMode == NULL\n");

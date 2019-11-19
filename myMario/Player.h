@@ -5,8 +5,8 @@ class T_Scene;
 enum PLAYERSTATUS {
 	PLAYER_NONE,
 	PLAYER_NORMAL,
-	PLAYER_BIGREDGER,
-	PLAYER_GREENBIGGER
+	PLAYER_BIGRED,
+	PLAYER_BIGGREEN
 };
 typedef struct {
 	T_Graph img;			//图片
@@ -103,7 +103,7 @@ public:
 
 	//PLAYER FRAME
 	void initBigRedMode(PLAYERMODE* bigRedMode);
-	void initNormaldMode(PLAYERMODE* normalMode);
+	void initNormalMode(PLAYERMODE* normalMode);
 
 	//运动控制方法
 	// ----- MOVE

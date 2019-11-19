@@ -360,7 +360,8 @@ void MarioGame::LoadPlayer()
 	PLAYERMODE player_mode;
 
 	player = new Player(L".\\res\\sprite\\sMario.png", 32, 32);	
-	int sequence[10] = {4,4,5,5,5,6,6,6,4,4};
+	int sSequence[10] = {4,4,5,5,5,6,6,6,4,4};
+	int bSequence[10] = { 1,1,1,2,2,2,3,3,3,1 };
 
 	player_Info.Active = true;
 	player_Info.Dead = false;
@@ -376,15 +377,16 @@ void MarioGame::LoadPlayer()
 	player_Info.Y = (wnd_height - player->GetHeight()) / 2;
 	player_Info.Visible = true;
 	player->Initiate(player_Info);
-	player->SetSequence(sequence, 10);
+	player->SetSequence(sSequence, 10);
 	player->SetLayerTypeID(LAYER_PLY);
 
+	// ----- 初始化马里奥的开始状态
 	player_frame.frameHeight = 32;
 	player_frame.frameWidth = 24;
 	player_frame.img = T_Graph(L".\\res\\sprite\\sMario.png");	
 	player_frame.nRunFrames = 10;
 	player_frame.runFrmSequence = (int*)malloc(sizeof(int)*player_frame.nRunFrames);
-	memcpy(player_frame.runFrmSequence, sequence, sizeof(int)*player_frame.nRunFrames);
+	memcpy(player_frame.runFrmSequence, sSequence, sizeof(int)*player_frame.nRunFrames);
 
 	player_frame.jumpFrame = 7;
 	player_frame.speedDownFrame = 3;
@@ -399,10 +401,33 @@ void MarioGame::LoadPlayer()
 	player_mode.maxBootTime = 1500;
 	player_mode.maxMoveSpeedX = 4;
 	player_mode.maxRunSpeedX = 6;
+	player->initNormalMode(&player_mode);
 
-	player->initNormaldMode(&player_mode);
-	player->setPlayerMode(PLAYER_NORMAL);
 
+	// ----- 初始化马里奥嗑药后的状态
+	player_frame.frameHeight = 64;
+	player_frame.frameWidth = 32;
+	player_frame.img = T_Graph(L".\\res\\sprite\\bMario.png");
+	player_frame.nRunFrames = 10;
+	player_frame.runFrmSequence = (int*)malloc(sizeof(int)*player_frame.nRunFrames);
+	memcpy(player_frame.runFrmSequence, bSequence, sizeof(int)*player_frame.nRunFrames);
+
+	player_frame.jumpFrame = 5;
+	player_frame.speedDownFrame = 4;
+	player_frame.squatFrame = 6;
+	player_frame.squatHeight = 64*2/3;
+	player_frame.stopFrame = 0;
+
+	player_mode.frameMode = player_frame;
+	player_mode.basicJumpSpeedY = 6;
+	player_mode.basicSpeedX = 0;
+	player_mode.canSquat = false;
+	player_mode.maxBootTime = 1500;
+	player_mode.maxMoveSpeedX = 4;
+	player_mode.maxRunSpeedX = 6;
+	player->initBigRedMode(&player_mode);
+
+	player->setPlayerMode(PLAYER_BIGRED);
 	gameLayer.layer = player;
 	gameLayer.type_id = LAYER_PLY;
 	gameLayer.z_order = gameScene->getSceneLayers()->size() + 1;
