@@ -3,6 +3,7 @@
 class T_Scene;
 
 enum PLAYERSTATUS {
+	PLAYER_NONE,
 	PLAYER_NORMAL,
 	PLAYER_BIGREDGER,
 	PLAYER_GREENBIGGER
@@ -21,7 +22,7 @@ typedef struct {
 }PLAYERFRAME;
 
 typedef struct {
-	PLAYERFRAME* frameMode;
+	PLAYERFRAME frameMode;
 	// ----- MOVE
 	int maxMoveSpeedX;		//最大行走速度
 	int maxRunSpeedX;		//最大奔跑速度（shift）
@@ -153,14 +154,14 @@ public:
 		}
 		else if (this->bSquat == false && bSquat == true)//蹲下
 		{
-			this->Y = this->Y+(currentMode->frameMode->frameHeight- currentMode->frameMode->squatHeight);		//蹲下和站起来帧图的高度差
-			SetHeight(currentMode->frameMode->squatHeight);
+			this->Y = this->Y+(currentMode->frameMode.frameHeight- currentMode->frameMode.squatHeight);		//蹲下和站起来帧图的高度差
+			SetHeight(currentMode->frameMode.squatHeight);
 			this->bSquat = bSquat;
 		}
 		else if (this->bSquat == true && bSquat == false)//站起来
 		{
-			this->Y = this->Y - (currentMode->frameMode->frameHeight - currentMode->frameMode->squatHeight);	// 蹲下和站起来帧图的高度差
-			SetHeight(currentMode->frameMode->frameHeight);
+			this->Y = this->Y - (currentMode->frameMode.frameHeight - currentMode->frameMode.squatHeight);	// 蹲下和站起来帧图的高度差
+			SetHeight(currentMode->frameMode.frameHeight);
 			this->bSquat = bSquat;
 		}
 	}
