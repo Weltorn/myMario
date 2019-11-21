@@ -45,12 +45,11 @@ Player::~Player()
 void Player::updatePositionX()
 {
 	Util::myprintf(L"current speedx: %d\n", speedX);
-	Util::myprintf(L"current X: %d\n", X);
 	if (!bSquat)		//非下蹲状态下可水平移动
 	{
 		if (!bMove)		//水平静止或惯性滑行状态
 		{
-			if (bSlide && (currentMaxSpeedX - speedX)*20 + endTime <= GetTickCount()){		//惯性滑行状态，减速
+			if (bSlide && (currentMaxSpeedX - speedX)*30 + endTime <= GetTickCount()){		//惯性滑行状态，减速
 				speedX-=(int)friction;
 			
 				if (speedX < 0)			//恢复水平静止
@@ -63,7 +62,7 @@ void Player::updatePositionX()
 		}
 		else if(bMove)
 		{
-			if ((100 + 35 * speedX) + startTime <= GetTickCount() && speedX < currentMaxSpeedX)		//加速过程,100ms后加速
+			if ((100 + 50 * speedX) + startTime <= GetTickCount() && speedX < currentMaxSpeedX)		//加速过程,100ms后加速
 			{
 				++speedX;
 			}
@@ -292,7 +291,6 @@ void Player::Draw(HDC hdc) {
 	}		
 
 
-	Util::myprintf(L"current frame: %d\n",frmIndex);
 	if (bSquat)
 	{
 		spImg.PaintRegion(spImg.GetBmpHandle(),hdc,X,Y,currentMode->frameMode.frameWidth *frmIndex, 
@@ -421,6 +419,7 @@ bool Player::CollideWith(IN T_Map* map)
 					collideBlocks.push_back(block);
 					break;
 				case DIR_DOWN:
+					Util::myprintf(L"collision DIR_DOWN\n========================================");
 					x = GetX();
 					y = map->GetY() + row*map->getTileHeight() - GetHeight();  //紧靠障碍上侧
 					isOnPlantform = true;
@@ -446,14 +445,6 @@ GAME_DIR Player::getCollideDir(RECT target)
 	oldRect.top = this->GetCollideRect()->top -(Y-lastY);
 	oldRect.bottom = this->GetCollideRect()->bottom - (Y - lastY);
 	
- 	if (oldRect.top >= target.bottom && this->GetCollideRect()->top<=target.bottom )
-	{
-		return DIR_UP;
-	}
-	if (oldRect.bottom <=target.top && this->GetCollideRect()->bottom >= target.top)
-	{
-		return DIR_DOWN;
-	}
 	if (oldRect.left >= target.right && this->GetCollideRect()->left <= target.right)
 	{
 		return DIR_LEFT;
@@ -462,6 +453,14 @@ GAME_DIR Player::getCollideDir(RECT target)
 	{
 		return DIR_RIGHT;
 	}
+ 	if (oldRect.top >= target.bottom && this->GetCollideRect()->top<=target.bottom )
+	{
+		return DIR_UP;
+	}
+	if (oldRect.bottom <=target.top && this->GetCollideRect()->bottom >= target.top)
+	{
+		return DIR_DOWN;
+	}	
 	return DIR_NONE;
 }
 
