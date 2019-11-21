@@ -40,8 +40,8 @@ void MarioGame::GameLogic()
 			gameTime = GetTickCount();		//更新游戏已运行时间	
 
 			//更新玩家	
-		//	if (!player->IsDead() && player->IsVisible())	//未死亡或播放死亡动画未播放完
-			//	player->update();
+			if (!player->IsDead() && player->IsVisible())	//未死亡或播放死亡动画未播放完
+				player->update();
 			if (player->IsDead() && !player->IsVisible())	//玩家死亡，死亡动画播放完
 			{
 				if (player->getLifeCount() == 0)
