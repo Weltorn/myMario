@@ -356,7 +356,7 @@ void MarioGame::LoadPlayer()
 	PLAYERFRAME player_frame;
 	PLAYERMODE player_mode;
 
-	player = new Player(L".\\res\\sprite\\sMario.png", 32, 32);	
+	player = new Player(L".\\res\\sprite\\sMario.png", 24, 32);	
 	int sSequence[10] = {4,4,5,5,5,6,6,6,4,4};
 	int bSequence[10] = { 1,1,1,2,2,2,3,3,3,1 };
 

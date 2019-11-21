@@ -16,7 +16,7 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	X;
 	Y;
 	speedX = 0;
-	speedY = 0;
+	speedY = -1;
 
 	// ----- MOVE STATUS
 	bMove = false;		//是否水平移动状态
@@ -50,7 +50,7 @@ void Player::updatePositionX()
 	{
 		if (!bMove)		//水平静止或惯性滑行状态
 		{
-			if (bSlide && (currentMaxSpeedX - speedX)*20 <= GetTickCount() - endTime){		//惯性滑行状态，减速
+			if (bSlide && (currentMaxSpeedX - speedX)*20 + endTime <= GetTickCount()){		//惯性滑行状态，减速
 				speedX-=(int)friction;
 			
 				if (speedX < 0)			//恢复水平静止
@@ -63,7 +63,7 @@ void Player::updatePositionX()
 		}
 		else if(bMove)
 		{
-			if ((100 + 35 * speedX) <= GetTickCount()- startTime && speedX < currentMaxSpeedX)		//加速过程,100ms后加速
+			if ((100 + 35 * speedX) + startTime <= GetTickCount() && speedX < currentMaxSpeedX)		//加速过程,100ms后加速
 			{
 				++speedX;
 			}
@@ -85,15 +85,8 @@ void Player::updatePositionY()
 {
 	gravityEffect();		//重力作用
 	lastY = Y;
-	
-	if (Y <= 368) {
-		Y = Y - speedY;
-	}
-	if(Y >= 368)
-	{
-		Y = 368;
-		resetJump();
-	}
+	Y = Y - speedY;
+
 }
 //开始跳跃
 void Player::startJump()
@@ -118,6 +111,7 @@ void Player::resetJump()
 //重力作用
 void  Player::gravityEffect()
 {
+	
 	float currentGravity = gravity;		//单击跳跃
 	if (jumpStatus == 0 && isBooting)	//长按跳跃
 	{
@@ -125,14 +119,21 @@ void  Player::gravityEffect()
 	}
 	else if (jumpStatus == 1)			//跳跃的下落阶段
 	{
-		currentGravity = gravity*1.0f;	//重力增大，加快下落
-	}	
-	speedY = (int)round(currentMode->basicJumpSpeedY - (float)(GetTickCount()- timer)* currentGravity / 500);	//四舍五入
-	Util::myprintf(L"current SpeedY: %d\n", speedY);
-	if (speedY < 0)		//速度小于零（向下），设置为下落状态
+		currentGravity = gravity*0.8f;	//重力增大，加快下落
+	}		
+	//if (bJump)
 	{
-		jumpStatus = 1;
+		if (!isOnPlantform && (GetTickCount() - timer)* currentGravity / 350 > abs(speedY) )
+		{
+			speedY -= 2;	//四舍五入
+		}
+		if (speedY < 0)		//速度小于零（向下），设置为下落状态
+		{
+			jumpStatus = 1;
+		}
 	}
+	Util::myprintf(L"current SpeedY: %d\n", speedY);
+	
 }
 //更新玩家坐标
 void Player::updatePosition()
@@ -143,7 +144,7 @@ void Player::updatePosition()
 	}	
 	updatePositionX();
 	updatePositionY();
-	//CollideWith(T_Scene::getBarrier());	//玩家与障碍层碰撞检测
+	CollideWith(T_Scene::getBarrier());	//玩家与障碍层碰撞检测
 }
 //更新帧图
 void Player::updateFrame()
@@ -374,7 +375,7 @@ bool Player::CollideWith(IN T_Map* map)
 	int startCol = (spLeft <= mapLeft) ? 0 : (spLeft - mapLeft) / tW;
 	int endCol = (spRight < mapRight) ? (spRight - 1 - mapLeft) / tW : tNumCols - 1;
 
-
+	isOnPlantform = false;
 	COLLIDBLOCKS collideBlocks;
 	// 根据角色矩形上、下、左、右的矩形区域判断哪个矩形区域为障碍
 	for (int row = startRow; row <= endRow; ++row)
@@ -384,47 +385,46 @@ bool Player::CollideWith(IN T_Map* map)
 			// 如果当前矩形所在的图块在地图数据中为非0，就表示是障碍
 			if (map->getTile(col, row) != 0)
 			{
-				isCollide = false;
+				isCollide = true;
 				mapBlockPT.x = col;	// 记录当前障碍图块的列
-				mapBlockPT.y = row;	// 记录当前障碍图块的行
+ 				mapBlockPT.y = row;	// 记录当前障碍图块的行
 
 				COLLIDBLOCK block;
 
 				//碰撞的地图块
-				RECT blockRect = { col*map->getTileWidth() ,row*map->getTileHeight(),
-					(col+1)*map->getTileWidth(),(row+1)*map->getTileHeight() };
+				RECT blockRect = { col*map->getTileWidth()+(map->GetX()) ,row*map->getTileHeight()+(map->GetY()),
+					(col+1)*map->getTileWidth() + (map->GetX()),(row+1)*map->getTileHeight() + (map->GetY()) };
 
-				// 根据角色当前的方向计算碰撞前的位置
-				int x = GetX(), y = GetY();			
-				switch (getCollideDir(blockRect))
+				int x = GetX(), y = GetY();		
+				GAME_DIR DIR = getCollideDir(blockRect);
+				switch (DIR)
 				{
 				case DIR_LEFT:
-					x = (col + 1)*map->getTileWidth() + 1;	//紧靠障碍右侧
+					x = map->GetX() + (col + 1)*map->getTileWidth();	//紧靠障碍右侧
 					y = GetY();
-					speedY = -1;
 					speedX = 0;
 					block = { col ,row ,DIR_RIGHT};		//保存发生碰撞的地图块序列
 					collideBlocks.push_back(block);
 					break;
 				case DIR_RIGHT:
-					x = col*map->getTileWidth() - GetWidth() - 1;  //紧靠障碍左侧
+					x = map->GetX() + col*map->getTileWidth() - GetWidth();  //紧靠障碍左侧
 					y = GetY();
-					speedY = -1;
 					speedX = 0;
 					block = { col ,row ,DIR_LEFT };		//保存发生碰撞的地图块序列
 					collideBlocks.push_back(block);
 					break;
 				case DIR_UP:
 					x = GetX();
-					y = (row + 1)*map->getTileHeight() + 1;		//紧靠障碍下侧
+					y = map->GetY()+(row + 1)*map->getTileHeight();		//紧靠障碍下侧
 					speedY = -speedY;
 					block = { col ,row ,DIR_DOWN };		//保存发生碰撞的地图块序列
 					collideBlocks.push_back(block);
 					break;
 				case DIR_DOWN:
 					x = GetX();
-					y = row*map->getTileHeight() - GetHeight() - 1;  //紧靠障碍上侧
-					speedY = 0;
+					y = map->GetY() + row*map->getTileHeight() - GetHeight();  //紧靠障碍上侧
+					isOnPlantform = true;
+					resetJump();
 					block = { col ,row ,DIR_UP };		//保存发生碰撞的地图块序列
 					collideBlocks.push_back(block);
 					break;
@@ -440,24 +440,25 @@ bool Player::CollideWith(IN T_Map* map)
 GAME_DIR Player::getCollideDir(RECT target)
 {
 	RECT oldRect = *this->GetCollideRect();
-	oldRect.left = this->GetCollideRect() ->left+(X-lastX);
-	oldRect.right = this->GetCollideRect()->right + (X - lastX);
-	oldRect.top = this->GetCollideRect()->top +(Y-lastY);
-	oldRect.bottom = this->GetCollideRect()->bottom + (Y - lastY);
+	RECT currentRect = *this->GetCollideRect();
+	oldRect.left = this->GetCollideRect()->left-(X-lastX);
+	oldRect.right = this->GetCollideRect()->right - (X - lastX);
+	oldRect.top = this->GetCollideRect()->top -(Y-lastY);
+	oldRect.bottom = this->GetCollideRect()->bottom - (Y - lastY);
 	
-	if (oldRect.top < target.bottom && this->GetCollideRect()->top>=target.bottom )
+ 	if (oldRect.top >= target.bottom && this->GetCollideRect()->top<=target.bottom )
 	{
 		return DIR_UP;
 	}
-	if (oldRect.bottom > target.top && this->GetCollideRect()->bottom <= target.top)
+	if (oldRect.bottom <=target.top && this->GetCollideRect()->bottom >= target.top)
 	{
 		return DIR_DOWN;
 	}
-	if (oldRect.left > target.right && this->GetCollideRect()->left <= target.right)
+	if (oldRect.left >= target.right && this->GetCollideRect()->left <= target.right)
 	{
 		return DIR_LEFT;
 	}
-	if (oldRect.right < target.left && this->GetCollideRect()->right >= target.left)
+	if (oldRect.right <= target.left && this->GetCollideRect()->right >= target.left)
 	{
 		return DIR_RIGHT;
 	}

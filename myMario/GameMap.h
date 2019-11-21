@@ -1,5 +1,6 @@
 #pragma once
 #include "T_Map.h"
+#include "Player.h"
 class GameMap :
 	public T_Map
 {

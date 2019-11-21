@@ -71,6 +71,7 @@ private:
 	bool bSlide;	//减速滑行状态 暂不使用
 
 	// -----JUMP STATUS
+	bool isOnPlantform;
 	int jumpStatus;	//跳跃状态0：上升，1：下降
 	bool isBooting;	//是否跳跃加速状态
 	unsigned timer;		//计时器
