@@ -1,13 +1,17 @@
 #pragma once
 #include "T_Sprite.h"
 class T_Scene;
+class GameMap;
 
+//玩家模式
 enum PLAYERSTATUS {
 	PLAYER_NONE,
 	PLAYER_NORMAL,
 	PLAYER_BIGRED,
 	PLAYER_BIGGREEN
 };
+
+//玩家帧设置
 typedef struct {
 	T_Graph img;			//图片
 	int frameWidth;			//帧宽度
@@ -21,6 +25,7 @@ typedef struct {
 	int jumpFrame;			//跳跃帧
 }PLAYERFRAME;
 
+//玩家能力设置
 typedef struct {
 	PLAYERFRAME frameMode;
 	// ----- MOVE
@@ -35,7 +40,14 @@ typedef struct {
 	bool canSquat;			//是否可下蹲
 }PLAYERMODE;
 
+//碰撞块
+typedef struct {
+	int x;
+	int y;
+	GAME_DIR dir;
+}COLLIDBLOCK;
 
+typedef vector<COLLIDBLOCK> COLLIDBLOCKS;
 class Player :
 	public T_Sprite
 {
@@ -71,7 +83,6 @@ private:
 	// ----- COLLISION
 	int lastX;			//上一次打印位置横坐标
 	int lastY;			//上一次打印位置纵坐标
-
 
 public:
 	Player(LPCTSTR imgPath, int frameWidth = 0, int frameHeight = 0);
@@ -174,14 +185,18 @@ public:
 	void updatePosition();
 	//更新帧图
 	void updateFrame();
-	// 检测角色碰撞, distance检测碰撞的距离
-	virtual bool CollideWith(T_Sprite* target, int distance = 0)override { return false; }
-	// 检测地图碰撞
-	virtual bool CollideWith(IN T_Map* map)override;
+	
 	//根据根据玩家状态信息，更新位置、帧图，检测地图碰撞
 	virtual void update();
 
 	void setPlayerMode(PLAYERSTATUS status);
 	virtual void Draw(HDC hdc);
+
+	// 检测角色碰撞, distance检测碰撞的距离
+	virtual bool CollideWith(T_Sprite* target, int distance = 0)override { return false; }
+	// 检测地图碰撞
+	virtual bool CollideWith(IN T_Map* map)override;
+
+	GAME_DIR getCollideDir( RECT target);
 };
 
