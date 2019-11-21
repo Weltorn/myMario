@@ -32,7 +32,7 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	dir = DIR_RIGHT;		//初始化方向,向右
 
 	// ----- JUMP--------------------------------------------------暂不确定，待初始化
-	gravity = 9.8;				//基础重力加速度
+	gravity = 6;				//基础重力加速度
 	timer = GetTickCount();
 	
 }
@@ -49,7 +49,7 @@ void Player::updatePositionX()
 	{
 		if (!bMove)		//水平静止或惯性滑行状态
 		{
-			if (bSlide && (currentMaxSpeedX - speedX)*30 + endTime <= GetTickCount()){		//惯性滑行状态，减速
+			if (bSlide && (currentMaxSpeedX - speedX)*50 + endTime <= GetTickCount()){		//惯性滑行状态，减速
 				speedX-=(int)friction;
 			
 				if (speedX < 0)			//恢复水平静止
@@ -91,7 +91,7 @@ void Player::updatePositionY()
 void Player::startJump()
 {
 	timer = GetTickCount();		//记录起跳时间，用于控制加速时间(isBooting)
-
+	onPlantform = false;
 	bJump = true;		//设置跳跃状态
 	jumpStatus = 0;		//设置为上升阶段
 	isBooting = true;
@@ -120,17 +120,15 @@ void  Player::gravityEffect()
 	{
 		currentGravity = gravity*0.8f;	//重力增大，加快下落
 	}		
-	//if (bJump)
-	{
-		if (!isOnPlantform && (GetTickCount() - timer)* currentGravity / 350 > abs(speedY) )
+	
+		if (!onPlantform && (GetTickCount() - timer)* currentGravity / 500 >currentMode->basicJumpSpeedY- abs(speedY) )
 		{
-			speedY -= 2;	//四舍五入
+			speedY -= 1;	//四舍五入
 		}
 		if (speedY < 0)		//速度小于零（向下），设置为下落状态
 		{
 			jumpStatus = 1;
 		}
-	}
 	Util::myprintf(L"current SpeedY: %d\n", speedY);
 	
 }
@@ -143,7 +141,10 @@ void Player::updatePosition()
 	}	
 	updatePositionX();
 	updatePositionY();
-	CollideWith(T_Scene::getBarrier());	//玩家与障碍层碰撞检测
+	if (!CollideWith(T_Scene::getBarrier()))	//玩家与障碍层碰撞检测
+	{
+		onPlantform = false;
+	}
 }
 //更新帧图
 void Player::updateFrame()
@@ -287,7 +288,7 @@ void Player::Draw(HDC hdc) {
 	}
 	else if (bJump)
 	{
-		frmIndex = 5;
+		frmIndex = currentMode->frameMode.jumpFrame;
 	}		
 
 
@@ -373,7 +374,7 @@ bool Player::CollideWith(IN T_Map* map)
 	int startCol = (spLeft <= mapLeft) ? 0 : (spLeft - mapLeft) / tW;
 	int endCol = (spRight < mapRight) ? (spRight - 1 - mapLeft) / tW : tNumCols - 1;
 
-	isOnPlantform = false;
+	onPlantform = false;
 	COLLIDBLOCKS collideBlocks;
 	// 根据角色矩形上、下、左、右的矩形区域判断哪个矩形区域为障碍
 	for (int row = startRow; row <= endRow; ++row)
@@ -395,19 +396,20 @@ bool Player::CollideWith(IN T_Map* map)
 
 				int x = GetX(), y = GetY();		
 				GAME_DIR DIR = getCollideDir(blockRect);
+				
 				switch (DIR)
 				{
 				case DIR_LEFT:
 					x = map->GetX() + (col + 1)*map->getTileWidth();	//紧靠障碍右侧
 					y = GetY();
-					speedX = 0;
+					speedX = 0;					
 					block = { col ,row ,DIR_RIGHT};		//保存发生碰撞的地图块序列
 					collideBlocks.push_back(block);
 					break;
 				case DIR_RIGHT:
 					x = map->GetX() + col*map->getTileWidth() - GetWidth();  //紧靠障碍左侧
 					y = GetY();
-					speedX = 0;
+					speedX = 0;				
 					block = { col ,row ,DIR_LEFT };		//保存发生碰撞的地图块序列
 					collideBlocks.push_back(block);
 					break;
@@ -415,14 +417,14 @@ bool Player::CollideWith(IN T_Map* map)
 					x = GetX();
 					y = map->GetY()+(row + 1)*map->getTileHeight();		//紧靠障碍下侧
 					speedY = -speedY;
-					block = { col ,row ,DIR_DOWN };		//保存发生碰撞的地图块序列
+					block = { col ,row ,DIR_DOWN };	
+					//保存发生碰撞的地图块序列
 					collideBlocks.push_back(block);
 					break;
 				case DIR_DOWN:
-					Util::myprintf(L"collision DIR_DOWN\n========================================");
 					x = GetX();
 					y = map->GetY() + row*map->getTileHeight() - GetHeight();  //紧靠障碍上侧
-					isOnPlantform = true;
+					onPlantform = true;
 					resetJump();
 					block = { col ,row ,DIR_UP };		//保存发生碰撞的地图块序列
 					collideBlocks.push_back(block);

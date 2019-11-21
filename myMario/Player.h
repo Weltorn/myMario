@@ -71,7 +71,7 @@ private:
 	bool bSlide;	//减速滑行状态 暂不使用
 
 	// -----JUMP STATUS
-	bool isOnPlantform;
+	bool onPlantform;
 	int jumpStatus;	//跳跃状态0：上升，1：下降
 	bool isBooting;	//是否跳跃加速状态
 	unsigned timer;		//计时器
@@ -180,6 +180,7 @@ public:
 	}
 
 	bool isSliding() { return bSlide; }
+	bool isOnPlantform() { return onPlantform; }
 	//是否加速状态（shift）
 	bool isSpeedUp() { return currentMaxSpeedX == currentMode->maxRunSpeedX; }
 	//更新玩家坐标

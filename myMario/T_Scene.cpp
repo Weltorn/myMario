@@ -600,7 +600,6 @@ void T_Scene::Draw(HDC hdc)
 		if((*p).layer->IsVisible() == true)
 		{
 			(*p).layer->Draw(hdc);//调用图层自己的绘制方法
-			Util::myprintf(L"drawing....\n");
 		}
 	}
 }

@@ -213,7 +213,7 @@ void MarioGame::GameKeyAction(int Action)
 				}
 				if (keys[VK_SPACE])
 				{
-					if (!player->getSquat()&& !player->isJump()&&!preSpace)
+					if (!player->getSquat()&& !player->isJump()&&!preSpace&&player->isOnPlantform())
 					{
 						player->startJump();
 						preSpace = true;
@@ -258,6 +258,9 @@ void MarioGame::GameKeyAction(int Action)
 						if (player->getBooting())
 						{
 							player->stopBooting();		//释放键，停止加速
+							if (player->GetSpeedY() > 3) {
+								player->SetSpeedY(3);
+							}
 						}
 					}
 				}
@@ -316,38 +319,7 @@ void MarioGame::LoadMap()
 		if (p->layer->ClassName() == "T_Map") p->layer->SetPosition(scn_x, scn_y);
 	}
 }
-// 加载游戏玩家角色
-//void MarioGame::LoadPlayer()
-//{
-//	GAMELAYER gameLayer;
-//	SPRITEINFO player_Info;
-//	player = new Player(L".\\res\\sprite\\bMario.png", 32, 64);	
-//	int sequence[9] = {1,1,2,2,2,3,3,3,1};
-//
-//	player_Info.Active = true;
-//	player_Info.Dead = false;
-//	player_Info.Dir = DIR_RIGHT;
-//	player_Info.Rotation = TRANS_NONE;
-//	player_Info.Ratio = 1.0f;
-//	player_Info.Level = 0;
-//	player_Info.Score = 0;
-//	player_Info.SpeedX = 0;
-//	player_Info.SpeedY = 0;
-//	player_Info.Alpha = 220;
-//	player_Info.X = wnd_width / 5;
-//	player_Info.Y = (wnd_height - player->GetHeight()) / 2;
-//	player_Info.Visible = true;
-//	player->Initiate(player_Info);
-//	player->SetSequence(sequence, 9);
-//	player->SetLayerTypeID(LAYER_PLY);
-//
-//	gameLayer.layer = player;
-//	gameLayer.type_id = LAYER_PLY;
-//	gameLayer.z_order = gameScene->getSceneLayers()->size() + 1;
-//	gameLayer.layer->setZorder(gameLayer.z_order);
-//	gameScene->Append(gameLayer);
-//	player->SetStartTime(GetTickCount());
-//}
+
  //加载游戏玩家角色
 void MarioGame::LoadPlayer()
 {
@@ -357,8 +329,8 @@ void MarioGame::LoadPlayer()
 	PLAYERMODE player_mode;
 
 	player = new Player(L".\\res\\sprite\\sMario.png", 24, 32);	
-	int sSequence[10] = {4,4,5,5,5,6,6,6,4,4};
-	int bSequence[10] = { 1,1,1,2,2,2,3,3,3,1 };
+	int sSequence[12] = {4,4,5,5,5,5,6,6,6,6,4,4};
+	int bSequence[12] = { 1,1,2,2,2,2,3,3,3,3,1,1 };
 
 	player_Info.Active = true;
 	player_Info.Dead = false;
@@ -371,17 +343,17 @@ void MarioGame::LoadPlayer()
 	player_Info.SpeedY = 0;
 	player_Info.Alpha = 220;
 	player_Info.X = wnd_width / 5;
-	player_Info.Y = 200;//(wnd_height - player->GetHeight()) / 2;
+	player_Info.Y = 200;
 	player_Info.Visible = true;
 	player->Initiate(player_Info);
-	player->SetSequence(sSequence, 10);
+	player->SetSequence(sSequence, 12);
 	player->SetLayerTypeID(LAYER_PLY);
 
 	// ----- 初始化马里奥的开始状态
 	player_frame.frameHeight = 32;
 	player_frame.frameWidth = 24;
 	player_frame.img = T_Graph(L".\\res\\sprite\\sMario.png");	
-	player_frame.nRunFrames = 10;
+	player_frame.nRunFrames = 12;
 	player_frame.runFrmSequence = (int*)malloc(sizeof(int)*player_frame.nRunFrames);
 	memcpy(player_frame.runFrmSequence, sSequence, sizeof(int)*player_frame.nRunFrames);
 
@@ -405,7 +377,7 @@ void MarioGame::LoadPlayer()
 	player_frame.frameHeight = 64;
 	player_frame.frameWidth = 32;
 	player_frame.img = T_Graph(L".\\res\\sprite\\bMario.png");
-	player_frame.nRunFrames = 10;
+	player_frame.nRunFrames = 12;
 	player_frame.runFrmSequence = (int*)malloc(sizeof(int)*player_frame.nRunFrames);
 	memcpy(player_frame.runFrmSequence, bSequence, sizeof(int)*player_frame.nRunFrames);
 
