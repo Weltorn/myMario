@@ -1,4 +1,5 @@
 #include "GameScene.h"
+#include "Util.h"
 
 GameScene::GameScene()
 	:T_Scene()
@@ -145,13 +146,20 @@ bool GameScene::LoadTxtMap(const char* txtmap_path)
 				layerInfo.type_id = -1;
 				layerCount = layerCount + 1;
 			}
+			Util::myprintf(L"Load map successful!\n");
 		}
 	}
 	delete[] l_str;
 	return true;
 }
-void  GameScene::update()
+void  GameScene::update() 
 {
+	//更新场景图层
+	/*SCENE_LAYERS::iterator p;
+	for (p = sceneLayers.begin(); p != sceneLayers.end(); p++)
+	{
+		p->layer->update();
+	*/
 	
 	//更新障碍地图
 	if (pBarrier->IsVisible())
@@ -182,4 +190,6 @@ void  GameScene::update()
 	{
 		SortLayers();//对图层重新排序
 	}
+
+	ScrollScene(pPlayer);
 }

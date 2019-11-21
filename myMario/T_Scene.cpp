@@ -9,6 +9,7 @@
 //*******************************************************************
 
 #include "T_Scene.h"
+#include "util.h"
 
 T_Map* T_Scene::pBarrier = NULL;			// 碰撞图层指针，包含在sceneLayers中
 T_Map* T_Scene::pMask = NULL;			// 遮罩层指针，包含在sceneLayers中
@@ -599,6 +600,7 @@ void T_Scene::Draw(HDC hdc)
 		if((*p).layer->IsVisible() == true)
 		{
 			(*p).layer->Draw(hdc);//调用图层自己的绘制方法
+			Util::myprintf(L"drawing....\n");
 		}
 	}
 }

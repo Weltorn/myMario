@@ -26,7 +26,7 @@ using namespace Gdiplus;
 
 
 static const int WIN_WIDTH		 = 1024;			// 默认游戏窗口宽
-static const int WIN_HEIGHT		 = 768;				// 默认游戏窗口高
+static const int WIN_HEIGHT		 = 448;				// 默认游戏窗口高
 static const COLORREF WIN_BKCLR = RGB(50, 50, 50);	// 默认窗口背景色(更新: 2019-09-28)
 
 static const int FRAME_SPEED	 = 100;				// 默认游戏帧频
