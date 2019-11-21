@@ -19,9 +19,10 @@ MarioGame::~MarioGame(void)
 void MarioGame::GameInit() 
 {
 	gameLevel = 1;
-	GameState = GAME_RUN;			//调试准备，跳过菜单
+	menuIsInit = false;
+	GameState = GAME_ABOUT;			//调试 ABOUT_MENU
 	LoadGameLevel(gameLevel);		//加载关卡资源、地图、玩家
-	//LoadGameMenu(GameState);		//加载主菜单	
+	LoadGameMenu(GameState);		//加载主菜单	
 }
 
 //游戏逻辑处理(处理GameState)
@@ -40,8 +41,8 @@ void MarioGame::GameLogic()
 			gameTime = GetTickCount();		//更新游戏已运行时间	
 
 			//更新玩家	
-		//	if (!player->IsDead() && player->IsVisible())	//未死亡或播放死亡动画未播放完
-			//	player->update();
+			if (!player->IsDead() && player->IsVisible())	//未死亡或播放死亡动画未播放完
+				player->update();
 			if (player->IsDead() && !player->IsVisible())	//玩家死亡，死亡动画播放完
 			{
 				if (player->getLifeCount() == 0)
@@ -54,7 +55,7 @@ void MarioGame::GameLogic()
 					//加载复活点
 				}
 			}
-			//gameScene->ScrollScene(player);				//根据玩家位置，滚动场景
+			//gameScene->ScrollScene(player);			//根据玩家位置，滚动场景
 			gameScene->update();						//更新地图、怪物、玩家状态
 			break;
 		}
@@ -76,6 +77,55 @@ void MarioGame::GameLogic()
 		}
 		case GAME_ABOUT:		//游戏制作信息界面
 		{
+			
+			//背景颜色变换
+			switch (changeIndex) {
+			case 0:
+				if (red <= 10) {
+					changeIndex = 1;
+					green = 11;
+					lastGreen = 10;
+				}else if ((lastRed < red && red <= 230)) {
+					lastRed = red;
+					red += 0.4;
+				}
+				else if (lastRed > red || red > 230) {
+					lastRed = red;
+					red -= 0.4;
+				}
+				break;
+			case 1:
+				if (green <= 10) {
+					changeIndex = 2;
+					blue = 11;
+					lastBlue = 10;
+				}else if ((lastGreen < green && green <= 230)) {
+					lastGreen = green;
+					green += 0.4;
+				}
+				else if (lastGreen > green || green > 230) {
+					lastGreen = green;
+					green -= 0.4;
+				}
+				break;
+			case 2:
+				if (blue <= 10) {
+					changeIndex = 0;
+					red = 11;
+					lastRed = 10;
+				}else if ((lastBlue < blue && blue <= 230)) {
+					lastBlue = blue;
+					blue += 0.4;
+				}
+				else if (lastBlue > blue || blue > 230) {
+					lastBlue = blue;
+					blue -= 0.4;
+				}
+				break;
+			}
+		
+			// 坐标处理
+			gameScene->ScrollScene(-1);
 			break;
 		}
 	}
@@ -127,7 +177,10 @@ void MarioGame::GamePaint(HDC hdc)
 	}
 	case GAME_ABOUT:		//游戏制作信息界面
 	{
+		T_Graph::PaintBlank(hdc,0,0,wnd_width,wnd_height,RGB(ROUND(red),ROUND(green),ROUND(blue)),255);
 		//显示加载界面
+		gameScene->Draw(hdc);
+		DisplayInfo(hdc);
 		break;
 	}
 	}
@@ -282,6 +335,7 @@ void MarioGame::GameKeyAction(int Action)
 	}
 	case GAME_ABOUT:		//游戏制作信息界面
 	{
+
 		break;
 	}
 	}
@@ -436,16 +490,22 @@ void MarioGame::LoadPlayer()
 // 加载游戏菜单
 void MarioGame::LoadGameMenu(int type)
 {
-	if (gameMenu == NULL) gameMenu = new T_Menu();
-	delete gameMenu;
+//	if (gameMenu == NULL) gameMenu = new T_Menu();
+//	delete gameMenu;
 
-	gameMenu->SetMenuIndex(-1);
+//	gameMenu->SetMenuIndex(-1);
+	if (menuIsInit)	return;
 	int btnwidth = 200, btnheight = 80;
 	if (type == GAME_START)
 	{
-		
+
 	}
-	
+	else if (type == GAME_ABOUT) {
+		red = green = blue = 11;
+		gameScene->SetScenePos(-1, 0);	//场景重新定位
+		changeIndex;
+		menuIsInit = true;
+	}
 }
 
 //
@@ -508,11 +568,11 @@ void MarioGame::LoadGameLevel(int level)
 	gameScene = NULL;
 
 	if (gameScene == NULL) gameScene = new GameScene();
-	if (gameMenu == NULL) gameMenu = new T_Menu();
+//	if (gameMenu == NULL) gameMenu = new T_Menu();
 
 	//LoadSound(m_hWnd);
 	//LoadImageRes();
-
+//	LoadMenu();
 	LoadMap();
 	LoadPlayer();
 }
@@ -544,6 +604,7 @@ void MarioGame::DisplayInfo(HDC hdc)
 	case GAME_HELP:
 		break;
 	case GAME_ABOUT:
+
 		break;
 	}
 }

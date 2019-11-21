@@ -154,16 +154,10 @@ bool GameScene::LoadTxtMap(const char* txtmap_path)
 }
 void  GameScene::update() 
 {
-	//更新场景图层
-	SCENE_LAYERS::iterator p;
-	for (p = sceneLayers.begin(); p != sceneLayers.end(); p++)
-	{
-		p->layer->update();
-	}
 	
 	//更新障碍地图
-	//if (pBarrier->IsVisible())
-	//	pBarrier->update();
+	if (pBarrier->IsVisible())
+		pBarrier->update();
 
 	//更新怪物图层
 	LMinion::iterator p1;

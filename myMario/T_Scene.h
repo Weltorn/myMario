@@ -79,6 +79,8 @@ public:
 	void MoveScene(int speedX, int speedY);
 	// 根据参数指定的角色对象判断场景是否需要滚动
 	void ScrollScene(T_Sprite* player);
+	// 游戏制作信息界面中的场景自动滚动
+	void ScrollScene(int speed);
 		
 	//……………………………………………………………………………………
 	// 与图层操作相关的函数

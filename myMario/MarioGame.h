@@ -27,6 +27,9 @@ private:
 	static const int SUPER_TIME = 5000;			// 玩家角色无敌时间/ms
 	static const int BEGIN_TIME = 5000;			// 游戏开始音乐播放时间
 	static const int WARN_TIME = 15000;			// 游戏时间即将耗尽，剩余时间
+	static const int MAIN_MENU = 0;				// 主菜单索引
+	static const int OPTION_MENU = 1;			// 选项菜单索引
+	static const int ABOUT_MENU = 2;			// 关于菜单索引
 
 	//关卡相关数据
 	int timeLimit = 300000;						// 关卡时间限制
@@ -49,8 +52,20 @@ private:
 	// 与游戏对象类相关的变量
 	Player* player;								// 游戏玩家
 	GameScene* gameScene;						// 游戏场景
-	T_Menu* gameMenu;							// 游戏菜单
-	
+	Color bkColor;								// 游戏背景色
+
+
+	//------------------与菜单相关的变量-----------------------------------
+	vector<T_Menu>	menus;						// 游戏菜单
+	bool menuIsInit;							// 判断菜单是否初始化
+
+	//与 ABOUT_MENU 相关的变量
+	int changeIndex;							// 变换的颜色索引	0-R 1-G 2-B
+	double red, green, blue;						// 三原色 用于控制背景色改变
+	double lastRed, lastGreen, lastBlue;
+
+	//---------------------------------------------------------
+
 public:
 	
 	MarioGame(HINSTANCE h_instance, LPCTSTR sz_winclass, LPCTSTR sz_title, 
