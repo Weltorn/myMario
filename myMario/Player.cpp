@@ -43,7 +43,8 @@ Player::~Player()
 //更新玩家横坐标
 void Player::updatePositionX()
 {
-	Util::myprintf(L"current speedx: %d\n",speedX);
+	Util::myprintf(L"current speedx: %d\n", speedX);
+	Util::myprintf(L"current X: %d\n", X);
 	if (!bSquat)		//非下蹲状态下可水平移动
 	{
 		if (!bMove)		//水平静止或惯性滑行状态
@@ -84,12 +85,12 @@ void Player::updatePositionY()
 	gravityEffect();		//重力作用
 	lastY = Y;
 	
-	if (Y <= 500) {
+	if (Y <= 368) {
 		Y = Y - speedY;
 	}
-	if(Y >= 500)
+	if(Y >= 368)
 	{
-		Y = 500;
+		Y = 368;
 		resetJump();
 	}
 	Util::myprintf(L"current SpeedY: %d\n",speedY);

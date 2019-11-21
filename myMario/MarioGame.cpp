@@ -1,5 +1,3 @@
-
-
 #include "MarioGame.h"
 
 // 类的构造函数 
@@ -42,8 +40,8 @@ void MarioGame::GameLogic()
 			gameTime = GetTickCount();		//更新游戏已运行时间	
 
 			//更新玩家	
-			if (!player->IsDead() && player->IsVisible())	//未死亡或播放死亡动画未播放完
-				player->update();
+		//	if (!player->IsDead() && player->IsVisible())	//未死亡或播放死亡动画未播放完
+			//	player->update();
 			if (player->IsDead() && !player->IsVisible())	//玩家死亡，死亡动画播放完
 			{
 				if (player->getLifeCount() == 0)
@@ -57,7 +55,7 @@ void MarioGame::GameLogic()
 				}
 			}
 			//gameScene->ScrollScene(player);				//根据玩家位置，滚动场景
-			//gameScene->update();						//更新地图、怪物、玩家状态
+			gameScene->update();						//更新地图、怪物、玩家状态
 			break;
 		}
 		case GAME_PAUSE:		//暂停游戏界面
@@ -98,10 +96,9 @@ void MarioGame::GamePaint(HDC hdc)
 	}
 	case GAME_RUN:			//游戏进行时界面
 	{
-		//gameScene->Draw(hdc);
 		//DisplayInfo(hdc);		//显示顶部游戏状态信息
-		T_Graph::PaintBlank(hdc,0,0,wnd_width,wnd_height,RGB(200,200,200),255);
-		player->Draw(hdc);
+		T_Graph::PaintBlank(hdc,0,0,wnd_width,wnd_height,RGB(100,200,200),255);
+		gameScene->Draw(hdc);
 		break;
 	}
 	case GAME_PAUSE:		//暂停游戏界面
@@ -298,7 +295,7 @@ void MarioGame::GameMouseAction(int x, int y, int Action)
 // 加载游戏地图场景,可包括背景、障碍、遮罩层
 void MarioGame::LoadMap()
 {
-	if (!gameScene->LoadTxtMap("res\\game\\tankmap.txt"))
+	if (!gameScene->LoadTxtMap("res\\map\\marioMap.txt"))
 	{
 		Util::myprintf(L"Load map failure!\n");
 		exit(1);
@@ -374,7 +371,7 @@ void MarioGame::LoadPlayer()
 	player_Info.SpeedY = 0;
 	player_Info.Alpha = 220;
 	player_Info.X = wnd_width / 5;
-	player_Info.Y = (wnd_height - player->GetHeight()) / 2;
+	player_Info.Y = 200;//(wnd_height - player->GetHeight()) / 2;
 	player_Info.Visible = true;
 	player->Initiate(player_Info);
 	player->SetSequence(sSequence, 10);
@@ -516,7 +513,7 @@ void MarioGame::LoadGameLevel(int level)
 	//LoadSound(m_hWnd);
 	//LoadImageRes();
 
-	//LoadMap();
+	LoadMap();
 	LoadPlayer();
 }
 
