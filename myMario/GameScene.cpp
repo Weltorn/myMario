@@ -152,7 +152,6 @@ bool GameScene::LoadTxtMap(const char* txtmap_path)
 }
 void  GameScene::update()
 {
-	//更新图层
 	
 	//更新障碍地图
 	if (pBarrier->IsVisible())
