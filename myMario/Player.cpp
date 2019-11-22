@@ -483,6 +483,12 @@ bool Player::checkOnplantForm(T_Map* map)
 		int row = (Y + GetRatioSize().cy - map->GetY()) / map->getTileHeight();
 		int startCol = (X - map->GetX()) / map->getTileWidth();
 		int endCol = (X + GetRatioSize().cx - map->GetX()) / map->getTileWidth();
+
+		if (row > map->getMapRows() || row < 0|| startCol<0|| endCol>map->getMapCols())
+		{
+			onPlantform = false;
+			return onPlantform;
+		}
 		for (int i = startCol; i <= endCol; i++)
 		{
 			if (map->getTile(i, row) != 0)
