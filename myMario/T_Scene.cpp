@@ -261,6 +261,15 @@ void T_Scene::ScrollScene(T_Sprite* player)
 	}
 }
 
+void T_Scene::ScrollScene(int speed)
+{
+
+	if (lastSceneX > SceneX || SceneX == 0)
+		MoveScene(speed, 0);
+	else
+		MoveScene(-speed, 0);
+
+}
 
 // ÃÌº”Õº≤„
 void T_Scene::Append(GAMELAYER gm_layer)

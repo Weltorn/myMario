@@ -135,3 +135,58 @@ void T_Util::GetBevelSpeed(IN POINT startPT, IN POINT destPT, IN int Speed,
 	if(startPT.x-destPT.x > 0) xRatio = -xRatio;
 	if(startPT.y-destPT.y > 0) yRatio = -yRatio;
 }
+
+// 循环的改变三原色
+// 给定三原色，将根据索引循环改变三原色中的数值，形成颜色逐渐改变的效果
+// red,green,blue用于为改变后的三原色
+// lastRed,lastGreen,lastBlue用于记录改变前的三原色
+void T_Util::ChangeRGB(double *red, double *green, double *blue, double *lastRed, double *lastGreen, double *lastBlue, int *changeIndex)
+{
+	switch (*changeIndex) {
+	case 0:
+		if (*red <= 10) {
+			*changeIndex = 1;
+			*green = 11;
+			*lastGreen = 10;
+		}
+		else if ((*lastRed < *red && *red <= 230)) {
+			*lastRed = *red;
+			*red += 0.4;
+		}
+		else if (*lastRed > *red || *red > 230) {
+			*lastRed = *red;
+			*red -= 0.4;
+		}
+		break;
+	case 1:
+		if (*green <= 10) {
+			*changeIndex = 2;
+			*blue = 11;
+			*lastBlue = 10;
+		}
+		else if ((*lastGreen < *green && *green <= 230)) {
+			*lastGreen = *green;
+			*green += 0.4;
+		}
+		else if (*lastGreen > *green || *green > 230) {
+			*lastGreen = *green;
+			*green -= 0.4;
+		}
+		break;
+	case 2:
+		if (*blue <= 10) {
+			*changeIndex = 0;
+			*red = 11;
+			*lastRed = 10;
+		}
+		else if ((*lastBlue < *blue && *blue <= 230)) {
+			*lastBlue = *blue;
+			*blue += 0.4;
+		}
+		else if (*lastBlue > *blue || *blue > 230) {
+			*lastBlue = *blue;
+			*blue -= 0.4;
+		}
+		break;
+	}
+}

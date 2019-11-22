@@ -154,12 +154,6 @@ bool GameScene::LoadTxtMap(const char* txtmap_path)
 }
 void  GameScene::update() 
 {
-	//更新场景图层
-	/*SCENE_LAYERS::iterator p;
-	for (p = sceneLayers.begin(); p != sceneLayers.end(); p++)
-	{
-		p->layer->update();
-	*/
 	
 	//更新障碍地图
 	if (pBarrier->IsVisible())
@@ -191,5 +185,5 @@ void  GameScene::update()
 		SortLayers();//对图层重新排序
 	}
 
-	ScrollScene(pPlayer);
+//	ScrollScene(pPlayer);
 }
