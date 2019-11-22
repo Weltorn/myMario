@@ -198,7 +198,7 @@ public:
 	virtual bool CollideWith(T_Sprite* target, int distance = 0)override { return false; }
 	// ¼ì²âµØÍ¼Åö×²
 	virtual bool CollideWith(IN T_Map* map)override;
-
 	GAME_DIR getCollideDir( RECT target);
+	bool checkOnplantForm(T_Map* map);
 };
 

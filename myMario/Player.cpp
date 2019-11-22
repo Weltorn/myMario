@@ -139,6 +139,14 @@ void Player::updatePosition()
 	{
 		return;
 	}	
+	if (checkOnplantForm(T_Scene::getBarrier()))
+	{
+		if (jumpStatus == -1)
+		{
+			resetJump();
+		}			
+		Util::myprintf(L" on plantform now!-----------------------------------------------------\n");
+	}
 	updatePositionX();
 	updatePositionY();
 	if (!CollideWith(T_Scene::getBarrier()))	//ÕÊº“”Î’œ∞≠≤„≈ˆ◊≤ºÏ≤‚
@@ -374,7 +382,6 @@ bool Player::CollideWith(IN T_Map* map)
 	int startCol = (spLeft <= mapLeft) ? 0 : (spLeft - mapLeft) / tW;
 	int endCol = (spRight < mapRight) ? (spRight - 1 - mapLeft) / tW : tNumCols - 1;
 
-	onPlantform = false;
 	COLLIDBLOCKS collideBlocks;
 	// ∏˘æ›Ω«…´æÿ–Œ…œ°¢œ¬°¢◊Û°¢”“µƒæÿ–Œ«¯”Ú≈–∂œƒƒ∏ˆæÿ–Œ«¯”ÚŒ™’œ∞≠
 	for (int row = startRow; row <= endRow; ++row)
@@ -407,7 +414,7 @@ bool Player::CollideWith(IN T_Map* map)
 					collideBlocks.push_back(block);
 					break;
 				case DIR_RIGHT:
-					x = map->GetX() + col*map->getTileWidth() - GetWidth();  //ΩÙøø’œ∞≠◊Û≤‡
+					x = map->GetX() + col*map->getTileWidth() - GetRatioSize().cx;  //ΩÙøø’œ∞≠◊Û≤‡
 					y = GetY();
 					speedX = 0;				
 					block = { col ,row ,DIR_LEFT };		//±£¥Ê∑¢…˙≈ˆ◊≤µƒµÿÕºøÈ–Ú¡–
@@ -423,7 +430,7 @@ bool Player::CollideWith(IN T_Map* map)
 					break;
 				case DIR_DOWN:
 					x = GetX();
-					y = map->GetY() + row*map->getTileHeight() - GetHeight();  //ΩÙøø’œ∞≠…œ≤‡
+					y = map->GetY() + row*map->getTileHeight() - GetRatioSize().cy;  //ΩÙøø’œ∞≠…œ≤‡
 					onPlantform = true;
 					resetJump();
 					block = { col ,row ,DIR_UP };		//±£¥Ê∑¢…˙≈ˆ◊≤µƒµÿÕºøÈ–Ú¡–
@@ -465,4 +472,26 @@ GAME_DIR Player::getCollideDir(RECT target)
 	}	
 	return DIR_NONE;
 }
-
+bool Player::checkOnplantForm(T_Map* map)
+{
+	if (jumpStatus == 0) {
+		onPlantform = false;
+		return onPlantform;
+	}
+	if ((Y + GetRatioSize().cy - map->GetY()) % map->getTileHeight() < 2)
+	{
+		int row = (Y + GetRatioSize().cy - map->GetY()) / map->getTileHeight();
+		int startCol = (X - map->GetX()) / map->getTileWidth();
+		int endCol = (X + GetRatioSize().cx - map->GetX()) / map->getTileWidth();
+		for (int i = startCol; i <= endCol; i++)
+		{
+			if (map->getTile(i, row) != 0)
+			{
+				onPlantform = true;
+				return onPlantform;
+			}
+		}
+	}
+	onPlantform = false;
+	return onPlantform;
+}
