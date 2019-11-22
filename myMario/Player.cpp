@@ -16,7 +16,7 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	X;
 	Y;
 	speedX = 0;
-	speedY = -1;
+	speedY = 0;
 
 	// ----- MOVE STATUS
 	bMove = false;		//是否水平移动状态
@@ -28,7 +28,7 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	isBooting = false;	//是否跳跃加速状态
 
 	// ----- MOVE--------------------------------------------------暂不确定，待初始化	
-	friction = 2.0;		//水平摩擦，控制惯性滑行距离
+	friction = 1.0;		//水平摩擦，控制惯性滑行距离
 	dir = DIR_RIGHT;		//初始化方向,向右
 
 	// ----- JUMP--------------------------------------------------暂不确定，待初始化
@@ -49,20 +49,25 @@ void Player::updatePositionX()
 	{
 		if (!bMove)		//水平静止或惯性滑行状态
 		{
-			if (bSlide && (currentMaxSpeedX - speedX)*50 + endTime <= GetTickCount()){		//惯性滑行状态，减速
-				speedX-=(int)friction;
+			if (bSlide && (currentMaxSpeedX - speedX)*100 + (int)(endTime*friction) <= (int)(GetTickCount()*friction))
+			{		//惯性滑行状态，减速
+				speedX-=1;
 			
-				if (speedX < 0)			//恢复水平静止
+				if (speedX <= 0)			//恢复水平静止
 				{
 					speedX = 0;
 					bSlide = false;
+					if (dirChanged) {
+						dirChanged = false;
+						dir = (dir == DIR_LEFT) ? DIR_LEFT : DIR_RIGHT;
+					}
 				}
 			}
 			
 		}
 		else if(bMove)
 		{
-			if ((100 + 50 * speedX) + startTime <= GetTickCount() && speedX < currentMaxSpeedX)		//加速过程,100ms后加速
+			if (( 150 * speedX) + startTime <= GetTickCount() && speedX < currentMaxSpeedX)		//加速过程,300ms后加速
 			{
 				++speedX;
 			}
@@ -179,7 +184,7 @@ void Player::startMove() {
 	startTime = GetTickCount();
 	endTime = GetTickCount();
 	currentMaxSpeedX = currentMode->maxMoveSpeedX;
-	speedX = currentMaxSpeedX;
+	speedX = 0;
 	bMove = true;
 }
 
@@ -201,7 +206,7 @@ void Player::resetSpeedup() {
 void Player::stopMove(bool immediately) {
 	endTime = GetTickCount();
 	
-	if (speedX <= 2||immediately)
+	if (speedX <= 3||immediately)
 	{
 		speedX = 0;
 		bMove = false;
@@ -275,7 +280,7 @@ void Player::Draw(HDC hdc) {
 	
 	if (!bMove && !bJump && !bSquat)
 	{
-		if (bSlide)		//急停帧
+		if (bSlide&&dirChanged)		//急停帧
 		{
 			frmIndex = currentMode->frameMode.speedDownFrame;
 		}
@@ -283,25 +288,29 @@ void Player::Draw(HDC hdc) {
 			frmIndex = currentMode->frameMode.stopFrame;
 		}
 	}
-	else if (currentMode->canSquat && bSquat)
+	if (currentMode->canSquat && bSquat)
 	{
 		frmIndex = currentMode->frameMode.squatHeight;
 	}	
-	else if (bMove && !bJump)
+	if ((bMove && !bJump)||(bSlide&&!dirChanged))
 	{
 		frmIndex = frameSequence[forward];		
 	}
-	else if (bJump)
+	if (bJump)
 	{
 		frmIndex = currentMode->frameMode.jumpFrame;
-	}		
+	}
+	if (bSquat)
+	{
+		frmIndex = currentMode->frameMode.squatFrame;
+	}
 
 
 	if (bSquat)
 	{
 		spImg.PaintRegion(spImg.GetBmpHandle(),hdc,X,Y,currentMode->frameMode.frameWidth *frmIndex, 
 			currentMode->frameMode.frameHeight - currentMode->frameMode.squatHeight,
-			currentMode->frameMode.frameHeight, currentMode->frameMode.squatHeight,frameRatio, frameRotate, frameAlpha);
+			currentMode->frameMode.frameWidth, currentMode->frameMode.squatHeight,frameRatio, frameRotate, frameAlpha);
 	}
 	else if (bJump)
 	{

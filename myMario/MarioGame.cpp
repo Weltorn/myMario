@@ -180,6 +180,9 @@ void MarioGame::GameKeyAction(int Action)
 							preA = true;
 						}
 					}
+					if (player->isSliding() && player->GetDir() == DIR_RIGHT) {
+						player->setDirChanged(true);
+					}
 				}
 				if (keys[VK_D])
 				{
@@ -190,10 +193,13 @@ void MarioGame::GameKeyAction(int Action)
 							preD = true;
 						}
 					}
+					if (player->isSliding() && player->GetDir() == DIR_LEFT) {
+						player->setDirChanged(true);
+					}
 				}
 				if (keys[VK_S])
 				{
-					if (!keys[VK_A] && !keys[VK_D] && !keys[VK_SPACE]) {
+					if (!keys[VK_A] && !keys[VK_D] && !keys[VK_SPACE]&&!player->isSliding()) {
 						if (!preS)
 						{
 							player->setSquat(true);
@@ -203,7 +209,7 @@ void MarioGame::GameKeyAction(int Action)
 				}
 				if (keys[VK_SHIFT])
 				{
-					if (keys[VK_A] || keys[VK_D]) {
+					if (keys[VK_A] || keys[VK_D]&&!player->isJump()) {
 						if (!preShift)
 						{
 							player->startSpeedup();
@@ -341,7 +347,7 @@ void MarioGame::LoadPlayer()
 	player_Info.Score = 0;
 	player_Info.SpeedX = 0;
 	player_Info.SpeedY = 0;
-	player_Info.Alpha = 220;
+	player_Info.Alpha = 255;
 	player_Info.X = wnd_width / 5;
 	player_Info.Y = 200;
 	player_Info.Visible = true;
@@ -390,7 +396,7 @@ void MarioGame::LoadPlayer()
 	player_mode.frameMode = player_frame;
 	player_mode.basicJumpSpeedY = 6;
 	player_mode.basicSpeedX = 0;
-	player_mode.canSquat = false;
+	player_mode.canSquat = true;
 	player_mode.maxBootTime = 1500;
 	player_mode.maxMoveSpeedX = 4;
 	player_mode.maxRunSpeedX = 6;

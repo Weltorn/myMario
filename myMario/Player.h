@@ -68,7 +68,8 @@ private:
 	bool bMove;		//水平移动状态
 	bool bSquat;	//下蹲状态
 	bool bJump;		//跳跃状态
-	bool bSlide;	//减速滑行状态 暂不使用
+	bool bSlide;	//减速滑行状态
+	bool dirChanged;//滑行状态改变方向
 
 	// -----JUMP STATUS
 	bool onPlantform;
@@ -180,6 +181,8 @@ public:
 	}
 
 	bool isSliding() { return bSlide; }
+	bool isDirChanged() { return dirChanged; }
+	void setDirChanged(bool dirchanged) { dirChanged = dirchanged; }
 	bool isOnPlantform() { return onPlantform; }
 	//是否加速状态（shift）
 	bool isSpeedUp() { return currentMaxSpeedX == currentMode->maxRunSpeedX; }
