@@ -264,7 +264,7 @@ void  Player::setPlayerMode(PLAYERSTATUS status)
 	frameSequence = currentMode->frameMode.runFrmSequence;
 	totalFrames = currentMode->frameMode.nRunFrames;			// 动画总帧数
 	loopForward = true;
-
+	
 	//恢复静止状态		
 	stopMove(true);
 	resetJump();
@@ -404,14 +404,14 @@ bool Player::CollideWith(IN T_Map* map)
 				switch (DIR)
 				{
 				case DIR_LEFT:
-					x = map->GetX() + (col + 1)*map->getTileWidth();	//紧靠障碍右侧
+					x = lastX;
 					y = GetY();
 					speedX = 0;					
 					block = { col ,row ,DIR_RIGHT};		//保存发生碰撞的地图块序列
 					collideBlocks.push_back(block);
 					break;
-				case DIR_RIGHT:
-					x = map->GetX() + col*map->getTileWidth() - GetRatioSize().cx;  //紧靠障碍左侧
+				case DIR_RIGHT:					
+					x = lastX;
 					y = GetY();
 					speedX = 0;				
 					block = { col ,row ,DIR_LEFT };		//保存发生碰撞的地图块序列
