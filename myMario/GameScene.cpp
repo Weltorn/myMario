@@ -185,5 +185,5 @@ void  GameScene::update()
 		SortLayers();//∂‘Õº≤„÷ÿ–¬≈≈–Ú
 	}
 
-	ScrollScene(pPlayer);
+//	ScrollScene(pPlayer);
 }

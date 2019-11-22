@@ -321,5 +321,5 @@ void T_Engine::StartEngine()
 			}
 		}
 	}
-	pEngine->GameEnd();  // 游戏结束处理
+//	pEngine->GameEnd();  // 游戏结束处理
 }

@@ -56,7 +56,7 @@ private:
 
 
 	//------------------与菜单相关的变量-----------------------------------
-	vector<T_Menu>	menus;						// 游戏菜单
+	T_Menu*	gameMenu;						// 游戏菜单
 	bool menuIsInit;							// 判断菜单是否初始化
 
 	//与 ABOUT_MENU 相关的变量
@@ -92,7 +92,7 @@ public:
 	//游戏对象加载
 	void LoadPlayer();								// 加载游戏玩家角色
 	void LoadMap();									// 加载游戏地图场景	
-	void LoadGameMenu(int gameStatus);					// 加载游戏菜单
+	void LoadGameMenu(int gameStatus);				// 加载游戏菜单
 
 	//音频播放，信息显示
 	void PlayGameSound();							// 管理游戏中各时间段背景声音播放

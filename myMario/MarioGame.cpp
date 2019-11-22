@@ -7,6 +7,9 @@ MarioGame::MarioGame(HINSTANCE h_instance, LPCTSTR sz_winclass, LPCTSTR sz_title
 {	
 	wnd_width = winwidth;
 	wnd_height = winheight;
+
+
+
 }
 
 // 类的析构函数
@@ -55,7 +58,7 @@ void MarioGame::GameLogic()
 					//加载复活点
 				}
 			}
-			//gameScene->ScrollScene(player);			//根据玩家位置，滚动场景
+			gameScene->ScrollScene(player);			//根据玩家位置，滚动场景
 			gameScene->update();						//更新地图、怪物、玩家状态
 			break;
 		}
@@ -79,53 +82,9 @@ void MarioGame::GameLogic()
 		{
 			
 			//背景颜色变换
-			switch (changeIndex) {
-			case 0:
-				if (red <= 10) {
-					changeIndex = 1;
-					green = 11;
-					lastGreen = 10;
-				}else if ((lastRed < red && red <= 230)) {
-					lastRed = red;
-					red += 0.4;
-				}
-				else if (lastRed > red || red > 230) {
-					lastRed = red;
-					red -= 0.4;
-				}
-				break;
-			case 1:
-				if (green <= 10) {
-					changeIndex = 2;
-					blue = 11;
-					lastBlue = 10;
-				}else if ((lastGreen < green && green <= 230)) {
-					lastGreen = green;
-					green += 0.4;
-				}
-				else if (lastGreen > green || green > 230) {
-					lastGreen = green;
-					green -= 0.4;
-				}
-				break;
-			case 2:
-				if (blue <= 10) {
-					changeIndex = 0;
-					red = 11;
-					lastRed = 10;
-				}else if ((lastBlue < blue && blue <= 230)) {
-					lastBlue = blue;
-					blue += 0.4;
-				}
-				else if (lastBlue > blue || blue > 230) {
-					lastBlue = blue;
-					blue -= 0.4;
-				}
-				break;
-			}
-		
+			T_Util::ChangeRGB(&red,&green,&blue,&lastRed,&lastBlue,&lastGreen,&changeIndex);
 			// 坐标处理
-			gameScene->ScrollScene(-1);
+			gameScene->ScrollScene(-3);
 			break;
 		}
 	}
@@ -140,15 +99,16 @@ void MarioGame::GamePaint(HDC hdc)
 	case GAME_START:		//游戏开始菜单
 	{
 		//gameScene->Draw(hdc);
-		//DisplayInfo(hdc);		//显示顶部游戏状态信息
-		//gameMenu->DrawMenu(hdc);
+	//	DisplayInfo(hdc);		//显示顶部游戏状态信息
+		gameMenu->DrawMenu(hdc);
 		break;
 	}
 	case GAME_RUN:			//游戏进行时界面
 	{
-		//DisplayInfo(hdc);		//显示顶部游戏状态信息
 		T_Graph::PaintBlank(hdc,0,0,wnd_width,wnd_height,RGB(100,200,200),255);
 		gameScene->Draw(hdc);
+		DisplayInfo(hdc);		//显示顶部游戏状态信息
+
 		break;
 	}
 	case GAME_PAUSE:		//暂停游戏界面
@@ -178,9 +138,9 @@ void MarioGame::GamePaint(HDC hdc)
 	case GAME_ABOUT:		//游戏制作信息界面
 	{
 		T_Graph::PaintBlank(hdc,0,0,wnd_width,wnd_height,RGB(ROUND(red),ROUND(green),ROUND(blue)),255);
-		//显示加载界面
 		gameScene->Draw(hdc);
 		DisplayInfo(hdc);
+	//	gameMenu->DrawMenu(hdc);
 		break;
 	}
 	}
@@ -490,20 +450,55 @@ void MarioGame::LoadPlayer()
 // 加载游戏菜单
 void MarioGame::LoadGameMenu(int type)
 {
-//	if (gameMenu == NULL) gameMenu = new T_Menu();
-//	delete gameMenu;
+	if (!gameMenu) delete gameMenu;
+	gameMenu = new T_Menu();
 
 //	gameMenu->SetMenuIndex(-1);
 	if (menuIsInit)	return;
-	int btnwidth = 200, btnheight = 80;
+	MENU_INFO menuInfo;
+	Color normalClr, focusClr;
+	int btnWidth = 200, btnHeight = 80;
 	if (type == GAME_START)
 	{
 
 	}
 	else if (type == GAME_ABOUT) {
+
+		// 菜单初始化
+	//	wstring mainMenuItems[] = { L"MAIN MENU" };
+	//	gameMenu->SetMenuBkg(L".\\res\\menubck.png", 180);
+
+	//	//长条形按钮菜单项
+	//	normalClr = Color::Red;
+	//	focusClr = Color::White;
+	//	gameMenu->SetBtnBmp(NULL, btnWidth, btnHeight);
+
+	//	//设置菜单信息
+	//	menuInfo.align = 1;
+	//	menuInfo.space = MENU_SPACE;
+	//	menuInfo.width = btnWidth;
+	//	menuInfo.height = btnHeight;
+	//	menuInfo.fontName = L"黑体";
+	//	menuInfo.isBold = true;
+	//	menuInfo.normalTextColor = normalClr;
+	//	menuInfo.focusTextColor = focusClr;
+	//	gameMenu->SetMenuInfo(menuInfo);
+
+	////	for (int i = 0; i < 3; i++) {
+	//		//垂直布局的坐标
+	////		x = (wndWidth - btn_width) / 4;
+	////		y = i*(btn_height + MENU_SPACE) + (wnd_height - 3 * btn_height - 3 * MENU_SPACE) / 2;
+	//		MENUITEM mItem;
+	//		mItem.pos.x = 500;
+	//		mItem.pos.y = 500;
+	//		mItem.ItemName = mainMenuItems[0];
+	//		gameMenu->AddMenuItem(mItem);
+
+	//	}
+		// 与场景相关的变量
 		red = green = blue = 11;
 		gameScene->SetScenePos(-1, 0);	//场景重新定位
-		changeIndex;
+		changeIndex = 0;
 		menuIsInit = true;
 	}
 }
@@ -586,14 +581,62 @@ void MarioGame::ClearGameLevel()
 // 根据游戏状态，显示信息
 void MarioGame::DisplayInfo(HDC hdc)
 {
-	int FontHeight = 0;//字号
-	Gdiplus::RectF rect;
-	wstring Content = L"";
+	int FontHeight = 16;	 // 字号
+	LPCTSTR fontName = L"Comic Sans Ms"; // 字体
+	RectF textRect;			 // 文字域
+	vector<LPCTSTR> content; // 文字内容
+
 	switch (GameState)
 	{
 	case GAME_START:
 		break;
 	case GAME_RUN:
+
+		FontHeight = 16;
+		textRect.X = wnd_width / 12;
+		textRect.Y = 0;
+		textRect.Width = (float)wnd_width/8;
+		textRect.Height = (float)wnd_height / 12;
+
+		content.push_back(L"MARIO");
+		content.push_back(L" ");	
+		content.push_back(L"WORLD");	
+		content.push_back(L"TIME");
+
+
+		content.push_back(L"test");
+	//	content.push_back(T_Util::int_to_wstring(00));
+	//	content.push_back(T_Util::int_to_wstring(400));
+	//	content.push_back(T_Util::int_to_wstring(400));
+		
+
+		for (int i = 0; i < 4; i++)
+		{
+			T_Graph::PaintText(hdc, textRect, content[i], FontHeight, fontName,
+				Color::White, FontStyleBold, StringAlignmentNear);
+			textRect.X += wnd_width / 4;
+		}	
+
+		textRect.Y = (float)wnd_height / 12;
+		T_Graph::PaintText(hdc, textRect, content[4], FontHeight, fontName,
+			Color::White, FontStyleBold, StringAlignmentNear);
+	/*	for (int i = 4; i < 5; i++)
+		{
+			T_Graph::PaintText(hdc, textRect, content[i], FontHeight, fontName,
+				Color::White, FontStyleBold, StringAlignmentNear);
+			textRect.X += wnd_width / 4;
+		}*/
+
+	/*	for (int i = 0; i < content.size(); i++)
+		{
+			T_Graph::PaintText(hdc, textRect, content[i], FontHeight, fontName,
+				Color::White, FontStyleBold, StringAlignmentNear);
+			textRect.X += wnd_width/4;
+			if (i == 4)	textRect.Y += wnd_height / 12;
+
+		}*/
+
+
 		break;
 	case GAME_OVER:
 		break;
@@ -605,6 +648,27 @@ void MarioGame::DisplayInfo(HDC hdc)
 		break;
 	case GAME_ABOUT:
 
+	//	fontName = L"Comic Sans Ms";
+
+		textRect.X = wnd_width/5;
+		textRect.Y = wnd_height/6;
+		textRect.Width = (float)wnd_width;
+		textRect.Height = (float)wnd_height / 4;
+
+		content.push_back(L"MARIO V1.0  - C++ ");
+		content.push_back(L" ");
+		content.push_back(L"AUTHOR: Weidong Chen 8002117021");
+		content.push_back(L"            Jinzhou  Luo   8002117017");
+		content.push_back(L"ADVISER: Lizhong Wan");
+		content.push_back(L" ");
+		content.push_back(L"NOV 2019");
+
+		for (int i = 0; i < content.size(); i++)
+		{
+			T_Graph::PaintText(hdc, textRect, content[i], FontHeight, fontName,
+				Color::White, FontStyleBold, StringAlignmentNear);
+			textRect.Y += 25;
+		}
 		break;
 	}
 }
