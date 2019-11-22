@@ -149,10 +149,7 @@ void Player::updatePosition()
 	}
 	updatePositionX();
 	updatePositionY();
-	if (!CollideWith(T_Scene::getBarrier()))	//Íæ¼ÒÓëÕÏ°­²ãÅö×²¼ì²â
-	{
-		onPlantform = false;
-	}
+	CollideWith(T_Scene::getBarrier());	//Íæ¼ÒÓëÕÏ°­²ãÅö×²¼ì²â
 }
 //¸üĞÂÖ¡Í¼
 void Player::updateFrame()

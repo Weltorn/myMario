@@ -213,7 +213,7 @@ void MarioGame::GameKeyAction(int Action)
 				}
 				if (keys[VK_SPACE])
 				{
-					if (!player->getSquat()&& !player->isJump()&&!preSpace)
+					if (!player->getSquat()&& !player->isJump()&&!preSpace&&player->isOnPlantform())
 					{
 						player->startJump();
 						preSpace = true;
