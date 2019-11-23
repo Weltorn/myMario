@@ -247,12 +247,14 @@ void MarioGame::GameKeyAction(int Action)
 						}
 					}
 				}
-				if (keys[VK_SPACE])
+				if (keys[VK_L])
 				{
-					if (!player->getSquat()&& !player->isJump()&&!preSpace&&player->isOnPlantform())
+					Util::myprintf(L"Squat: %d,isJump: %d,preSpace: %d,isOnPlantform: %d\n",
+						player->getSquat() , player->isJump() , preL, player->isOnPlantform());
+					if (!player->getSquat()&& !player->isJump()&&!preL&&player->isOnPlantform())
 					{
 						player->startJump();
-						preSpace = true;
+						preL = true;
 					}
 				}
 			}
@@ -288,9 +290,9 @@ void MarioGame::GameKeyAction(int Action)
 							player->resetSpeedup();
 						}
 					}
-					if (!keys[VK_SPACE])
+					if (!keys[VK_L])
 					{
-						preSpace = false;
+						preL = false;
 						if (player->getBooting())
 						{
 							player->stopBooting();		//йм╥е╪Эё╛мёж╧╪скы

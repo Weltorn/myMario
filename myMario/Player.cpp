@@ -44,8 +44,6 @@ Player::~Player()
 void Player::updatePositionX()
 {
 	Util::myprintf(L"current speedx: %d\n", speedX);
-	if(bSlide)
-		Util::myprintf(L"current speedx: %d\n");
 
 	if (!bSquat)		//非下蹲状态下可水平移动
 	{
@@ -266,6 +264,11 @@ void Player::stopMove(bool immediately) {
 			{			
 				bMove = false;
 				bSlide = true;
+			}
+			else
+			{
+				bMove = false;
+				speedX = 0;
 			}
 		}
 	}
