@@ -158,6 +158,7 @@ void Player::updatePosition()
 //更新帧图
 void Player::updateFrame()
 {
+	//朝向控制
 	if (dir == DIR_LEFT)
 	{
 		frameRotate = TRANS_HFLIP_NOROT;
@@ -167,8 +168,34 @@ void Player::updateFrame()
 		frameRotate = TRANS_NONE;
 	}
 
-
-	LoopFrame();
+	//帧图选择
+	if (!bMove && !bJump && !bSquat)
+	{
+		if (bSlide&&dirChanged)		//急停帧
+		{
+			currentFrmIndex = currentMode->frameMode.speedDownFrame;
+		}
+		else {					//静止帧
+			currentFrmIndex = currentMode->frameMode.stopFrame;
+		}
+	}
+	if (currentMode->canSquat && bSquat)
+	{
+		currentFrmIndex = currentMode->frameMode.squatHeight;
+	}
+	if ((bMove && !bJump) || (bSlide && !dirChanged))
+	{
+		LoopFrame();
+		currentFrmIndex = frameSequence[forward];
+	}
+	if (bJump)
+	{
+		currentFrmIndex = currentMode->frameMode.jumpFrame;
+	}
+	if (bSquat)
+	{
+		currentFrmIndex = currentMode->frameMode.squatFrame;
+	}	
 }
 void Player::update()
 {
@@ -256,9 +283,13 @@ void  Player::setPlayerMode(PLAYERSTATUS status)
 		break;
 	}	
 	}
+
+	//更新T_Sprite属性
 	SetImage(&(currentMode->frameMode.img));
 	SetWidth(currentMode->frameMode.frameWidth);
 	SetHeight(currentMode->frameMode.frameHeight);
+	colideWidth = GetRatioSize().cx;
+	colideHeight = GetRatioSize().cy;
 
 	frameCols = currentMode->frameMode.img.GetImageWidth() / GetWidth();		// 动画帧图片总列数
 	frameRows = currentMode->frameMode.img.GetImageHeight() / GetHeight();		// 动画帧图片总行数
@@ -277,51 +308,22 @@ void  Player::setPlayerMode(PLAYERSTATUS status)
 	setSquat(false);
 }
 void Player::Draw(HDC hdc) {
-	int frmIndex = -1;
 	
-	if (!bMove && !bJump && !bSquat)
-	{
-		if (bSlide&&dirChanged)		//急停帧
-		{
-			frmIndex = currentMode->frameMode.speedDownFrame;
-		}
-		else {					//静止帧
-			frmIndex = currentMode->frameMode.stopFrame;
-		}
-	}
-	if (currentMode->canSquat && bSquat)
-	{
-		frmIndex = currentMode->frameMode.squatHeight;
-	}	
-	if ((bMove && !bJump)||(bSlide&&!dirChanged))
-	{
-		frmIndex = frameSequence[forward];		
-	}
-	if (bJump)
-	{
-		frmIndex = currentMode->frameMode.jumpFrame;
-	}
 	if (bSquat)
 	{
-		frmIndex = currentMode->frameMode.squatFrame;
-	}
-
-
-	if (bSquat)
-	{
-		spImg.PaintRegion(spImg.GetBmpHandle(),hdc,X,Y,currentMode->frameMode.frameWidth *frmIndex, 
+		spImg.PaintRegion(spImg.GetBmpHandle(),hdc,X,Y,currentMode->frameMode.frameWidth *currentFrmIndex,
 			currentMode->frameMode.frameHeight - currentMode->frameMode.squatHeight,
 			currentMode->frameMode.frameWidth, currentMode->frameMode.squatHeight,frameRatio, frameRotate, frameAlpha);
 	}
 	else if (bJump)
 	{
-		spImg.PaintRegion(spImg.GetBmpHandle(), hdc, X, Y, Width*frmIndex, 0, Width, Height,
+		spImg.PaintRegion(spImg.GetBmpHandle(), hdc, X, Y, Width*currentFrmIndex, 0, Width, Height,
 			frameRatio, frameRotate, frameAlpha);
 	}
 	else
 	{
 		spImg.PaintFrame(
-			spImg.GetBmpHandle(), hdc, (int)X, (int)Y, frmIndex,
+			spImg.GetBmpHandle(), hdc, (int)X, (int)Y, currentFrmIndex,
 			frameCols, Width, Height, frameRatio, frameRotate, frameAlpha
 		);
 	}
@@ -423,14 +425,16 @@ bool Player::CollideWith(IN T_Map* map)
 				switch (DIR)
 				{
 				case DIR_LEFT:
-					x = lastX;
+					//x = lastX;
+					x = map->GetX() + (col+1)*map->getTileWidth();
 					y = GetY();
 					speedX = 0;					
 					block = { col ,row ,DIR_RIGHT};		//保存发生碰撞的地图块序列
 					collideBlocks.push_back(block);
 					break;
 				case DIR_RIGHT:					
-					x = lastX;
+					//x = lastX;
+					x = map->GetX() + col*map->getTileWidth()-GetRatioSize().cx;
 					y = GetY();
 					speedX = 0;				
 					block = { col ,row ,DIR_LEFT };		//保存发生碰撞的地图块序列
@@ -470,6 +474,7 @@ GAME_DIR Player::getCollideDir(RECT target)
 	oldRect.top = this->GetCollideRect()->top -(Y-lastY);
 	oldRect.bottom = this->GetCollideRect()->bottom - (Y - lastY);
 	
+	Util::myprintf(L" lastposX: %d,posX: %d\n,target.right: %d\n", oldRect.right, this->GetCollideRect()->right, target.left);
 	if (oldRect.left >= target.right && this->GetCollideRect()->left <= target.right)
 	{
 		return DIR_LEFT;
@@ -498,8 +503,8 @@ bool Player::checkOnplantForm(T_Map* map)
 	{
 		//玩家下方的地图块
 		int row = (Y + GetRatioSize().cy - map->GetY()) / map->getTileHeight();		
-		int startCol = (X - map->GetX()) / map->getTileWidth();
-		int endCol = (X + GetRatioSize().cx - map->GetX()) / map->getTileWidth();
+		int startCol = (X - map->GetX()+1) / map->getTileWidth();
+		int endCol = (X + GetRatioSize().cx - map->GetX()-1) / map->getTileWidth();
 
 		//是否超出地图范围
 		if (row > map->getMapRows()-1 || row < 0|| startCol<0|| endCol>map->getMapCols()-1)

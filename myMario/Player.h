@@ -58,6 +58,7 @@ private:
 	int eventId;					//变大、变小、死亡
 	PLAYERSTATUS playerStatus;		//角色展示状态
 	bool starStatus;				//是否无敌（星星）状态
+	int currentFrmIndex;
 		
 	//PLAYER MODE
 	PLAYERMODE* currentMode;
