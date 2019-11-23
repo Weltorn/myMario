@@ -193,15 +193,20 @@ public:
 	
 	//根据根据玩家状态信息，更新位置、帧图，检测地图碰撞
 	virtual void update();
-
+	//设置玩家模式（普通、吃了红色蘑菇、吃了绿色蘑菇）
 	void setPlayerMode(PLAYERSTATUS status);
+
+	//玩家绘制方法
 	virtual void Draw(HDC hdc);
 
 	// 检测角色碰撞, distance检测碰撞的距离
 	virtual bool CollideWith(T_Sprite* target, int distance = 0)override { return false; }
 	// 检测地图碰撞
 	virtual bool CollideWith(IN T_Map* map)override;
+
+	// 判断玩家与目标矩形的碰撞方向（相对于玩家的方向）
 	GAME_DIR getCollideDir( RECT target);
+	// 检查玩家是否站在支持物上
 	bool checkOnplantForm(T_Map* map);
 };
 

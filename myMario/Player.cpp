@@ -12,7 +12,7 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	playerStatus = PLAYER_NONE;		//角色模式
 	starStatus = false;					//是否无敌（星星）状态
 	
-	//------------------------------------------------------------初始化位置，暂不确定
+	// ---初始化位置
 	X;
 	Y;
 	speedX = 0;
@@ -27,11 +27,10 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	jumpStatus =-1;		//跳跃状态0：上升，1：下降
 	isBooting = false;	//是否跳跃加速状态
 
-	// ----- MOVE--------------------------------------------------暂不确定，待初始化	
+	// ----- MOVE
 	friction = 1.0;		//水平摩擦，控制惯性滑行距离
-	dir = DIR_RIGHT;		//初始化方向,向右
 
-	// ----- JUMP--------------------------------------------------暂不确定，待初始化
+	// ----- JUMP
 	gravity = 6;				//基础重力加速度
 	timer = GetTickCount();
 	
@@ -67,7 +66,7 @@ void Player::updatePositionX()
 		}
 		else if(bMove)
 		{
-			if (( 150 * speedX) + startTime <= GetTickCount() && speedX < currentMaxSpeedX)		//加速过程,300ms后加速
+			if (( 150 * speedX) + startTime <= GetTickCount() && speedX < currentMaxSpeedX)		//加速过程,每150ms后加速
 			{
 				++speedX;
 			}
@@ -167,6 +166,8 @@ void Player::updateFrame()
 	{
 		frameRotate = TRANS_NONE;
 	}
+
+
 	LoopFrame();
 }
 void Player::update()
@@ -351,6 +352,15 @@ bool Player::CollideWith(IN T_Map* map)
 	int mapRight = mapLeft + map->GetWidth();
 	int mapBottom = mapTop + map->GetHeight();
 
+	//地图左右边界碰撞
+	if (this->X <= mapLeft)
+	{
+		this->X = mapLeft;
+	}
+	if (this->X+this->GetRatioSize().cx >= mapRight)
+	{
+		this->X = mapRight - this->GetRatioSize().cx-1;
+	}
 	// 获得地图图层中使用的图块的宽高
 	int tW = map->getTileWidth();
 	int tH = map->getTileHeight();
@@ -486,15 +496,18 @@ bool Player::checkOnplantForm(T_Map* map)
 	}
 	if ((Y + GetRatioSize().cy - map->GetY()) % map->getTileHeight() < 2)
 	{
-		int row = (Y + GetRatioSize().cy - map->GetY()) / map->getTileHeight();
+		//玩家下方的地图块
+		int row = (Y + GetRatioSize().cy - map->GetY()) / map->getTileHeight();		
 		int startCol = (X - map->GetX()) / map->getTileWidth();
 		int endCol = (X + GetRatioSize().cx - map->GetX()) / map->getTileWidth();
 
-		if (row > map->getMapRows() || row < 0|| startCol<0|| endCol>map->getMapCols())
+		//是否超出地图范围
+		if (row > map->getMapRows()-1 || row < 0|| startCol<0|| endCol>map->getMapCols()-1)
 		{
 			onPlantform = false;
 			return onPlantform;
 		}
+		//检查玩家下方的地图块
 		for (int i = startCol; i <= endCol; i++)
 		{
 			if (map->getTile(i, row) != 0)
