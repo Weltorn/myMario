@@ -32,7 +32,7 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 
 	// ----- JUMP
 	gravity = 6;				//基础重力加速度
-	timer = GetTickCount();
+	jumpTimer = GetTickCount();
 	
 }
 
@@ -44,11 +44,14 @@ Player::~Player()
 void Player::updatePositionX()
 {
 	Util::myprintf(L"current speedx: %d\n", speedX);
+	if(bSlide)
+		Util::myprintf(L"current speedx: %d\n");
+
 	if (!bSquat)		//非下蹲状态下可水平移动
 	{
 		if (!bMove)		//水平静止或惯性滑行状态
 		{
-			if (onPlantform && bSlide && (currentMaxSpeedX - speedX)*100 + (int)(endTime*friction) <= (int)(GetTickCount()*friction))
+			if (onPlantform && bSlide && (currentMaxSpeedX - speedX)*100 + (int)(moveTimer*friction) <= (int)(GetTickCount()*friction))
 			{
 				//惯性滑行状态，减速(空中不减速)				
 				speedX -= 1;		
@@ -63,14 +66,14 @@ void Player::updatePositionX()
 					}
 				}
 			}
-			if (!onPlantform && bSlide && (currentMaxSpeedX - speedX) * 100 + (int)(endTime*friction) <= (int)(GetTickCount()*friction))
+			if (!onPlantform && bSlide && (currentMaxSpeedX - speedX) * 100 + (int)(moveTimer*friction) <= (int)(GetTickCount()*friction))
 			{
 				
 			}
 		}
 		else if(bMove)
 		{
-			if (( 150 * speedX) + startTime <= GetTickCount() && speedX < currentMaxSpeedX)		//加速过程,每150ms后加速
+			if (( 150 * speedX) + moveTimer <= GetTickCount() && speedX < currentMaxSpeedX)		//加速过程,每150ms后加速
 			{
 				++speedX;
 			}
@@ -93,16 +96,17 @@ void Player::updatePositionY()
 	gravityEffect();		//重力作用
 	lastY = Y;
 	Y = Y - speedY;
-
+	
 }
 //开始跳跃
 void Player::startJump()
 {
-	timer = GetTickCount();		//记录起跳时间，用于控制加速时间(isBooting)
+	jumpTimer = GetTickCount();		//记录起跳时间，用于控制加速时间(isBooting)
 	onPlantform = false;
 	bJump = true;		//设置跳跃状态
 	jumpStatus = 0;		//设置为上升阶段
 	isBooting = true;
+	startHeight = GetY();	//设置跳跃起始高度
 	speedY = currentMode->basicJumpSpeedY;	//设置跳跃初始速度
 }
 //落地
@@ -125,9 +129,13 @@ void  Player::gravityEffect()
 	else if (jumpStatus == 1)			//跳跃的下落阶段
 	{
 		currentGravity = gravity*0.8f;	//重力增大，加快下落
-	}		
-	
-		if (!onPlantform && (GetTickCount() - timer)* currentGravity / 500 >currentMode->basicJumpSpeedY- abs(speedY) )
+	}	
+	/*if (speedY <= -12)
+	{
+		currentGravity = 0.0;
+	}
+	*/
+		if (!onPlantform && (GetTickCount() - jumpTimer)* currentGravity / 500 >currentMode->basicJumpSpeedY- abs(speedY) )
 		{
 			speedY -= 1;	//四舍五入
 		}
@@ -135,6 +143,7 @@ void  Player::gravityEffect()
 		{
 			jumpStatus = 1;
 		}
+		
 	Util::myprintf(L"current SpeedY: %d\n", speedY);
 	
 }
@@ -197,7 +206,7 @@ void Player::updateFrame()
 }
 void Player::update()
 {
-	if (isBooting && timer +currentMode->maxBootTime <= GetTickCount())	//跳跃加速时间结束
+	if (isBooting && jumpTimer +currentMode->maxBootTime <= GetTickCount())	//跳跃加速时间结束
 	{
 		isBooting = false;
 	}
@@ -207,8 +216,8 @@ void Player::update()
 
 //设置正常移动状态，初速度和速度上限
 void Player::startMove() {
-	startTime = GetTickCount();
-	endTime = GetTickCount();
+	moveTimer = GetTickCount();
+
 	currentMaxSpeedX = currentMode->maxMoveSpeedX;
 	speedX = 0;
 	bMove = true;
@@ -230,18 +239,37 @@ void Player::resetSpeedup() {
 }
 //停止水平移动
 void Player::stopMove(bool immediately) {
-	endTime = GetTickCount();
-	
-	if ((speedX <= 3||immediately)&&!bJump)
+	moveTimer = GetTickCount();
+	if (immediately)
 	{
 		speedX = 0;
 		bMove = false;
 	}
 	else
 	{
-		bMove = false;
-		bSlide = true;
+		if (!bJump)
+		{
+			if (speedX <= 3)
+			{
+				speedX = 0;
+				bMove = false;
+			}
+			else
+			{
+				bMove = false;
+				bSlide = true;
+			}
+		}
+		else
+		{
+			if (speedX > 0)
+			{			
+				bMove = false;
+				bSlide = true;
+			}
+		}
 	}
+	
 }
 
 void Player::initBigRedMode(PLAYERMODE* bigRedMode)
@@ -423,7 +451,6 @@ bool Player::CollideWith(IN T_Map* map)
 				switch (DIR)
 				{
 				case DIR_LEFT:
-					//x = lastX;
 					x = map->GetX() + (col+1)*map->getTileWidth();
 					y = GetY();
 					speedX = 0;					
@@ -431,7 +458,6 @@ bool Player::CollideWith(IN T_Map* map)
 					collideBlocks.push_back(block);
 					break;
 				case DIR_RIGHT:					
-					//x = lastX;
 					x = map->GetX() + col*map->getTileWidth()-GetRatioSize().cx;
 					y = GetY();
 					speedX = 0;				
@@ -441,7 +467,7 @@ bool Player::CollideWith(IN T_Map* map)
 				case DIR_UP:
 					x = GetX();
 					y = map->GetY()+(row + 1)*map->getTileHeight();		//紧靠障碍下侧
-					speedY = -speedY;
+					speedY = -abs(speedY);
 					block = { col ,row ,DIR_DOWN };	
 					//保存发生碰撞的地图块序列
 					collideBlocks.push_back(block);

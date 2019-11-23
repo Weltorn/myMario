@@ -239,7 +239,7 @@ void MarioGame::GameKeyAction(int Action)
 				}
 				if (keys[VK_SHIFT])
 				{
-					if (keys[VK_A] || keys[VK_D]&&!player->isJump()) {
+					if ((keys[VK_A] || keys[VK_D])&&!player->isJump()) {
 						if (!preShift)
 						{
 							player->startSpeedup();
@@ -400,7 +400,7 @@ void MarioGame::LoadPlayer()
 	player_frame.stopFrame = 0;
 
 	player_mode.frameMode = player_frame;
-	player_mode.basicJumpSpeedY = 6;
+	player_mode.basicJumpSpeedY = 8;
 	player_mode.basicSpeedX = 0;
 	player_mode.canSquat = false;
 	player_mode.maxBootTime = 1500;
@@ -424,7 +424,7 @@ void MarioGame::LoadPlayer()
 	player_frame.stopFrame = 0;
 
 	player_mode.frameMode = player_frame;
-	player_mode.basicJumpSpeedY = 6;
+	player_mode.basicJumpSpeedY = 8;
 	player_mode.basicSpeedX = 0;
 	player_mode.canSquat = true;
 	player_mode.maxBootTime = 1500;

@@ -74,14 +74,16 @@ private:
 
 	// -----JUMP STATUS
 	bool onPlantform;
-	int jumpStatus;	//跳跃状态0：上升，1：下降
-	bool isBooting;	//是否跳跃加速状态
-	unsigned timer;		//计时器
+	int jumpStatus;		//跳跃状态0：上升，1：下降
+	bool isBooting;		//是否跳跃加速状态
+	int startHeight;	//跳跃起始高度
+	unsigned jumpTimer;		//计时器
 		
 	// ----- MOVE	
 	int currentMaxSpeedX;
 	float friction;		//水平摩擦，控制惯性滑行距离	
 	float gravity;			//基础重力加速度
+	unsigned moveTimer;		//计时器
 
 	// ----- COLLISION
 	int lastX;			//上一次打印位置横坐标
@@ -94,26 +96,6 @@ public:
 
 	void setLifeCount(int lifeCount) { this->lifeCount = lifeCount; }
 	int  getLifeCount() { return lifeCount; }
-
-	// ----- PLAYER MODE getter
-	//PLAYER FRAME
-	//T_Graph* getFrameImg(){ return &(currentMode->frameMode->img); }
-	//int getFrameHeight() { return currentMode->frameMode->frameHeight; }
-	//int getFrameWidth() { return currentMode->frameMode->frameWidth; }
-	//int getSquatHeight() { return currentMode->frameMode->squatHeight; }
-	//int* getRunFrmSequence() { return currentMode->frameMode->runFrmSequence; }
-	//int getNRunFrames() { return currentMode->frameMode->nRunFrames; }
-	//int getStopFrame() { return currentMode->frameMode->stopFrame; }
-	//int getSpeedDownFrame() { return currentMode->frameMode->speedDownFrame; }
-	//int getSquatFrame() { return currentMode->frameMode->speedDownFrame; }
-	//int getJumpFrame() { return currentMode->frameMode->speedDownFrame; }
-
-	////PLAYER ABILITY getter
-	//int getMaxMoveSpeedX() { return currentMode->maxMoveSpeedX; }
-	//int getMaxRunSpeedX() { return currentMode->maxRunSpeedX; }
-	//int getBasicSpeedX() { return currentMode->basicSpeedX; }
-	//int getBasicJumpSpeedY() { return currentMode->basicJumpSpeedY; }
-	//int getMaxBootTime() { return currentMode->maxBootTime; }
 
 
 	//PLAYER FRAME
