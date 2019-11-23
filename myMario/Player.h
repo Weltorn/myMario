@@ -135,8 +135,7 @@ public:
 	void gravityEffect();
 
 
-	void updatePositionY();			//竖直移动
-	void updatePositionX();			//水平移动
+	
 	//垂直加速状态设置
 	bool getBooting() { return isBooting; }
 	void stopBooting()
@@ -189,6 +188,8 @@ public:
 	bool isSpeedUp() { return currentMaxSpeedX == currentMode->maxRunSpeedX; }
 	//更新玩家坐标
 	void updatePosition();
+	void updatePositionY();			//竖直移动
+	void updatePositionX();			//水平移动
 	//更新帧图
 	void updateFrame();
 	

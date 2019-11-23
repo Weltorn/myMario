@@ -48,21 +48,25 @@ void Player::updatePositionX()
 	{
 		if (!bMove)		//水平静止或惯性滑行状态
 		{
-			if (bSlide && (currentMaxSpeedX - speedX)*100 + (int)(endTime*friction) <= (int)(GetTickCount()*friction))
-			{		//惯性滑行状态，减速
-				speedX-=1;
-			
+			if (onPlantform && bSlide && (currentMaxSpeedX - speedX)*100 + (int)(endTime*friction) <= (int)(GetTickCount()*friction))
+			{
+				//惯性滑行状态，减速(空中不减速)				
+				speedX -= 1;		
 				if (speedX <= 0)			//恢复水平静止
 				{
 					speedX = 0;
 					bSlide = false;
+					//若滑行期间尝试改变方向，此时修改方向
 					if (dirChanged) {
 						dirChanged = false;
 						dir = (dir == DIR_LEFT) ? DIR_LEFT : DIR_RIGHT;
 					}
 				}
 			}
-			
+			if (!onPlantform && bSlide && (currentMaxSpeedX - speedX) * 100 + (int)(endTime*friction) <= (int)(GetTickCount()*friction))
+			{
+				
+			}
 		}
 		else if(bMove)
 		{
@@ -103,13 +107,11 @@ void Player::startJump()
 }
 //落地
 void Player::resetJump()
-{
+{	
 	bJump = false;			//设置跳跃状态
 	jumpStatus = -1;		//非跳跃状态
 	speedY = 0;				//设置竖直速度置零
-	isBooting = false;		//加速状态结束
-
-	//stopMove(false);	//水平静止,有惯性
+	isBooting = false;		//加速状态结束		
 }
 //重力作用
 void  Player::gravityEffect()
@@ -145,7 +147,7 @@ void Player::updatePosition()
 	}	
 	if (checkOnplantForm(T_Scene::getBarrier()))
 	{
-		if (jumpStatus == -1)
+		if (jumpStatus == 1)	//如果为下落状态则解除跳跃状态
 		{
 			resetJump();
 		}			
@@ -181,7 +183,7 @@ void Player::updateFrame()
 	}
 	if (currentMode->canSquat && bSquat)
 	{
-		currentFrmIndex = currentMode->frameMode.squatHeight;
+		currentFrmIndex = currentMode->frameMode.squatFrame;
 	}
 	if ((bMove && !bJump) || (bSlide && !dirChanged))
 	{
@@ -191,10 +193,6 @@ void Player::updateFrame()
 	if (bJump)
 	{
 		currentFrmIndex = currentMode->frameMode.jumpFrame;
-	}
-	if (bSquat)
-	{
-		currentFrmIndex = currentMode->frameMode.squatFrame;
 	}	
 }
 void Player::update()
@@ -234,7 +232,7 @@ void Player::resetSpeedup() {
 void Player::stopMove(bool immediately) {
 	endTime = GetTickCount();
 	
-	if (speedX <= 3||immediately)
+	if ((speedX <= 3||immediately)&&!bJump)
 	{
 		speedX = 0;
 		bMove = false;
@@ -451,7 +449,7 @@ bool Player::CollideWith(IN T_Map* map)
 				case DIR_DOWN:
 					x = GetX();
 					y = map->GetY() + row*map->getTileHeight() - GetRatioSize().cy;  //紧靠障碍上侧
-					onPlantform = true;
+					onPlantform = true;			
 					resetJump();
 					block = { col ,row ,DIR_UP };		//保存发生碰撞的地图块序列
 					collideBlocks.push_back(block);

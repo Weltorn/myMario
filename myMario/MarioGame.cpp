@@ -173,29 +173,59 @@ void MarioGame::GameKeyAction(int Action)
 			{
 				if (keys[VK_A])
 				{
-					if (!keys[VK_D] && !player->isSliding()) {
-						player->SetDir(DIR_LEFT);
-						if (!preA) {					//如果是第一次按下键A,设置为开始移动
-							player->startMove();
-							preA = true;
+					if (!keys[VK_D])		//若按住反向键，无效
+					{
+						//在地面或其他支持物上
+						if (player->isOnPlantform() && !player->isSliding())
+						{
+							player->SetDir(DIR_LEFT);
+							if (!preA) {					//如果是第一次按下键D,设置为开始移动
+								player->startMove();
+								preA = true;
+							}
 						}
-					}
-					if (player->isSliding() && player->GetDir() == DIR_RIGHT) {
-						player->setDirChanged(true);
+						if (player->isOnPlantform() && player->isSliding() && player->GetDir() == DIR_RIGHT) {
+							player->setDirChanged(true);
+						}
+
+						//在空中
+						if (!player->isOnPlantform())
+						{
+							player->SetDir(DIR_LEFT);
+							if (!preA) {					//如果是第一次按下键D,设置为开始移动
+								player->startMove();
+								preA = true;
+							}
+						}
 					}
 				}
 				if (keys[VK_D])
 				{
-					if (!keys[VK_A] && !player->isSliding()) {
-						player->SetDir(DIR_RIGHT);
-						if (!preD) {					//如果是第一次按下键D,设置为开始移动
-							player->startMove();
-							preD = true;
+					if (!keys[VK_A])		//若按住反向键，无效
+					{		
+						//在地面或其他支持物上
+						if (player->isOnPlantform()&&!player->isSliding())
+						{
+							player->SetDir(DIR_RIGHT);
+							if (!preD) {					//如果是第一次按下键D,设置为开始移动
+								player->startMove();
+								preD = true;
+							}						
 						}
-					}
-					if (player->isSliding() && player->GetDir() == DIR_LEFT) {
-						player->setDirChanged(true);
-					}
+						if (player->isOnPlantform() && player->isSliding() && player->GetDir() == DIR_LEFT) {
+							player->setDirChanged(true);
+						}
+
+						//在空中
+						if (!player->isOnPlantform())
+						{
+							player->SetDir(DIR_RIGHT);
+							if (!preD) {					//如果是第一次按下键D,设置为开始移动
+								player->startMove();
+								preD = true;
+							}
+						}
+					}					
 				}
 				if (keys[VK_S])
 				{
