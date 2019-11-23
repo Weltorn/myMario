@@ -179,7 +179,7 @@ void MarioGame::GameKeyAction(int Action)
 						if (player->isOnPlantform() && !player->isSliding())
 						{
 							player->SetDir(DIR_LEFT);
-							if (!preA) {					//如果是第一次按下键D,设置为开始移动
+							if (!preA && !keys[VK_S]) {					//如果是第一次按下键D,设置为开始移动
 								player->startMove();
 								preA = true;
 							}
@@ -207,7 +207,7 @@ void MarioGame::GameKeyAction(int Action)
 						if (player->isOnPlantform()&&!player->isSliding())
 						{
 							player->SetDir(DIR_RIGHT);
-							if (!preD) {					//如果是第一次按下键D,设置为开始移动
+							if (!preD && !keys[VK_S]) {					//如果是第一次按下键D,设置为开始移动
 								player->startMove();
 								preD = true;
 							}						
