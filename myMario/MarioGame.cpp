@@ -36,7 +36,7 @@ void MarioGame::GameLogic()
 		}
 		case GAME_RUN:			//游戏进行时界面
 		{
-			//GameKeyAction();
+			GameKeyAction();
 			gameTime = GetTickCount();		//更新游戏已运行时间	
 
 			//更新玩家	
@@ -480,7 +480,7 @@ void MarioGame::LoadSound(HWND hwnd)
 // 管理游戏中的各种声音播放
 void MarioGame::PlayGameSound()
 {
-	bkgMusic->Terminate();			// 游戏背景音乐
+	bkgMusic->Terminate();			// 游戏背景音乐 
 	gameOverSound->Terminate();		// 游戏结束声音
 	gameWinSound->Terminate();		// 游戏胜利声音
 
