@@ -400,6 +400,7 @@ void MarioGame::LoadPlayer()
 	player_frame.squatFrame = 0;
 	player_frame.squatHeight = 32;
 	player_frame.stopFrame = 0;
+	player_frame.deathFrame = 9;
 
 	player_mode.frameMode = player_frame;
 	player_mode.basicJumpSpeedY = 8;

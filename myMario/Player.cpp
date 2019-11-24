@@ -567,3 +567,24 @@ bool Player::checkOnplantForm(T_Map* map)
 	onPlantform = false;
 	return onPlantform;
 }
+
+void Player::loadEvents()
+{
+
+}
+void Player::startEvent(int eventId)
+{
+
+}
+bool Player::checkNextPoint()
+{
+
+}
+void Player::playAnimation()
+{
+
+}
+void Player::endEvent()
+{
+
+}

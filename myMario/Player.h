@@ -23,6 +23,7 @@ typedef struct {
 	int speedDownFrame;		//减速动作帧
 	int squatFrame;			//下蹲帧
 	int jumpFrame;			//跳跃帧
+	int deathFrame;			//死亡帧
 }PLAYERFRAME;
 
 //玩家能力设置
@@ -46,8 +47,16 @@ typedef struct {
 	int y;
 	GAME_DIR dir;
 }COLLIDBLOCK;
-
 typedef vector<COLLIDBLOCK> COLLIDBLOCKS;
+
+typedef struct {
+	bool useTime;		//是否使用时间
+	bool usePos;		//是否使用位置
+	unsigned lastTime;	//节点持续时间
+	POINT endPt;		//节点终止坐标
+}EVENTSTEP;
+typedef vector<EVENTSTEP> EVENT;
+
 class Player :
 	public T_Sprite
 {
@@ -64,6 +73,15 @@ private:
 	PLAYERMODE* currentMode;
 	PLAYERMODE* normalMode;
 	PLAYERMODE* bigRedMode;
+
+	//PLAYER EVENT
+	EVENT* currentEvent;	//当前事件
+	unsigned currentStep;
+	EVENT deathEvent;
+	EVENT levelUpEvent;
+	EVENT levelDownEvent;
+	EVENT levelEndEvent;
+
 
 	// ----- MOVE STATUS
 	bool bMove;		//水平移动状态
@@ -125,20 +143,7 @@ public:
 		isBooting = false;
 	}
 
-	//是否在游戏事件中
-	bool isInEvent() { return isInEnvnt; }
-	bool setEvent(int eventId)
-	{ 
-		if (eventId == 0)		//设置事件结束
-		{
-			isInEnvnt = false;
-		}
-		else
-		{
-			isInEnvnt = true;	//设置事件开始
-		}
-		this->eventId = eventId;
-	}
+	
 
 	// ----- SQUAT
 	bool getSquat() { return bSquat; }
@@ -192,5 +197,13 @@ public:
 	GAME_DIR getCollideDir( RECT target);
 	// 检查玩家是否站在支持物上
 	bool checkOnplantForm(T_Map* map);
+
+	//游戏事件相关
+	bool isInEvent() { return isInEnvnt; }
+	void loadEvents();
+	void startEvent(int eventId);
+	bool checkNextPoint();
+	void playAnimation();
+	void endEvent();
 };
 
