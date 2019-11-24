@@ -60,7 +60,7 @@ void Player::updatePositionX()
 					//若滑行期间尝试改变方向，此时修改方向
 					if (dirChanged) {
 						dirChanged = false;
-						dir = (dir == DIR_LEFT) ? DIR_LEFT : DIR_RIGHT;
+						dir = (dir == DIR_LEFT) ?  DIR_RIGHT : DIR_LEFT;
 					}
 				}
 			}
@@ -133,7 +133,7 @@ void  Player::gravityEffect()
 		currentGravity = 0.0;
 	}
 	*/
-		if (!onPlantform && (GetTickCount() - jumpTimer)* currentGravity / 500 >currentMode->basicJumpSpeedY- abs(speedY) )
+		if (!onPlantform && (GetTickCount() - jumpTimer)* currentGravity / 270 >currentMode->basicJumpSpeedY- abs(speedY) )
 		{
 			speedY -= 1;	//四舍五入
 		}
@@ -170,11 +170,26 @@ void Player::updateFrame()
 	//朝向控制
 	if (dir == DIR_LEFT)
 	{
-		frameRotate = TRANS_HFLIP_NOROT;
+		
+		if (bSlide&&dirChanged)		//急停帧
+		{
+			frameRotate = TRANS_NONE;
+		}
+		else
+		{
+			frameRotate = TRANS_HFLIP_NOROT;
+		}
 	}
 	else if (dir == DIR_RIGHT)
 	{
-		frameRotate = TRANS_NONE;
+		if (bSlide&&dirChanged)		//急停帧
+		{
+			frameRotate = TRANS_HFLIP_NOROT;
+		}
+		else
+		{
+			frameRotate = TRANS_NONE;
+		}
 	}
 
 	//帧图选择
