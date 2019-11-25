@@ -49,15 +49,6 @@ typedef struct {
 }COLLIDBLOCK;
 typedef vector<COLLIDBLOCK> COLLIDBLOCKS;
 
-typedef struct {
-	bool useTime;		//是否使用时间
-	bool usePos;		//是否使用位置
-	bool relativePos;	//false:相对节点开始位置(地图位置)，true:相对节点开始位置变化量
-	unsigned lastTime;	//节点持续时间
-	POINT endPt;		//节点终止坐标
-}EVENTSTEP;
-typedef vector<EVENTSTEP> EVENT;
-
 enum EVENTTYPE
 {
 	PLAYER_DEATH,
@@ -72,8 +63,6 @@ class Player :
 private:
 	// ----- PLAYER STATUS
 	int lifeCount;					//生命值
-	bool inEvent;					//是否在游戏事件中
-	int eventId;					//变大、变小、死亡
 	PLAYERSTATUS playerStatus;		//角色展示状态
 	bool starStatus;				//是否无敌（星星）状态
 	int currentFrmIndex;
@@ -84,15 +73,10 @@ private:
 	PLAYERMODE* bigRedMode;
 
 	//PLAYER EVENT
-	EVENT* currentEvent;	//当前事件
-	unsigned currentStep;
-	EVENT deathEvent;
-	EVENT levelUpEvent;
-	EVENT levelDownEvent;
-	EVENT afterPoleEvent;
 	unsigned eventTimer;
-	POINT posBeforeEvent;
-
+	bool inEvent;					//是否在游戏事件中
+	int eventId;					//变大、变小、死亡
+	int currentStep;
 
 	// ----- MOVE STATUS
 	bool bMove;		//水平移动状态
@@ -211,10 +195,12 @@ public:
 
 	//游戏事件相关
 	bool isInEvent() { return inEvent; }
-	void loadEvents();
 	void startEvent(int eventId);
-	bool checkNextStep();
 	void playAnimation();
 	void endEvent(int eventId);
+
+	void playDeathAnimation();
+
+	void playerDeath(bool immediately);
 };
 

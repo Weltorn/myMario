@@ -71,7 +71,7 @@ void Player::updatePositionX()
 		}
 		else if(bMove)
 		{
-			if (( 150 * speedX) + moveTimer <= GetTickCount() && speedX < currentMaxSpeedX)		//加速过程,每150ms后加速
+			if (( 200 * speedX) + moveTimer <= GetTickCount() && speedX < currentMaxSpeedX)		//加速过程,每150ms后加速
 			{
 				++speedX;
 			}
@@ -91,6 +91,10 @@ void Player::updatePositionX()
 //更新玩家纵坐标
 void Player::updatePositionY()
 {
+	if (isBooting && jumpTimer + currentMode->maxBootTime <= GetTickCount())	//跳跃加速时间结束
+	{
+		isBooting = false;
+	}
 	gravityEffect();		//重力作用
 	lastY = Y;
 	Y = Y - speedY;
@@ -128,11 +132,6 @@ void  Player::gravityEffect()
 	{
 		currentGravity = gravity*0.8f;	//重力增大，加快下落
 	}	
-	/*if (speedY <= -12)
-	{
-		currentGravity = 0.0;
-	}
-	*/
 		if (!onPlantform && (GetTickCount() - jumpTimer)* currentGravity / 270 >currentMode->basicJumpSpeedY- abs(speedY) )
 		{
 			speedY -= 1;	//四舍五入
@@ -152,17 +151,9 @@ void Player::updatePosition()
 	{
 		return;
 	}	
-	if (checkOnplantForm(T_Scene::getBarrier()))
-	{
-		if (jumpStatus == 1)	//如果为下落状态则解除跳跃状态
-		{
-			resetJump();
-		}			
-		Util::myprintf(L" on plantform now!-----------------------------------------------------\n");
-	}
+	
 	updatePositionX();
 	updatePositionY();
-	CollideWith(T_Scene::getBarrier());	//玩家与障碍层碰撞检测
 }
 //更新帧图
 void Player::updateFrame()
@@ -219,12 +210,34 @@ void Player::updateFrame()
 }
 void Player::update()
 {
-	if (isBooting && jumpTimer +currentMode->maxBootTime <= GetTickCount())	//跳跃加速时间结束
+	
+	if (!inEvent)
 	{
-		isBooting = false;
+		if (checkOnplantForm(T_Scene::getBarrier()))
+		{
+			if (jumpStatus == 1)	//如果为下落状态则解除跳跃状态
+			{
+				resetJump();
+			}
+			Util::myprintf(L" on plantform now!-----------------------------------------------------\n");
+		}
+		updatePosition();	//更新玩家坐标
+		CollideWith(T_Scene::getBarrier());	//玩家与障碍层碰撞检测
+		updateFrame();		//更新帧图
+	
+		if (onPlantform)
+		{
+			Util::myprintf(L"player death now!-----------------------------------------------------\n");
+			playerDeath(false);
+			onPlantform = false;
+		}
 	}
-	updatePosition();	//更新玩家坐标
-	updateFrame();		//更新帧图
+	else
+	{
+		Util::myprintf(L"play animation now!-----------------------------------------------------\n");
+		playAnimation();
+	}
+	
 }
 
 //设置正常移动状态，初速度和速度上限
@@ -568,104 +581,24 @@ bool Player::checkOnplantForm(T_Map* map)
 	return onPlantform;
 }
 
-void Player::loadEvents()
-{
-	//加载死亡事件
-	EVENTSTEP step1 = {true,false,false,500,NULL};//变成死亡状态帧，静止
-	deathEvent.push_back(step1);
-	EVENTSTEP step2 = { false,true,true,0,{0,42} };//上升
-	deathEvent.push_back(step2);
-	EVENTSTEP step3 = { false,false,false,0,NULL };//下降,超出边界时自动判定死亡
-	deathEvent.push_back(step3);
-}
 void Player::startEvent(int eventId)
-{
-	switch (eventId)
-	{
-	case PLAYER_DEATH:
-		currentEvent = &deathEvent;
-		break;
-	case PLAYER_LEVELUP:
-		currentEvent = &levelUpEvent;
-		break;
-	case PLAYER_LEVELDOWN:
-		currentEvent = &levelDownEvent;
-		break;
-	case PLAYER_AFTERPOLE:
-		currentEvent = &afterPoleEvent;
-		break;
-	default:
-		currentEvent = NULL;
-		break;
-	}
+{	
 	this->eventId = eventId;
-	currentStep = 0;
 	inEvent = true;
+	currentStep = 0;
 	eventTimer = GetTickCount();
-	posBeforeEvent = {X-T_Scene::getBarrier()->GetX() ,Y-T_Scene::getBarrier()->GetY() };//当前相对地图位置
-}
-bool Player::checkNextStep()
-{
-	bool stepEnd = false;
-	if ((*currentEvent)[currentStep].useTime)	//检查时间条件
-	{
-		if (eventTimer + (*currentEvent)[currentStep].lastTime >= GetTickCount())
-		{
-			stepEnd = true;
-		}
-		else
-		{
-			stepEnd = false;
-		}
-	}
-	if ((*currentEvent)[currentStep].usePos)	//检查位置条件
-	{
-		int x = X - T_Scene::getBarrier()->GetX();
-		int y = Y - T_Scene::getBarrier()->GetY();
-		if ((*currentEvent)[currentStep].relativePos)
-		{
-			if (abs(x - posBeforeEvent.x) >= (*currentEvent)[currentStep].endPt.x &&
-				(x - posBeforeEvent.x) ^ (*currentEvent)[currentStep].endPt.x >= 0 &&
-				abs(y - posBeforeEvent.y) >= (*currentEvent)[currentStep].endPt.y &&
-				(y - posBeforeEvent.y) ^ (*currentEvent)[currentStep].endPt.y >= 0)		//同号，且绝对值大于endPt
-				stepEnd = true;
-			else
-				stepEnd = false;
-		}
-		else
-		{
-			if (x  >= (*currentEvent)[currentStep].endPt.x &&				
-				y  >= (*currentEvent)[currentStep].endPt.y )		//到达指定位置
-				stepEnd = true;
-			else
-				stepEnd = false;
-		}
-	}
-	if (stepEnd)
-	{
-		if (currentStep == currentEvent->size() - 1)		//判断是否结束事件
-		{
-			endEvent(eventId);
-		}
-		else
-		{
-			++currentStep;		//进入下一事件步骤
-		}
-	}
-	return stepEnd;
+	
+	//解除运动状态
+	stopMove(true);
+	resetJump();
+	playAnimation();
 }
 void Player::playAnimation()
 {
 	switch (eventId)
 	{
 	case PLAYER_DEATH:
-		switch (currentStep)
-		{
-		case 0:
-
-		default:
-			break;
-		}
+		playDeathAnimation();
 		break;
 	case PLAYER_LEVELUP:
 		break;
@@ -680,4 +613,46 @@ void Player::playAnimation()
 void Player::endEvent(int eventId)
 {
 
+}
+
+void Player::playDeathAnimation()
+{
+	currentFrmIndex = currentMode->frameMode.deathFrame;	//设置死亡帧
+	switch (currentStep)
+	{
+	case 0:
+		if (eventTimer + 500 <= GetTickCount())		//静止0.5秒
+		{
+			++currentStep;
+		}
+		break;
+	case 1:
+		speedY = 15;	
+		++currentStep;
+		break;
+	case 2:
+		updatePosition();
+		if (X + GetRatioSize().cy >= T_Scene::getBarrier()->GetHeight())
+		{
+			++currentStep;
+		}
+		break;
+	default:
+		playerDeath(true);
+		break;
+	}
+}
+void Player::playerDeath(bool immediately)
+{
+	if (immediately)
+	{
+		if(lifeCount>0)
+		{ 
+			lifeCount--;
+		}
+	}
+	else
+	{
+		startEvent(PLAYER_DEATH);
+	}
 }

@@ -435,8 +435,8 @@ void MarioGame::LoadPlayer()
 	player_mode.maxRunSpeedX = 6;
 	player->initBigRedMode(&player_mode);
 
-	//player->setPlayerMode(PLAYER_NORMAL);
-	player->setPlayerMode(PLAYER_BIGRED);
+	player->setPlayerMode(PLAYER_NORMAL);
+	//player->setPlayerMode(PLAYER_BIGRED);
 	gameLayer.layer = player;
 	gameLayer.type_id = LAYER_PLY;
 	gameLayer.z_order = gameScene->getSceneLayers()->size() + 1;
