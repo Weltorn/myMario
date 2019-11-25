@@ -7,7 +7,7 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 {
 	// ----- role status
 	lifeCount = 3;
-	isInEnvnt = false;
+	inEvent = false;
 	eventId = -1;
 	playerStatus = PLAYER_NONE;		//角色模式
 	starStatus = false;					//是否无敌（星星）状态
@@ -570,21 +570,114 @@ bool Player::checkOnplantForm(T_Map* map)
 
 void Player::loadEvents()
 {
-
+	//加载死亡事件
+	EVENTSTEP step1 = {true,false,false,500,NULL};//变成死亡状态帧，静止
+	deathEvent.push_back(step1);
+	EVENTSTEP step2 = { false,true,true,0,{0,42} };//上升
+	deathEvent.push_back(step2);
+	EVENTSTEP step3 = { false,false,false,0,NULL };//下降,超出边界时自动判定死亡
+	deathEvent.push_back(step3);
 }
 void Player::startEvent(int eventId)
 {
-
+	switch (eventId)
+	{
+	case PLAYER_DEATH:
+		currentEvent = &deathEvent;
+		break;
+	case PLAYER_LEVELUP:
+		currentEvent = &levelUpEvent;
+		break;
+	case PLAYER_LEVELDOWN:
+		currentEvent = &levelDownEvent;
+		break;
+	case PLAYER_AFTERPOLE:
+		currentEvent = &afterPoleEvent;
+		break;
+	default:
+		currentEvent = NULL;
+		break;
+	}
+	this->eventId = eventId;
+	currentStep = 0;
+	inEvent = true;
+	eventTimer = GetTickCount();
+	posBeforeEvent = {X-T_Scene::getBarrier()->GetX() ,Y-T_Scene::getBarrier()->GetY() };//当前相对地图位置
 }
-bool Player::checkNextPoint()
+bool Player::checkNextStep()
 {
-
+	bool stepEnd = false;
+	if ((*currentEvent)[currentStep].useTime)	//检查时间条件
+	{
+		if (eventTimer + (*currentEvent)[currentStep].lastTime >= GetTickCount())
+		{
+			stepEnd = true;
+		}
+		else
+		{
+			stepEnd = false;
+		}
+	}
+	if ((*currentEvent)[currentStep].usePos)	//检查位置条件
+	{
+		int x = X - T_Scene::getBarrier()->GetX();
+		int y = Y - T_Scene::getBarrier()->GetY();
+		if ((*currentEvent)[currentStep].relativePos)
+		{
+			if (abs(x - posBeforeEvent.x) >= (*currentEvent)[currentStep].endPt.x &&
+				(x - posBeforeEvent.x) ^ (*currentEvent)[currentStep].endPt.x >= 0 &&
+				abs(y - posBeforeEvent.y) >= (*currentEvent)[currentStep].endPt.y &&
+				(y - posBeforeEvent.y) ^ (*currentEvent)[currentStep].endPt.y >= 0)		//同号，且绝对值大于endPt
+				stepEnd = true;
+			else
+				stepEnd = false;
+		}
+		else
+		{
+			if (x  >= (*currentEvent)[currentStep].endPt.x &&				
+				y  >= (*currentEvent)[currentStep].endPt.y )		//到达指定位置
+				stepEnd = true;
+			else
+				stepEnd = false;
+		}
+	}
+	if (stepEnd)
+	{
+		if (currentStep == currentEvent->size() - 1)		//判断是否结束事件
+		{
+			endEvent(eventId);
+		}
+		else
+		{
+			++currentStep;		//进入下一事件步骤
+		}
+	}
+	return stepEnd;
 }
 void Player::playAnimation()
 {
+	switch (eventId)
+	{
+	case PLAYER_DEATH:
+		switch (currentStep)
+		{
+		case 0:
 
+		default:
+			break;
+		}
+		break;
+	case PLAYER_LEVELUP:
+		break;
+	case PLAYER_LEVELDOWN:
+		break;
+	case PLAYER_AFTERPOLE:
+		break;
+	default:
+		break;
+	}
 }
-void Player::endEvent()
+void Player::endEvent(int eventId)
 {
 
 }
