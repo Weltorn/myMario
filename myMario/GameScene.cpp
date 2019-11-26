@@ -154,12 +154,6 @@ bool GameScene::LoadTxtMap(const char* txtmap_path)
 }
 void  GameScene::update() 
 {
-	//更新场景图层
-	/*SCENE_LAYERS::iterator p;
-	for (p = sceneLayers.begin(); p != sceneLayers.end(); p++)
-	{
-		p->layer->update();
-	*/
 	
 	//更新障碍地图
 	if (pBarrier->IsVisible())
@@ -191,5 +185,23 @@ void  GameScene::update()
 		SortLayers();//对图层重新排序
 	}
 
-	ScrollScene(pPlayer);
+//	ScrollScene(pPlayer);
+}
+
+void GameScene::RePosition(int wnd_width,int wnd_height)
+{
+	int scn_width = this->getBarrier()->GetWidth();
+	int scn_height = this->getBarrier()->GetHeight();
+	// 视图初始位置以地图作为参照
+	int scn_x = 0;
+	int scn_y = -this->getBarrier()->getTileHeight() / 2;
+	// 将游戏地图初始化
+	this->InitScene(scn_x, scn_y, scn_width, scn_height, wnd_width, wnd_height);
+
+	// 将所有地图图层定位
+	SCENE_LAYERS::iterator p;
+	for (p = this->getSceneLayers()->begin(); p != this->getSceneLayers()->end(); p++)
+	{
+		if (p->layer->ClassName() == "T_Map") p->layer->SetPosition(scn_x, scn_y);
+	}
 }

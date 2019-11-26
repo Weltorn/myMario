@@ -261,6 +261,15 @@ void T_Scene::ScrollScene(T_Sprite* player)
 	}
 }
 
+void T_Scene::ScrollScene(int speed)
+{
+
+	if (lastSceneX > SceneX || SceneX == 0)
+		MoveScene(speed, 0);
+	else
+		MoveScene(-speed, 0);
+
+}
 
 // 添加图层
 void T_Scene::Append(GAMELAYER gm_layer)
@@ -600,6 +609,8 @@ void T_Scene::Draw(HDC hdc)
 		if((*p).layer->IsVisible() == true)
 		{
 			(*p).layer->Draw(hdc);//调用图层自己的绘制方法
+			Util::myprintf(T_Util::int_to_wstring((*p).layer->GetLayerTypeID()));
+			Util::myprintf(L"drawing....\n");
 		}
 	}
 }

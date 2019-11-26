@@ -61,6 +61,7 @@ public:
 	static T_Map* getBarrier(){ return pBarrier; }
 	// 获取场景中地图遮罩图层
 	static T_Map* getMask(){ return pMask; }
+	void setMask(T_Map* mask) { pMask = mask; }
 	// 场景中图层总数
 	int GetTotalLayers(){ return (int)(sceneLayers.size()); }
 	// 获取场景图层容器对象
@@ -79,6 +80,8 @@ public:
 	void MoveScene(int speedX, int speedY);
 	// 根据参数指定的角色对象判断场景是否需要滚动
 	void ScrollScene(T_Sprite* player);
+	// 游戏制作信息界面中的场景自动滚动
+	void ScrollScene(int speed);
 		
 	//……………………………………………………………………………………
 	// 与图层操作相关的函数

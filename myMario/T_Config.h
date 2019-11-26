@@ -25,8 +25,8 @@ using namespace std;
 using namespace Gdiplus;
 
 
-static const int WIN_WIDTH		 = 1024;			// 默认游戏窗口宽
-static const int WIN_HEIGHT		 = 448;				// 默认游戏窗口高
+static const int WIN_WIDTH		 = 802;				// 默认游戏窗口宽
+static const int WIN_HEIGHT		 = 453;				// 默认游戏窗口高
 static const COLORREF WIN_BKCLR = RGB(50, 50, 50);	// 默认窗口背景色(更新: 2019-09-28)
 
 static const int FRAME_SPEED	 = 100;				// 默认游戏帧频
@@ -172,6 +172,7 @@ typedef struct
 	int		height;				// 菜单高度
 	int		space;				// 菜单项之间间隔距离
 	int		align;				// 文字对齐方式(0:左对齐; 1:居中; 2:右对齐)
+//	int		fontHeight;			// 字体大小
 	LPCTSTR fontName;			// 字体名称
 	bool	isBold;				// 是否粗体
 	Color	normalTextColor;	// 正常菜单文字颜色

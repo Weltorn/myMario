@@ -70,7 +70,7 @@ public:
 	static void PaintText(HDC hdc, RectF fontRect, LPCTSTR text, 
 		                  REAL fontSize, LPCTSTR fontName, 
 		                  Color fontColor = Color::White,
-						  FontStyle style = FontStyleBold, 
+						  FontStyle style = FontStyleBold,
 						  StringAlignment align = StringAlignmentCenter);
 
 	static void PaintBlank(HBITMAP hbmp, int width, int height, COLORREF crColor);
