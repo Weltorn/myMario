@@ -10,8 +10,11 @@
 #pragma once
 #include "T_Config.h"
 
+static int beginTick = 0;	//用于定时
+
 class T_Util
 {
+private:
 public:
 
 	static HWND GetHWnd()
@@ -57,4 +60,6 @@ public:
 	// red,green,blue用于为改变后的三原色
 	// lastRed,lastGreen,lastBlue用于记录改变前的三原色
 	static void ChangeRGB(double *red, double *green, double *blue, double *lastRed, double *lastGreen, double *lastBlue, int *changeIndex);
+	static bool Timer(int seconds);	// 运行指定时间
+
 };

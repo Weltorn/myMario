@@ -11,6 +11,7 @@
 #pragma once
 #include "T_Config.h"
 #include "T_Display.h"
+#include "GameMenu.h"
 #include "Util.h"
 
 class T_Engine

@@ -61,6 +61,7 @@ public:
 	static T_Map* getBarrier(){ return pBarrier; }
 	// 获取场景中地图遮罩图层
 	static T_Map* getMask(){ return pMask; }
+	void setMask(T_Map* mask) { pMask = mask; }
 	// 场景中图层总数
 	int GetTotalLayers(){ return (int)(sceneLayers.size()); }
 	// 获取场景图层容器对象

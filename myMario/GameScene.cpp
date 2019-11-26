@@ -187,3 +187,21 @@ void  GameScene::update()
 
 //	ScrollScene(pPlayer);
 }
+
+void GameScene::RePosition(int wnd_width,int wnd_height)
+{
+	int scn_width = this->getBarrier()->GetWidth();
+	int scn_height = this->getBarrier()->GetHeight();
+	// 视图初始位置以地图作为参照
+	int scn_x = 0;
+	int scn_y = -this->getBarrier()->getTileHeight() / 2;
+	// 将游戏地图初始化
+	this->InitScene(scn_x, scn_y, scn_width, scn_height, wnd_width, wnd_height);
+
+	// 将所有地图图层定位
+	SCENE_LAYERS::iterator p;
+	for (p = this->getSceneLayers()->begin(); p != this->getSceneLayers()->end(); p++)
+	{
+		if (p->layer->ClassName() == "T_Map") p->layer->SetPosition(scn_x, scn_y);
+	}
+}
