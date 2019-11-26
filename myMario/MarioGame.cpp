@@ -39,7 +39,7 @@ void MarioGame::GameLogic()
 		}
 		case GAME_RUN:			//游戏进行时界面
 		{
-			//GameKeyAction();
+			GameKeyAction();
 			gameTime = GetTickCount();		//更新游戏已运行时间	
 
 			//更新玩家	
@@ -200,27 +200,63 @@ void MarioGame::GameKeyAction(int Action)
 			{
 				if (keys[VK_A])
 				{
-					if (!keys[VK_D] && !player->isSliding()) {
-						player->SetDir(DIR_LEFT);
-						if (!preA) {					//如果是第一次按下键A,设置为开始移动
-							player->startMove();
-							preA = true;
+					if (!keys[VK_D])		//若按住反向键，无效
+					{
+						//在地面或其他支持物上
+						if (player->isOnPlantform() && !player->isSliding())
+						{
+							player->SetDir(DIR_LEFT);
+							if (!preA && !keys[VK_S]) {					//如果是第一次按下键D,设置为开始移动
+								player->startMove();
+								preA = true;
+							}
+						}
+						if (player->isOnPlantform() && player->isSliding() && player->GetDir() == DIR_RIGHT) {
+							player->setDirChanged(true);
+						}
+
+						//在空中
+						if (!player->isOnPlantform())
+						{
+							player->SetDir(DIR_LEFT);
+							if (!preA) {					//如果是第一次按下键D,设置为开始移动
+								player->startMove();
+								preA = true;
+							}
 						}
 					}
 				}
 				if (keys[VK_D])
 				{
-					if (!keys[VK_A] && !player->isSliding()) {
-						player->SetDir(DIR_RIGHT);
-						if (!preD) {					//如果是第一次按下键D,设置为开始移动
-							player->startMove();
-							preD = true;
+					if (!keys[VK_A])		//若按住反向键，无效
+					{		
+						//在地面或其他支持物上
+						if (player->isOnPlantform()&&!player->isSliding())
+						{
+							player->SetDir(DIR_RIGHT);
+							if (!preD && !keys[VK_S]) {					//如果是第一次按下键D,设置为开始移动
+								player->startMove();
+								preD = true;
+							}						
 						}
-					}
+						if (player->isOnPlantform() && player->isSliding() && player->GetDir() == DIR_LEFT) {
+							player->setDirChanged(true);
+						}
+
+						//在空中
+						if (!player->isOnPlantform())
+						{
+							player->SetDir(DIR_RIGHT);
+							if (!preD) {					//如果是第一次按下键D,设置为开始移动
+								player->startMove();
+								preD = true;
+							}
+						}
+					}					
 				}
 				if (keys[VK_S])
 				{
-					if (!keys[VK_A] && !keys[VK_D] && !keys[VK_SPACE]) {
+					if (!keys[VK_A] && !keys[VK_D] && !keys[VK_SPACE]&&!player->isSliding()) {
 						if (!preS)
 						{
 							player->setSquat(true);
@@ -230,7 +266,7 @@ void MarioGame::GameKeyAction(int Action)
 				}
 				if (keys[VK_SHIFT])
 				{
-					if (keys[VK_A] || keys[VK_D]) {
+					if ((keys[VK_A] || keys[VK_D])&&!player->isJump()) {
 						if (!preShift)
 						{
 							player->startSpeedup();
@@ -238,12 +274,14 @@ void MarioGame::GameKeyAction(int Action)
 						}
 					}
 				}
-				if (keys[VK_SPACE])
+				if (keys[VK_L])
 				{
-					if (!player->getSquat()&& !player->isJump()&&!preSpace)
+					Util::myprintf(L"Squat: %d,isJump: %d,preSpace: %d,isOnPlantform: %d\n",
+						player->getSquat() , player->isJump() , preL, player->isOnPlantform());
+					if (!player->getSquat()&& !player->isJump()&&!preL&&player->isOnPlantform())
 					{
 						player->startJump();
-						preSpace = true;
+						preL = true;
 					}
 				}
 			}
@@ -279,12 +317,15 @@ void MarioGame::GameKeyAction(int Action)
 							player->resetSpeedup();
 						}
 					}
-					if (!keys[VK_SPACE])
+					if (!keys[VK_L])
 					{
-						preSpace = false;
+						preL = false;
 						if (player->getBooting())
 						{
 							player->stopBooting();		//释放键，停止加速
+							if (player->GetSpeedY() > 3) {
+								player->SetSpeedY(3);
+							}
 						}
 					}
 				}
@@ -365,38 +406,7 @@ void MarioGame::LoadMap()
 	//	if (p->layer->ClassName() == "T_Map") p->layer->SetPosition(scn_x, scn_y);
 	//}
 }
-// 加载游戏玩家角色
-//void MarioGame::LoadPlayer()
-//{
-//	GAMELAYER gameLayer;
-//	SPRITEINFO player_Info;
-//	player = new Player(L".\\res\\sprite\\bMario.png", 32, 64);	
-//	int sequence[9] = {1,1,2,2,2,3,3,3,1};
-//
-//	player_Info.Active = true;
-//	player_Info.Dead = false;
-//	player_Info.Dir = DIR_RIGHT;
-//	player_Info.Rotation = TRANS_NONE;
-//	player_Info.Ratio = 1.0f;
-//	player_Info.Level = 0;
-//	player_Info.Score = 0;
-//	player_Info.SpeedX = 0;
-//	player_Info.SpeedY = 0;
-//	player_Info.Alpha = 220;
-//	player_Info.X = wnd_width / 5;
-//	player_Info.Y = (wnd_height - player->GetHeight()) / 2;
-//	player_Info.Visible = true;
-//	player->Initiate(player_Info);
-//	player->SetSequence(sequence, 9);
-//	player->SetLayerTypeID(LAYER_PLY);
-//
-//	gameLayer.layer = player;
-//	gameLayer.type_id = LAYER_PLY;
-//	gameLayer.z_order = gameScene->getSceneLayers()->size() + 1;
-//	gameLayer.layer->setZorder(gameLayer.z_order);
-//	gameScene->Append(gameLayer);
-//	player->SetStartTime(GetTickCount());
-//}
+
  //加载游戏玩家角色
 void MarioGame::LoadPlayer()
 {
@@ -405,9 +415,9 @@ void MarioGame::LoadPlayer()
 	PLAYERFRAME player_frame;
 	PLAYERMODE player_mode;
 
-	player = new Player(L".\\res\\sprite\\sMario.png", 32, 32);	
-	int sSequence[10] = {4,4,5,5,5,6,6,6,4,4};
-	int bSequence[10] = { 1,1,1,2,2,2,3,3,3,1 };
+	player = new Player(L".\\res\\sprite\\sMario.png", 24, 32);	
+	int sSequence[12] = {4,4,5,5,5,5,6,6,6,6,4,4};
+	int bSequence[12] = { 1,1,2,2,2,2,3,3,3,3,1,1 };
 
 	player_Info.Active = true;
 	player_Info.Dead = false;
@@ -418,19 +428,19 @@ void MarioGame::LoadPlayer()
 	player_Info.Score = 0;
 	player_Info.SpeedX = 0;
 	player_Info.SpeedY = 0;
-	player_Info.Alpha = 220;
+	player_Info.Alpha = 255;
 	player_Info.X = wnd_width / 5;
-	player_Info.Y = 200;//(wnd_height - player->GetHeight()) / 2;
+	player_Info.Y = 200;
 	player_Info.Visible = true;
 	player->Initiate(player_Info);
-	player->SetSequence(sSequence, 10);
+	player->SetSequence(sSequence, 12);
 	player->SetLayerTypeID(LAYER_PLY);
 
 	// ----- 初始化马里奥的开始状态
 	player_frame.frameHeight = 32;
 	player_frame.frameWidth = 24;
 	player_frame.img = T_Graph(L".\\res\\sprite\\sMario.png");	
-	player_frame.nRunFrames = 10;
+	player_frame.nRunFrames = 12;
 	player_frame.runFrmSequence = (int*)malloc(sizeof(int)*player_frame.nRunFrames);
 	memcpy(player_frame.runFrmSequence, sSequence, sizeof(int)*player_frame.nRunFrames);
 
@@ -439,9 +449,10 @@ void MarioGame::LoadPlayer()
 	player_frame.squatFrame = 0;
 	player_frame.squatHeight = 32;
 	player_frame.stopFrame = 0;
+	player_frame.deathFrame = 9;
 
 	player_mode.frameMode = player_frame;
-	player_mode.basicJumpSpeedY = 6;
+	player_mode.basicJumpSpeedY = 8;
 	player_mode.basicSpeedX = 0;
 	player_mode.canSquat = false;
 	player_mode.maxBootTime = 1500;
@@ -454,7 +465,7 @@ void MarioGame::LoadPlayer()
 	player_frame.frameHeight = 64;
 	player_frame.frameWidth = 32;
 	player_frame.img = T_Graph(L".\\res\\sprite\\bMario.png");
-	player_frame.nRunFrames = 10;
+	player_frame.nRunFrames = 12;
 	player_frame.runFrmSequence = (int*)malloc(sizeof(int)*player_frame.nRunFrames);
 	memcpy(player_frame.runFrmSequence, bSequence, sizeof(int)*player_frame.nRunFrames);
 
@@ -465,15 +476,16 @@ void MarioGame::LoadPlayer()
 	player_frame.stopFrame = 0;
 
 	player_mode.frameMode = player_frame;
-	player_mode.basicJumpSpeedY = 6;
+	player_mode.basicJumpSpeedY = 8;
 	player_mode.basicSpeedX = 0;
-	player_mode.canSquat = false;
+	player_mode.canSquat = true;
 	player_mode.maxBootTime = 1500;
 	player_mode.maxMoveSpeedX = 4;
 	player_mode.maxRunSpeedX = 6;
 	player->initBigRedMode(&player_mode);
 
 	player->setPlayerMode(PLAYER_NORMAL);
+	//player->setPlayerMode(PLAYER_BIGRED);
 	gameLayer.layer = player;
 	gameLayer.type_id = LAYER_PLY;
 	gameLayer.z_order = gameScene->getSceneLayers()->size() + 1;
@@ -639,7 +651,7 @@ void MarioGame::LoadSound(HWND hwnd)
 // 管理游戏中的各种声音播放
 void MarioGame::PlayGameSound()
 {
-	bkgMusic->Terminate();			// 游戏背景音乐
+	bkgMusic->Terminate();			// 游戏背景音乐 
 	gameOverSound->Terminate();		// 游戏结束声音
 	gameWinSound->Terminate();		// 游戏胜利声音
 

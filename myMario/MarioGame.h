@@ -18,7 +18,7 @@ private:
 	bool preA;
 	bool preS;
 	bool preD;
-	bool preSpace;
+	bool preL;
 	bool preShift;
 
 

@@ -55,7 +55,8 @@ enum GAME_DIR
 	DIR_LEFT_UP,				// 左上
 	DIR_LEFT_DOWN,				// 左下
 	DIR_RIGHT_UP,				// 右上
-	DIR_RIGHT_DOWN				// 右下
+	DIR_RIGHT_DOWN,				// 右下
+	DIR_NONE
 };
 
 // 图像绘制处理常量

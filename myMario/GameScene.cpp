@@ -154,7 +154,7 @@ bool GameScene::LoadTxtMap(const char* txtmap_path)
 }
 void  GameScene::update() 
 {
-	
+
 	//¸üĞÂÕÏ°­µØÍ¼
 	if (pBarrier->IsVisible())
 		pBarrier->update();
