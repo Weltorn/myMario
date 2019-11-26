@@ -597,8 +597,8 @@ void MarioGame::LoadGameMenu()
 		}
 		
 		// 与场景相关的变量
-		red = green = blue = 11;
 		gameScene->SetScenePos(-1, 0);	//场景重新定位
+		red = green = blue = 11;
 		changeIndex = 0;
 	}
 }
@@ -708,7 +708,7 @@ void MarioGame::ClearGameLevel()
 // 根据游戏状态，显示信息
 void MarioGame::DisplayInfo(HDC hdc)
 {
-	int FontHeight = 16;	 // 字号
+	REAL FontHeight = 16.0;	 // 字号 
 	wstring fontName = L"Comic Sans Ms"; // 字体
 	RectF textRect;			 // 文字域
 	vector<wstring> content; // 文字内容
@@ -789,13 +789,11 @@ void MarioGame::DisplayInfo(HDC hdc)
 // 显示顶端状态栏
 void MarioGame::ShowTitleInfo(HDC hdc) {
 
-	int FontHeight = 16;	 // 字号
+	REAL FontHeight = 16.0;	 // 字号
 	wstring fontName = L"Comic Sans Ms"; // 字体
 	RectF textRect;			 // 文字域
 	vector<wstring> content; // 文字内容
 
-
-	FontHeight = 16;
 	textRect.X = STATUS_BEGIN_X;
 	textRect.Y = STATUS_BEGIN_Y;
 	textRect.Width = (float)STATUS_TEXT_WIDTH;

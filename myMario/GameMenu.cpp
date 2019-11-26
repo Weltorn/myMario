@@ -4,7 +4,7 @@
 
 GameMenu::GameMenu()
 {
-	beginTick = 0;
+//	beginTick = 0;
 }
 
 

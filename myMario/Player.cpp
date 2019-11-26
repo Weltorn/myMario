@@ -10,7 +10,7 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	inEvent = false;
 	eventId = -1;
 	playerStatus = PLAYER_NONE;		//角色模式
-	starStatus = false;					//是否无敌（星星）状态
+	starStatus = false;				//是否无敌（星星）状态
 	
 	// ---初始化位置
 	X;
