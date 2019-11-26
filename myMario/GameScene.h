@@ -12,4 +12,5 @@ public:
 	~GameScene();
 	virtual bool LoadTxtMap(const char* txtmap_path);
 	void update();
+	void RePosition(int wnd_width, int wnd_height);			// 地图重定位
 };

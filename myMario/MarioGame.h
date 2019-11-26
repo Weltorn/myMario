@@ -27,9 +27,14 @@ private:
 	static const int SUPER_TIME = 5000;			// 玩家角色无敌时间/ms
 	static const int BEGIN_TIME = 5000;			// 游戏开始音乐播放时间
 	static const int WARN_TIME = 15000;			// 游戏时间即将耗尽，剩余时间
-	static const int MAIN_MENU = 0;				// 主菜单索引
-	static const int OPTION_MENU = 1;			// 选项菜单索引
-	static const int ABOUT_MENU = 2;			// 关于菜单索引
+
+	// 下面这些常量主要是方便 闪烁的小金币 进行定位 （状态栏中小金币的位置信息与其他文字的位置信息并不在一起初始化）
+	static const int STATUS_BEGIN_X = WIN_WIDTH / 12;				// 状态栏文字起始横坐标
+	static const int STATUS_BEGIN_Y = 0;							// 状态栏文字起始纵坐标
+	static const int STATUS_TEXT_WIDTH = WIN_WIDTH / 8;
+	static const int STATUS_TEXT_HEIGHT = WIN_HEIGHT / 18;
+	static const int STATUS_TEXT_HORIZON_SPACE = WIN_WIDTH / 4;		// 状态栏文字间距
+	static const int STATUS_TEXT_VERTICAL_SPACE = WIN_HEIGHT / 19;	// 状态栏垂直间距
 
 	//关卡相关数据
 	int timeLimit = 300000;						// 关卡时间限制
@@ -45,7 +50,8 @@ private:
 	AudioDXBuffer*	timeLastingSound;				// 游戏时间即将耗尽音乐
 	//...
 	//图片
-	T_Graph* status;								// 状态栏小图片
+	T_Sprite* statusCoin;							// 状态栏小金币图片
+	T_Sprite* statusMario;							// 
 	//...
 	
 	
@@ -56,12 +62,14 @@ private:
 
 
 	//------------------与菜单相关的变量-----------------------------------
-	T_Menu*	gameMenu;						// 游戏菜单
-	bool menuIsInit;							// 判断菜单是否初始化
+	GameMenu* gameMenu;							// 游戏菜单
+
+	//与 MAIN_MENU 相关的变量
+	GAMELAYER marioBoard;						// 超级大的棕色牌子
 
 	//与 ABOUT_MENU 相关的变量
 	int changeIndex;							// 变换的颜色索引	0-R 1-G 2-B
-	double red, green, blue;						// 三原色 用于控制背景色改变
+	double red, green, blue;					// 三原色 用于控制背景色改变
 	double lastRed, lastGreen, lastBlue;
 
 	//---------------------------------------------------------
@@ -92,11 +100,14 @@ public:
 	//游戏对象加载
 	void LoadPlayer();								// 加载游戏玩家角色
 	void LoadMap();									// 加载游戏地图场景	
-	void LoadGameMenu(int gameStatus);				// 加载游戏菜单
+	void LoadGameMenu();							// 加载游戏菜单
 
 	//音频播放，信息显示
 	void PlayGameSound();							// 管理游戏中各时间段背景声音播放
-	void DisplayInfo(HDC hdc);						//显示顶部游戏状态信息
+	void DisplayInfo(HDC hdc);						// 显示......如关卡加载中的信息
+	void ShowTitleInfo(HDC hdc);					// 显示顶部游戏状态信息
 	void ReleaseDXBuffer(AudioDXBuffer* dxBuf);		// 释放声音缓冲
 
+	//地图重定位
+	//void RePosition();
 };

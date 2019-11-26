@@ -22,7 +22,7 @@
 //
 class T_Menu
 {
-private:
+protected:
 	MENU_INFO menu_info;								// 菜单信息
 	
 	int m_index;										// 当前焦点菜单索引号

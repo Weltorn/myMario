@@ -48,6 +48,9 @@ T_Sprite::T_Sprite(LPCTSTR imgPath, int frameWidth, int frameHeight)
 
 	mapBlockPT.x = -1;
 	mapBlockPT.y = -1;
+
+
+	frameCount = 0;
 }
 
 T_Sprite::~T_Sprite(void)
@@ -106,6 +109,38 @@ void T_Sprite::LoopFrame(bool ahead)
 	}
 }
 
+void T_Sprite::LoopFrame(int times, bool ahead)
+{
+	frameCount++;
+
+	loopForward = ahead;
+	if (totalFrames>0)
+	{
+		if (ahead == true)
+		{
+			if (frameCount > times) {
+				forward = forward + 1;
+				if (forward > totalFrames - 1)
+				{
+					forward = 0;
+				}
+				frameCount = 0;
+			}
+
+		}
+		else
+		{
+			if (frameCount > times) {
+				backward = backward - 1;
+				if (backward < 0)
+				{
+					backward = totalFrames - 1;
+				}
+				frameCount = 0;
+			}
+		}
+	}
+}
 bool T_Sprite::LoopFrameOnce(bool ahead)
 {
 	loopForward = ahead;
@@ -162,7 +197,7 @@ void T_Sprite::Draw(HDC hdc)
 
 	if(&spImg != NULL)
 	{
-		if(Visible == true)
+		if(Visible == true)	
 		{
 			if(totalFrames==0)
 			{

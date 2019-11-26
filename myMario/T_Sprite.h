@@ -36,6 +36,8 @@ protected:
 	int		frameRotate;			// 帧图片旋转或翻转方式(取值为TRANSFER常量值)
 	BYTE	frameAlpha;				// 帧图片透明度(255不透明, 0完全透明)
 
+	int		frameCount;				// 用于维护自己独立的帧计数器
+
 	//……………………………………………………………………………………
 	// 与角色状态相关的属性
 	//……………………………………………………………………………………
@@ -155,6 +157,8 @@ public:
 
 	// 往前或往后循环播放所有帧
 	void LoopFrame(bool ahead = true);
+	// 往前或往后循环播放所有帧 times为引擎帧刷新速率与角色自定义帧刷新速率之比
+	void LoopFrame(int times, bool ahead = true);
 	// 往前或往后循环播放一轮所有帧
 	bool LoopFrameOnce(bool ahead = true);				
 	// 获取原始帧的长度

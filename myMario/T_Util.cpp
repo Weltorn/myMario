@@ -190,3 +190,20 @@ void T_Util::ChangeRGB(double *red, double *green, double *blue, double *lastRed
 		break;
 	}
 }
+
+
+
+// 从首次执行该函数开始，运行指定时间
+// 若时间到，则返回true 否则返回false
+bool T_Util::Timer(int seconds)
+{
+	if (beginTick == 0)
+		beginTick = GetTickCount();	//开始计时
+
+	if (GetTickCount() - beginTick >= seconds * 1000) {
+		beginTick = 0;
+		return true;
+	}
+	else
+		return false;
+}
