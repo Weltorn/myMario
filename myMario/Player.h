@@ -24,6 +24,7 @@ typedef struct {
 	int squatFrame;			//下蹲帧
 	int jumpFrame;			//跳跃帧
 	int deathFrame;			//死亡帧
+	int levelUpFrame;		//升级帧
 }PLAYERFRAME;
 
 //玩家能力设置
@@ -197,9 +198,9 @@ public:
 	bool isInEvent() { return inEvent; }
 	void startEvent(int eventId);
 	void playAnimation();
-	void endEvent(int eventId);
 
-	void playDeathAnimation();
+	void deathAnimation();
+	void levelUpAnimation();
 
 	void playerDeath(bool immediately);
 };

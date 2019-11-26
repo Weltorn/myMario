@@ -95,6 +95,11 @@ void Player::updatePositionY()
 	{
 		isBooting = false;
 	}
+	if (onPlantform && jumpStatus == 1)	//如果为下落到平台则解除跳跃状态
+	{
+		resetJump();
+	}
+	
 	gravityEffect();		//重力作用
 	lastY = Y;
 	Y = Y - speedY;
@@ -122,7 +127,6 @@ void Player::resetJump()
 //重力作用
 void  Player::gravityEffect()
 {
-	
 	float currentGravity = gravity;		//单击跳跃
 	if (jumpStatus == 0 && isBooting)	//长按跳跃
 	{
@@ -213,24 +217,11 @@ void Player::update()
 	
 	if (!inEvent)
 	{
-		if (checkOnplantForm(T_Scene::getBarrier()))
-		{
-			if (jumpStatus == 1)	//如果为下落状态则解除跳跃状态
-			{
-				resetJump();
-			}
-			Util::myprintf(L" on plantform now!-----------------------------------------------------\n");
-		}
+		checkOnplantForm(T_Scene::getBarrier());
+		
 		updatePosition();	//更新玩家坐标
 		CollideWith(T_Scene::getBarrier());	//玩家与障碍层碰撞检测
 		updateFrame();		//更新帧图
-	
-		if (onPlantform)
-		{
-			Util::myprintf(L"player death now!-----------------------------------------------------\n");
-			playerDeath(false);
-			onPlantform = false;
-		}
 	}
 	else
 	{
@@ -477,8 +468,7 @@ bool Player::CollideWith(IN T_Map* map)
 					(col+1)*map->getTileWidth() + (map->GetX()),(row+1)*map->getTileHeight() + (map->GetY()) };
 
 				int x = GetX(), y = GetY();		
-				GAME_DIR DIR = getCollideDir(blockRect);
-				
+				GAME_DIR DIR = getCollideDir(blockRect);				
 				switch (DIR)
 				{
 				case DIR_LEFT:
@@ -505,7 +495,7 @@ bool Player::CollideWith(IN T_Map* map)
 					break;
 				case DIR_DOWN:
 					x = GetX();
-					y = map->GetY() + row*map->getTileHeight() - GetRatioSize().cy;  //紧靠障碍上侧
+					y = map->GetY() + (row)*map->getTileHeight() - GetRatioSize().cy;  //紧靠障碍上侧
 					onPlantform = true;			
 					resetJump();
 					block = { col ,row ,DIR_UP };		//保存发生碰撞的地图块序列
@@ -591,6 +581,7 @@ void Player::startEvent(int eventId)
 	//解除运动状态
 	stopMove(true);
 	resetJump();
+	setSquat(false);
 	playAnimation();
 }
 void Player::playAnimation()
@@ -598,24 +589,23 @@ void Player::playAnimation()
 	switch (eventId)
 	{
 	case PLAYER_DEATH:
-		playDeathAnimation();
+		deathAnimation();
 		break;
 	case PLAYER_LEVELUP:
+		levelUpAnimation();
 		break;
 	case PLAYER_LEVELDOWN:
 		break;
 	case PLAYER_AFTERPOLE:
 		break;
 	default:
+		inEvent = false;
+		eventId = -1;
 		break;
 	}
 }
-void Player::endEvent(int eventId)
-{
 
-}
-
-void Player::playDeathAnimation()
+void Player::deathAnimation()
 {
 	currentFrmIndex = currentMode->frameMode.deathFrame;	//设置死亡帧
 	switch (currentStep)
@@ -639,6 +629,38 @@ void Player::playDeathAnimation()
 		break;
 	default:
 		playerDeath(true);
+		break;
+	}
+}
+void Player::levelUpAnimation()
+{	
+	switch (currentStep)
+	{
+	case 0:
+		setPlayerMode(PLAYER_BIGRED);
+		currentFrmIndex = currentMode->frameMode.stopFrame;
+		Y -= bigRedMode->frameMode.frameHeight - normalMode->frameMode.frameHeight;
+		SetAlpha(180);
+		++currentStep;
+		break;
+	case 1:
+		if (eventTimer + 1000 >= GetTickCount())
+		{
+			if (eventTimer + 100 <= GetTickCount())
+			{
+				currentFrmIndex = (currentFrmIndex == currentMode->frameMode.levelUpFrame) ?
+					currentMode->frameMode.stopFrame : currentMode->frameMode.levelUpFrame;				
+			}			
+		}
+		else
+		{
+			currentFrmIndex = currentMode->frameMode.stopFrame;
+			++currentStep;
+		}
+		break;
+	default:
+		inEvent = false;
+		eventId = -1;
 		break;
 	}
 }
