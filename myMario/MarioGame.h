@@ -6,6 +6,7 @@
 #include "T_Audio.h"
 #include "T_Menu.h"
 #include "Player.h"
+#include "MinionFactory.h"
 
 class MarioGame:public T_Engine
 {

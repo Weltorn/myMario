@@ -29,7 +29,7 @@ class T_Scene
 {
 protected:
 	SCENE_LAYERS sceneLayers;		// 保存游戏中场景图层的vector容器
-	Player* pPlayer;				// 玩家指针，包含在sceneLayers中
+	static Player* pPlayer;				// 玩家指针，包含在sceneLayers中
 	static T_Map* pBarrier;			// 碰撞图层指针，包含在sceneLayers中
 	static T_Map* pMask;			// 遮罩层指针，包含在sceneLayers中
 
@@ -59,6 +59,8 @@ public:
 	int getlastSceneY(){ return lastSceneY; }
 	// 获取场景中地图障碍图层
 	static T_Map* getBarrier(){ return pBarrier; }
+	// 获取场景中地图玩家图层
+	static T_Sprite* getPlayer() { return pPlayer; }
 	// 获取场景中地图遮罩图层
 	static T_Map* getMask(){ return pMask; }
 	void setMask(T_Map* mask) { pMask = mask; }

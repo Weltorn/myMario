@@ -72,6 +72,9 @@
     <ClCompile Include="GameMenu.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Goomba.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MarioGame.h">
@@ -138,6 +141,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="GameConfig.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Goomba.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

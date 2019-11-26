@@ -493,6 +493,15 @@ void MarioGame::LoadPlayer()
 	gameLayer.layer->setZorder(gameLayer.z_order);
 	gameScene->Append(gameLayer);
 	player->SetStartTime(GetTickCount());
+
+	Minion *minion= MinionFactory::getMinion(MINION_TYPE::MINION_GOOMBA,200,200);
+	gameLayer.layer = minion;
+	gameLayer.type_id = LAYER_TYPE::LAYER_NPC;
+	gameLayer.z_order = gameScene->getSceneLayers()->size() + 1;
+	gameLayer.layer->setZorder(gameLayer.z_order);
+	gameScene->Append(gameLayer);
+	gameScene->appendMinion(minion);
+
 }
 
 // ╪стьсно╥╡к╣╔

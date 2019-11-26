@@ -162,11 +162,14 @@ void  GameScene::update()
 	//更新怪物图层
 	LMinion::iterator p1;
 	LMinion::iterator p2;
-	for (p1 = pMinions.begin(); p1 != pMinions.end();)
+	for (p1 = pMinions.begin(); p1 != pMinions.end(); )
 	{
-		if ((*p1)->IsDead())
+		if (!(*p1)->IsDead())
+		{
 			(*p1)->update();
-		else if (!(*p1)->IsDead())		//怪物死亡，删除对象
+			p1++;
+		}			
+		else if ((*p1)->IsDead())		//怪物死亡，删除对象
 		{		
 			p2 = p1;
 			p1 = pMinions.erase(p2);
