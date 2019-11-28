@@ -61,6 +61,8 @@ T_Sprite::~T_Sprite(void)
 void T_Sprite::Initiate(SPRITEINFO spInfo)
 {								
 	SetPosition(spInfo.X, spInfo.Y);	// 角色坐标
+	lastX = spInfo.X;
+	lastY = spInfo.Y;
 	Visible = spInfo.Visible;			// 角色是否可见
 	dir = spInfo.Dir;					// 角色方向
 	active = spInfo.Active;				// 角色状态（是否移动）
@@ -391,6 +393,77 @@ int T_Sprite::GetDir(POINT mousePT)
 		dir = -1;			
 	}
 	return dir;
+}
+
+// 判断怪物与目标矩形的碰撞方向（相对于怪物的方向）
+GAME_DIR T_Sprite::getCollideDir(RECT target)
+{
+	RECT oldRect = *this->GetCollideRect();
+	RECT currentRect = *this->GetCollideRect();
+	oldRect.left = this->GetCollideRect()->left - (X - lastX);
+	oldRect.right = this->GetCollideRect()->right - (X - lastX);
+	oldRect.top = this->GetCollideRect()->top - (Y - lastY);
+	oldRect.bottom = this->GetCollideRect()->bottom - (Y - lastY);
+
+	if (oldRect.left >= target.right && this->GetCollideRect()->left <= target.right)
+	{
+		return DIR_LEFT;
+	}
+	if (oldRect.right <= target.left && this->GetCollideRect()->right >= target.left)
+	{
+		return DIR_RIGHT;
+	}
+	if (oldRect.top >= target.bottom && this->GetCollideRect()->top <= target.bottom)
+	{
+		return DIR_UP;
+	}
+	if (oldRect.bottom <= target.top && this->GetCollideRect()->bottom >= target.top)
+	{
+		return DIR_DOWN;
+	}
+	return DIR_NONE;
+}
+
+// 判断怪物与目标的碰撞方向（相对于怪物的方向）
+GAME_DIR T_Sprite::getCollideDir(T_Sprite* target, int distance)
+{
+	RECT currentRect = *this->GetCollideRect();
+	RECT oldRect = currentRect;
+	oldRect.left = currentRect.left - (X - lastX);
+	oldRect.right = currentRect.right - (X - lastX);
+	oldRect.top = currentRect.top - (Y - lastY);
+	oldRect.bottom = currentRect.bottom - (Y - lastY);
+
+	
+	RECT targetRect = *target->GetCollideRect();
+	targetRect.left = targetRect.left - distance;
+	targetRect.top = targetRect.top - distance;
+	targetRect.right = targetRect.right + distance;
+	targetRect.bottom = targetRect.bottom + distance;
+
+	RECT oldTargetRect = targetRect;
+	oldTargetRect.left = targetRect.left - (target->GetX() - target->getLastX());
+	oldTargetRect.right = targetRect.right - (target->GetX() - target->getLastX());
+	oldTargetRect.top = targetRect.top - (target->GetY() - target->getLastY());
+	oldTargetRect.bottom = targetRect.bottom - (target->GetY() - target->getLastY());
+
+	if (oldRect.left >= oldTargetRect.right && currentRect.left <= targetRect.right)
+	{
+		return DIR_LEFT;
+	}
+	if (oldRect.right <= oldTargetRect.left && currentRect.right >= targetRect.left)
+	{
+		return DIR_RIGHT;
+	}
+	if (oldRect.top >= oldTargetRect.bottom && currentRect.top <= targetRect.bottom)
+	{
+		return DIR_UP;
+	}
+	if (oldRect.bottom <= oldTargetRect.top && currentRect.bottom >= targetRect.top)
+	{
+		return DIR_DOWN;
+	}
+	return DIR_NONE;
 }
 
 // 检测地图碰撞

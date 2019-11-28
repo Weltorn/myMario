@@ -1,14 +1,24 @@
 #pragma once
 #include "Minion.h"
+#include "Player.h"
+class T_Scene;
+
 class Goomba :
 	public Minion
 {
+private:
+	bool crashed;	//ÊÇ·ñ±»Ñ¹±â×´Ì¬
 public:
 	Goomba::Goomba(LPCTSTR imgPath, int frameWidth, int frameHeight);
 	~Goomba();
 
-	//bool CollideWith(T_Sprite* target, int distance = 0);
-	//virtual void startEvent(int eventId);
-	//virtual void playAnimation();
+	virtual bool CollideWith(T_Sprite* target, int distance = 0);
+
+	virtual void playAnimation();
+
+	void dead(int deathType);	//0:ÂíÉÏËÀÍö£¬ÎÞ¶¯»­£»1£ºÑ¹±â£»2£º»÷·É
+	void crashedAnimate();
+	void turnOverAnimate();
+	void draw(HDC hdc);
 };
 

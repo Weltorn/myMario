@@ -55,7 +55,9 @@ enum EVENTTYPE
 	PLAYER_DEATH,
 	PLAYER_LEVELUP,
 	PLAYER_LEVELDOWN,
-	PLAYER_AFTERPOLE
+	PLAYER_AFTERPOLE,
+	NPC_DEATH_CRASH,
+	NPC_DEATH_TURNOVER
 };
 
 class Player :
@@ -98,10 +100,6 @@ private:
 	float friction;		//水平摩擦，控制惯性滑行距离	
 	float gravity;			//基础重力加速度
 	unsigned moveTimer;		//计时器
-
-	// ----- COLLISION
-	int lastX;			//上一次打印位置横坐标
-	int lastY;			//上一次打印位置纵坐标
 
 public:
 	Player(LPCTSTR imgPath, int frameWidth = 0, int frameHeight = 0);
@@ -187,10 +185,7 @@ public:
 	// 检测角色碰撞, distance检测碰撞的距离
 	virtual bool CollideWith(T_Sprite* target, int distance = 0)override { return false; }
 	// 检测地图碰撞
-	virtual bool CollideWith(IN T_Map* map)override;
-
-	// 判断玩家与目标矩形的碰撞方向（相对于玩家的方向）
-	GAME_DIR getCollideDir( RECT target);
+	virtual bool CollideWith(IN T_Map* map)override;	
 	// 检查玩家是否站在支持物上
 	bool checkOnplantForm(T_Map* map);
 

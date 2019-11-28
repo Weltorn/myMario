@@ -83,8 +83,6 @@ void Player::updatePositionX()
 			ispeedX = -abs(speedX);
 		else if (dir == DIR_RIGHT)
 			ispeedX = abs(speedX);
-
-		lastX = X;
 		X += ispeedX;
 	}
 }
@@ -100,8 +98,7 @@ void Player::updatePositionY()
 		resetJump();
 	}
 	
-	gravityEffect();		//重力作用
-	lastY = Y;
+	gravityEffect();		//重力作用	
 	Y = Y - speedY;
 	
 }
@@ -217,8 +214,7 @@ void Player::update()
 	
 	if (!inEvent)
 	{
-		checkOnplantForm(T_Scene::getBarrier());
-		
+		checkOnplantForm(T_Scene::getBarrier());		
 		updatePosition();	//更新玩家坐标
 		CollideWith(T_Scene::getBarrier());	//玩家与障碍层碰撞检测
 		updateFrame();		//更新帧图
@@ -356,7 +352,8 @@ void  Player::setPlayerMode(PLAYERSTATUS status)
 	setSquat(false);
 }
 void Player::Draw(HDC hdc) {
-	
+	lastX = X;
+	lastY = Y;
 	if (bSquat)
 	{
 		spImg.PaintRegion(spImg.GetBmpHandle(),hdc,X,Y,currentMode->frameMode.frameWidth *currentFrmIndex,
@@ -510,34 +507,6 @@ bool Player::CollideWith(IN T_Map* map)
 	(dynamic_cast<GameMap*>(map))->setCollideBlocks(collideBlocks); //刷新碰撞地图块
 	return isCollide;
 }
-GAME_DIR Player::getCollideDir(RECT target)
-{
-	RECT oldRect = *this->GetCollideRect();
-	RECT currentRect = *this->GetCollideRect();
-	oldRect.left = this->GetCollideRect()->left-(X-lastX);
-	oldRect.right = this->GetCollideRect()->right - (X - lastX);
-	oldRect.top = this->GetCollideRect()->top -(Y-lastY);
-	oldRect.bottom = this->GetCollideRect()->bottom - (Y - lastY);
-	
-	Util::myprintf(L" lastposX: %d,posX: %d\n,target.right: %d\n", oldRect.right, this->GetCollideRect()->right, target.left);
-	if (oldRect.left >= target.right && this->GetCollideRect()->left <= target.right)
-	{
-		return DIR_LEFT;
-	}
-	if (oldRect.right <= target.left && this->GetCollideRect()->right >= target.left)
-	{
-		return DIR_RIGHT;
-	}
- 	if (oldRect.top >= target.bottom && this->GetCollideRect()->top<=target.bottom )
-	{
-		return DIR_UP;
-	}
-	if (oldRect.bottom <=target.top && this->GetCollideRect()->bottom >= target.top)
-	{
-		return DIR_DOWN;
-	}	
-	return DIR_NONE;
-}
 bool Player::checkOnplantForm(T_Map* map)
 {
 	if (jumpStatus == 0) {
@@ -579,6 +548,7 @@ void Player::startEvent(int eventId)
 	eventTimer = GetTickCount();
 	
 	//解除运动状态
+	onPlantform = false;
 	stopMove(true);
 	resetJump();
 	setSquat(false);
@@ -622,7 +592,7 @@ void Player::deathAnimation()
 		break;
 	case 2:
 		updatePosition();
-		if (X + GetRatioSize().cy >= T_Scene::getBarrier()->GetHeight())
+		if (Y - GetRatioSize().cy >= T_Scene::getBarrier()->GetHeight())
 		{
 			++currentStep;
 		}
@@ -668,6 +638,7 @@ void Player::playerDeath(bool immediately)
 {
 	if (immediately)
 	{
+		active = false;
 		if(lifeCount>0)
 		{ 
 			lifeCount--;

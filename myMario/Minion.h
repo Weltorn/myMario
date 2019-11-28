@@ -18,7 +18,7 @@ enum MINION_TYPE
 class Minion :
 	public T_Sprite
 {
-private:
+protected:
 	MINION_TYPE minionType;		//怪物类型
 
 	//状态信息
@@ -33,11 +33,7 @@ private:
 	unsigned eventTimer;
 	bool inEvent;					//是否在游戏事件中
 	int eventId;					//变大、变小、死亡
-	int currentStep;
-
-	// ----- COLLISION
-	int lastX;			//上一次打印位置横坐标
-	int lastY;			//上一次打印位置纵坐标
+	int currentStep;	
 public:
 	Minion(LPCTSTR imgPath, int frameWidth, int frameHeight);
 	~Minion();
@@ -47,8 +43,6 @@ public:
 		this->minionType = minionType;
 	}
 
-	// 判断怪物与目标矩形的碰撞方向（相对于怪物的方向）
-	GAME_DIR getCollideDir(RECT target);
 	virtual bool CollideWith(IN T_Map* map);
 	virtual bool CollideWith(T_Sprite* target, int distance = 0);
 
@@ -71,6 +65,7 @@ public:
 	bool isInEvent() { return inEvent; }
 	virtual void startEvent(int eventId);
 	virtual void playAnimation();
+	virtual void draw(HDC hdc) {}
 
 };
 

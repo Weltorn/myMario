@@ -7,38 +7,10 @@ Minion::Minion(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	:T_Sprite(imgPath, frameWidth, frameHeight)
 {
 	gravity = 4;
+	inEvent = false;
 }
 Minion::~Minion()
 {
-}
-
-// 判断怪物与目标矩形的碰撞方向（相对于怪物的方向）
-GAME_DIR Minion::getCollideDir(RECT target)
-{
-	RECT oldRect = *this->GetCollideRect();
-	RECT currentRect = *this->GetCollideRect();
-	oldRect.left = this->GetCollideRect()->left - (X - lastX);
-	oldRect.right = this->GetCollideRect()->right - (X - lastX);
-	oldRect.top = this->GetCollideRect()->top - (Y - lastY);
-	oldRect.bottom = this->GetCollideRect()->bottom - (Y - lastY);
-
-	if (oldRect.left >= target.right && this->GetCollideRect()->left <= target.right)
-	{
-		return DIR_LEFT;
-	}
-	if (oldRect.right <= target.left && this->GetCollideRect()->right >= target.left)
-	{
-		return DIR_RIGHT;
-	}
-	if (oldRect.top >= target.bottom && this->GetCollideRect()->top <= target.bottom)
-	{
-		return DIR_UP;
-	}
-	if (oldRect.bottom <= target.top && this->GetCollideRect()->bottom >= target.top)
-	{
-		return DIR_DOWN;
-	}
-	return DIR_NONE;
 }
 
 bool Minion::CollideWith(IN T_Map* map)
@@ -112,7 +84,6 @@ bool Minion::CollideWith(IN T_Map* map)
 	int startCol = (spLeft <= mapLeft) ? 0 : (spLeft - mapLeft) / tW;
 	int endCol = (spRight < mapRight) ? (spRight - 1 - mapLeft) / tW : tNumCols - 1;
 
-	COLLIDBLOCKS collideBlocks;
 	// 根据角色矩形上、下、左、右的矩形区域判断哪个矩形区域为障碍
 	for (int row = startRow; row <= endRow; ++row)
 	{
@@ -124,8 +95,6 @@ bool Minion::CollideWith(IN T_Map* map)
 				isCollide = true;
 				mapBlockPT.x = col;	// 记录当前障碍图块的列
 				mapBlockPT.y = row;	// 记录当前障碍图块的行
-
-				COLLIDBLOCK block;
 
 				//碰撞的地图块
 				RECT blockRect = { col*map->getTileWidth() + (map->GetX()) ,row*map->getTileHeight() + (map->GetY()),
@@ -162,7 +131,6 @@ bool Minion::CollideWith(IN T_Map* map)
 			}
 		}
 	}
-	(dynamic_cast<GameMap*>(map))->setCollideBlocks(collideBlocks); //刷新碰撞地图块
 	return isCollide;
 }
 
@@ -181,6 +149,7 @@ void Minion::updatePosition()
 void Minion::updatePositionY()
 {
 	gravityEffect();		//重力作用
+
 	lastY = Y;
 	Y = Y - speedY;
 }
@@ -193,7 +162,6 @@ void Minion::updatePositionX()
 		ispeedX = -abs(speedX);
 	else if (dir == DIR_RIGHT)
 		ispeedX = abs(speedX);
-
 	lastX = X;
 	X += ispeedX;
 }
@@ -211,7 +179,7 @@ void Minion::updateFrame()
 	}
 
 	//帧图选择
-	LoopFrame();
+	LoopFrame(12,true);
 	currentFrmIndex = frameSequence[forward];
 
 
@@ -225,9 +193,12 @@ void Minion::update()
 		{
 			speedY = 0;
 		}
+		if (T_Scene::getPlayer()->IsActive())//玩家层碰撞检测
+		{
+			CollideWith(T_Scene::getPlayer());	
+		}
 		updatePosition();					//更新坐标
-		CollideWith(T_Scene::getBarrier());	//障碍层碰撞检测
-		CollideWith(T_Scene::getPlayer());	//玩家层碰撞检测
+		CollideWith(T_Scene::getBarrier());	//障碍层碰撞检测		
 		updateFrame();						//更新帧图
 	}
 	else
@@ -297,22 +268,5 @@ void Minion::startEvent(int eventId)
 
 //播放事件动画
 void Minion::playAnimation()
-{
-	switch (eventId)
-	{
-	case PLAYER_DEATH:
-		
-		break;
-	case PLAYER_LEVELUP:
-		
-		break;
-	case PLAYER_LEVELDOWN:
-		break;
-	case PLAYER_AFTERPOLE:
-		break;
-	default:
-		inEvent = false;
-		eventId = -1;
-		break;
-	}
+{	
 }
