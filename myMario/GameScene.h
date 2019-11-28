@@ -13,4 +13,8 @@ public:
 	virtual bool LoadTxtMap(const char* txtmap_path);
 	void update();
 	void RePosition(int wnd_width, int wnd_height);			// 地图重定位
+
+	// 加载参数指定的地图文件，解析其中的地图数据，并保存到场景图层中
+	//virtual bool LoadTxtMap(const char* txtmap_path);
+
 };

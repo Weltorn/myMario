@@ -227,9 +227,9 @@ void Player::update()
 	
 		if (onPlantform)
 		{
-			Util::myprintf(L"player death now!-----------------------------------------------------\n");
-			playerDeath(false);
-			onPlantform = false;
+			//Util::myprintf(L"player death now!-----------------------------------------------------\n");
+			//playerDeath(false);
+			//onPlantform = false;
 		}
 	}
 	else
