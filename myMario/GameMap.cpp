@@ -1,4 +1,5 @@
 #include "GameMap.h"
+#include "NormalBrick.h"
 
 
 GameMap::GameMap(LAYERINFO layerInfo)
@@ -21,5 +22,213 @@ GameMap::~GameMap()
 void GameMap::update()
 {	
 	//更新砖块状态
+	for (int i = 0; i < pBricks.size(); i++)
+	{
+		// 设置Mario新碰撞到的砖块Active属性
+		for (int j = 0; j < collideBlocks.size(); j++)
+		{
+			// 更具行、列索引找到指定砖块 且若该砖块不处于活跃状态
+			if (collideBlocks[j].col == pBricks[i]->getCol() && collideBlocks[i].row == pBricks[i]->getRow() && pBricks[i]->IsActive() == false)
+				pBricks[i]->SetActive(true);
+		}
 
+		// 更新活跃状态砖块
+		if (pBricks[i]->IsActive()) {
+			int lastY = dynamic_cast<NormalBrick *>(pBricks[i])->getLastY();
+			int Y = pBricks[i]->GetY();
+			//上移
+			if (Y <= lastY )
+			{
+				dynamic_cast<NormalBrick *>(pBricks[i])->setLastY(Y);		// 记录移动前的坐标位置
+				pBricks[i]->SetY(Y - pBricks[i]->GetHeight()/6);			// 上移1/6个身位
+			}
+			updated = true;
+			// 下移
+		/*	else if (Y > lastY)
+			{
+				
+			}*/
+		}
+			
+	}
+}
+
+//根据参数type以及地图数据 生成指定的砖对象并存放于pBricks中
+void GameMap::CreateBricks(BRICK_TYPE type)
+{
+	for (int i = 0; i < layer_data.size(); i++)
+	{
+		for (int j = 0; j < layer_data[0].size(); j++)
+		{
+			if(layer_data[i][j] != 0)
+				pBricks.push_back(BrickFactory::getBrick(type, j, i));
+		}
+	}
+
+}
+
+// 重新绘制当前图层全部图块
+void GameMap::Redraw(HDC hdc)
+{
+	// 由对象构成的图层
+	if (pBricks.size() != 0) {
+
+		int width = (int)GetWidth();
+		int height = (int)GetHeight();
+
+		SelectObject(dc_buf, hbmp_old);
+		DeleteObject(hbmp_layer);
+		hbmp_layer = NULL;
+		hbmp_layer = T_Graph::CreateBlankBitmap(width, height, Color::White);
+		hbmp_old = (HBITMAP)SelectObject(dc_buf, hbmp_layer);
+
+		if (Visible == true)
+		{
+			int tileIndex = 0;
+
+			int tX = 0, tY = 0;
+			int r = 0, c = 0;
+			int img_col = 0, img_row = 0;
+
+			int tileImageWidth = graph->GetImageWidth();
+			HDC memDC = CreateCompatibleDC(hdc);
+			HBITMAP OldMemBmp = (HBITMAP)SelectObject(memDC, graph->GetBmpHandle());
+
+			for (int i = 0; i < pBricks.size(); i++)
+			{
+				pBricks[i]->Draw(dc_buf);
+
+			}
+			//还原：使用原来对象替换内存设备中的位图对象
+			SelectObject(memDC, OldMemBmp);
+			DeleteDC(memDC);//删除内存设备
+			DeleteObject(OldMemBmp);//删除位图对象
+			updated = false;
+		}
+
+
+
+
+		updated = false;
+	}
+
+	// 由图块构成的图层
+	else if (graph->GetImageHeight()>0 && graph->GetImageWidth()>0)
+	{
+		int width = (int)GetWidth();
+		int height = (int)GetHeight();
+
+		SelectObject(dc_buf, hbmp_old);
+		DeleteObject(hbmp_layer);
+		hbmp_layer = NULL;
+		hbmp_layer = T_Graph::CreateBlankBitmap(width, height, Color::White);
+		hbmp_old = (HBITMAP)SelectObject(dc_buf, hbmp_layer);
+
+		if (Visible == true)
+		{
+			int tileIndex = 0;
+
+			int tX = 0, tY = 0;
+			int r = 0, c = 0;
+			int img_col = 0, img_row = 0;
+
+			int tileImageWidth = graph->GetImageWidth();
+			HDC memDC = CreateCompatibleDC(hdc);
+			HBITMAP OldMemBmp = (HBITMAP)SelectObject(memDC, graph->GetBmpHandle());
+
+			for (r = 0, tY = 0; r < map_rows; r++, tY += tile_height)
+			{
+				for (c = 0, tX = 0; c < map_cols; c++, tX += tile_width)
+				{
+					int imgTotalCols = tileImageWidth / tile_width;
+					tileIndex = layer_data[r][c];
+					//得到图片上的行列号
+					if (first_gid == 1)
+					{
+						//得到图片上的行列号
+						img_col = (tileIndex - 1) % imgTotalCols;
+						img_row = (tileIndex - 1) / imgTotalCols;
+					}
+					else
+					{
+						img_col = tileIndex % imgTotalCols;
+						img_row = tileIndex / imgTotalCols;
+					}
+
+					BLENDFUNCTION frame_bf;
+					frame_bf.BlendOp = AC_SRC_OVER;
+					frame_bf.BlendFlags = 0;
+					frame_bf.SourceConstantAlpha = 255;
+					frame_bf.AlphaFormat = AC_SRC_ALPHA;
+					AlphaBlend(
+						dc_buf, tX, tY, tile_width, tile_height,
+						memDC, img_col*tile_width, img_row*tile_height,
+						tile_width, tile_height, frame_bf
+					);
+				}
+			}
+			//还原：使用原来对象替换内存设备中的位图对象
+			SelectObject(memDC, OldMemBmp);
+			DeleteDC(memDC);//删除内存设备
+			DeleteObject(OldMemBmp);//删除位图对象
+			updated = false;
+		}
+	}
+}
+
+// 图层绘制
+void GameMap::Draw(HDC hdc)
+{
+	//绘制背景图像
+	if (tile_width == 0 && tile_height == 0)
+	{
+		if (graph->GetImageHeight()>0 && graph->GetImageWidth()>0)
+		{
+			graph->PaintImage(hdc, (int)X, (int)Y);
+		}
+	}
+	// 由多个对象（砖）组成的图层
+	else if (pBricks.size() != 0)
+	{
+		if (updated == true) {
+			Redraw(hdc);
+		}
+		if (updated == false) {
+		//	if(collideBlocks.size() != 0)
+				update();
+			BLENDFUNCTION frame_bf;
+			frame_bf.BlendOp = AC_SRC_OVER;
+			frame_bf.BlendFlags = 0;
+			frame_bf.SourceConstantAlpha = 255;
+			frame_bf.AlphaFormat = AC_SRC_ALPHA;
+
+			AlphaBlend(
+				hdc, (int)X, (int)Y, (int)GetWidth(), (int)GetHeight(),
+				dc_buf, 0, 0, (int)GetWidth(), (int)GetHeight(), frame_bf
+			);
+		}
+
+	}
+	//绘制由Tiles组成的地图图块
+	else if (tile_width > 0 && tile_height > 0)
+	{
+		if (updated == true)
+		{
+			Redraw(hdc);
+		}
+
+		if (updated == false)
+		{
+			BLENDFUNCTION frame_bf;
+			frame_bf.BlendOp = AC_SRC_OVER;
+			frame_bf.BlendFlags = 0;
+			frame_bf.SourceConstantAlpha = 255;
+			frame_bf.AlphaFormat = AC_SRC_ALPHA;
+
+			AlphaBlend(
+				hdc, (int)X, (int)Y, (int)GetWidth(), (int)GetHeight(),
+				dc_buf, 0, 0, (int)GetWidth(), (int)GetHeight(), frame_bf
+			);
+		}
+	}
 }

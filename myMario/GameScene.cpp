@@ -70,10 +70,9 @@ bool GameScene::LoadTxtMap(const char* txtmap_path)
 		GetTxtMapValue(line_str, L"tile_grid_id", layerInfo.first_gid);
 		GetTxtMapValue(line_str, L"back_layer_name", bkgName);
 		GetTxtMapValue(line_str, L"barrier_layer_name", barrierName);
-		GetTxtMapValue(line_str, L"minion_layer_name", minionName);
-		GetTxtMapValue(line_str, L"normal_brick_layer_name", normalBrickName);
 		GetTxtMapValue(line_str, L"prop_brick_layer_name", propBrickname);
-
+		GetTxtMapValue(line_str, L"normal_brick_layer_name", normalBrickName);
+		GetTxtMapValue(line_str, L"minion_layer_name", minionName);
 		GetTxtMapValue(line_str, L"mask_layer_name", maskName);
 
 		// 查找是否有layer标记, 并获取对应的图层名称
@@ -105,7 +104,7 @@ bool GameScene::LoadTxtMap(const char* txtmap_path)
 				startReadMapData = false;
 				// 解析出字符串中的图层数据
 				parseCsvData(mapdata, layerInfo);
-				// 用图层数据构造T_Map对象
+				// 用图层数据构造GameMap对象
 				mapLayer.layer = new GameMap(layerInfo);
 				// 判断当前图层是否为背景图层
 				if (currentlayerName == bkgName &&
@@ -116,7 +115,7 @@ bool GameScene::LoadTxtMap(const char* txtmap_path)
 					layerInfo.type_id = LAYER_MAP_BACK;
 				}
 				// 判断当前图层是否为障碍图层
-				if (currentlayerName == barrierName &&
+				else if (currentlayerName == barrierName &&
 					currentlayerName != L"" && barrierName != L"")
 				{
 					pBarrier = (GameMap*)mapLayer.layer;//指定碰撞图层
@@ -125,9 +124,8 @@ bool GameScene::LoadTxtMap(const char* txtmap_path)
 					layerInfo.type_id = LAYER_MAP_BARR;
 
 				}
-
 				//如果为遮罩层,则z_order为LAYER_MAX
-				if (currentlayerName == maskName &&
+				else if (currentlayerName == maskName &&
 					currentlayerName != L"" && maskName != L"")
 				{
 					mapLayer.z_order = LAYER_MAX;
@@ -136,6 +134,41 @@ bool GameScene::LoadTxtMap(const char* txtmap_path)
 					mapLayer.layer->SetLayerTypeID(LAYER_MAP_MASK);
 					mapLayer.type_id = LAYER_MAP_MASK;
 					layerInfo.type_id = LAYER_MAP_MASK;
+				}
+				//如果为怪物层,则z_order为LAYER_MAX
+				else if (currentlayerName == minionName &&
+					currentlayerName != L"" && minionName != L"")
+				{
+					continue;
+				//	mapLayer.z_order = layerCount;
+				//	mapLayer.layer->setZorder(layerCount);
+				}
+				//如果为普通砖层,则z_order为LAYER_MAX
+				else if (currentlayerName == normalBrickName &&
+					currentlayerName != L"" && normalBrickName != L"")
+				{
+				//	continue;
+					mapLayer.z_order = LAYER_MAX;
+					mapLayer.layer->setZorder(LAYER_MAX);
+					//父指针无法直接调用子类函数
+					dynamic_cast<GameMap *>(mapLayer.layer)->CreateBricks(NORMAL_BRICK);
+					pNormalBrick = (GameMap*)mapLayer.layer;
+					//	pMask = (GameMap*)mapLayer.layer;
+					mapLayer.layer->SetLayerTypeID(LAYER_NORMAL_BRICK);
+					mapLayer.type_id = LAYER_NORMAL_BRICK;
+					layerInfo.type_id = LAYER_NORMAL_BRICK;
+				}
+				//如果为道具转层,则z_order为LAYER_MAX
+				else if (currentlayerName == propBrickname &&
+					currentlayerName != L"" && propBrickname != L"")
+				{
+					mapLayer.z_order = LAYER_MAX;
+					mapLayer.layer->setZorder(LAYER_MAX);
+				//	pMask = (GameMap*)mapLayer.layer;
+					mapLayer.layer->SetLayerTypeID(LAYER_PROP_BRICK);
+					mapLayer.type_id = LAYER_PROP_BRICK;
+					layerInfo.type_id = LAYER_PROP_BRICK;
+					//continue;
 				}
 				else
 				{

@@ -32,6 +32,7 @@ protected:
 	Player* pPlayer;				// 玩家指针，包含在sceneLayers中
 	static T_Map* pBarrier;			// 碰撞图层指针，包含在sceneLayers中
 	static T_Map* pMask;			// 遮罩层指针，包含在sceneLayers中
+	static T_Map* pNormalBrick;		// 遮罩层指针，包含在sceneLayers中
 
 	int SceneWidth, SceneHeight;	// 整个场景的宽、高
 	int WinWidth, WinHeight;		// 窗口的宽、高
@@ -60,8 +61,12 @@ public:
 	// 获取场景中地图障碍图层
 	static T_Map* getBarrier(){ return pBarrier; }
 	// 获取场景中地图遮罩图层
-	static T_Map* getMask(){ return pMask; }
+	static T_Map* getMask() { return pMask; }
 	void setMask(T_Map* mask) { pMask = mask; }
+	// 获取场景中砖块层
+	static T_Map* getNormalBrick() { return pNormalBrick; }
+	void setNormalBrick(T_Map* mask) { pNormalBrick = mask; }
+
 	// 场景中图层总数
 	int GetTotalLayers(){ return (int)(sceneLayers.size()); }
 	// 获取场景图层容器对象

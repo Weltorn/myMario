@@ -43,8 +43,8 @@ typedef struct {
 
 //Åö×²¿é
 typedef struct {
-	int x;
-	int y;
+	int col;
+	int row;
 	GAME_DIR dir;
 }COLLIDBLOCK;
 typedef vector<COLLIDBLOCK> COLLIDBLOCKS;

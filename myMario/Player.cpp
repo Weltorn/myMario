@@ -223,6 +223,7 @@ void Player::update()
 		}
 		updatePosition();	//更新玩家坐标
 		CollideWith(T_Scene::getBarrier());	//玩家与障碍层碰撞检测
+		CollideWith(T_Scene::getNormalBrick());	//玩家与障碍层碰撞检测
 		updateFrame();		//更新帧图
 	
 		if (onPlantform)
@@ -486,14 +487,14 @@ bool Player::CollideWith(IN T_Map* map)
 					y = GetY();
 					speedX = 0;					
 					block = { col ,row ,DIR_RIGHT};		//保存发生碰撞的地图块序列
-					collideBlocks.push_back(block);
+					//collideBlocks.push_back(block);
 					break;
 				case DIR_RIGHT:					
 					x = map->GetX() + col*map->getTileWidth()-GetRatioSize().cx;
 					y = GetY();
 					speedX = 0;				
 					block = { col ,row ,DIR_LEFT };		//保存发生碰撞的地图块序列
-					collideBlocks.push_back(block);
+					//collideBlocks.push_back(block);
 					break;
 				case DIR_UP:
 					x = GetX();
@@ -509,7 +510,7 @@ bool Player::CollideWith(IN T_Map* map)
 					onPlantform = true;			
 					resetJump();
 					block = { col ,row ,DIR_UP };		//保存发生碰撞的地图块序列
-					collideBlocks.push_back(block);
+			//		collideBlocks.push_back(block);
 					break;
 				}
 				// 将角色定位在障碍物边界
@@ -518,6 +519,8 @@ bool Player::CollideWith(IN T_Map* map)
 		}
 	}
 	(dynamic_cast<GameMap*>(map))->setCollideBlocks(collideBlocks); //刷新碰撞地图块
+	if (collideBlocks.size() != 0)
+		int a = 0;
 	return isCollide;
 }
 GAME_DIR Player::getCollideDir(RECT target)

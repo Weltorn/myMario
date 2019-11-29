@@ -11,8 +11,16 @@ enum BRICK_TYPE
 class Brick :
 	public T_Sprite
 {
+protected:
+	int col;
+	int row;
+//	bool isActive;		
 public:
 	Brick(LPCTSTR imgPath, int frameWidth, int frameHeight);
 	~Brick();
+	void setCol(int c) { col = c; }
+	void setRow(int r) { row = r; }
+	int getCol() { return col; }
+	int getRow() { return row; }
 };
 

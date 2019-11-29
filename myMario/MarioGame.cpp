@@ -22,7 +22,7 @@ MarioGame::~MarioGame(void)
 void MarioGame::GameInit() 
 {
 	gameLevel = 1;
-	GameState = GAME_START;			//调试 ABOUT_MENU
+	GameState = GAME_RUN;			//调试 ABOUT_MENU
 	LoadGameLevel(gameLevel);		//加载关卡资源、地图、玩家
 	LoadGameMenu();					//加载主菜单	
 }
@@ -383,7 +383,7 @@ void MarioGame::GameMouseAction(int x, int y, int Action)
 // 加载游戏地图场景,可包括背景、障碍、遮罩层
 void MarioGame::LoadMap()
 {
-	if (!gameScene->LoadTxtMap("res\\map\\marioMapReDraw.txt"))
+	if (!gameScene->LoadTxtMap("res\\map\\marioMapReDraw2.txt"))
 	{
 		Util::myprintf(L"Load map failure!\n");
 		exit(1);
