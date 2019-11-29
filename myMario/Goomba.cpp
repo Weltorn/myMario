@@ -37,7 +37,7 @@ bool Goomba::CollideWith(T_Sprite* target, int distance)
 		case DIR_RIGHT:	
 			if (target->GetLayerTypeID() == LAYER_TYPE::LAYER_PLY&&target->IsActive())
 			{
-				Util::myprintf(L"minion and player collide now -----------------------\n");
+				Util::myprintf(L"minion and player left or right collide now -----------------------\n");
 				(dynamic_cast<Player*>(target))->playerDeath(false);
 			}		
 			break;
@@ -46,7 +46,8 @@ bool Goomba::CollideWith(T_Sprite* target, int distance)
 			{
 				(dynamic_cast<Player*>(target))->startJump();
 				(dynamic_cast<Player*>(target))->stopBooting();
-				dead(1);	//±»Ñ¹±â
+				//dead(1);	//±»Ñ¹±â
+				dead(2);	//±»»÷·É
 			}
 			break;
 		case DIR_DOWN:
@@ -106,11 +107,13 @@ void Goomba::turnOverAnimate()
 	{
 	case 0:
 		SetRotation(TRANS_VFLIP_NOROT);	//´¹Ö±·­×ª
-		speedY = 12;
+		onPlantform = false;
+		speedY = 6;
 		speedX = 2;
 		++currentStep;
 		break;
 	case 1:
+		gravityEffect();
 		updatePosition();
 		if (Y - GetRatioSize().cy >= T_Scene::getBarrier()->GetHeight())
 		{

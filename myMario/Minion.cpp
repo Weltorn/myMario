@@ -237,11 +237,11 @@ void  Minion::gravityEffect()
 {
 	float currentGravity = gravity;		//单击跳跃	
 	
-	if (!onPlantform && (GetTickCount() - timer)* currentGravity / 270 >abs(speedY))
+	if (!onPlantform && (GetTickCount() - timer)* currentGravity / 270 >6-abs(speedY))
 	{
 		speedY -= 1;	
 	}	
-	if (speedY == 0)		//更新计时器
+	if (onPlantform)		//更新计时器
 	{
 		timer = GetTickCount();
 	}
