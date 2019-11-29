@@ -13,12 +13,12 @@ public:
 	~Goomba();
 
 	virtual bool CollideWith(T_Sprite* target, int distance = 0);
-
+	virtual void updateFrame();
 	virtual void playAnimation();
 
 	void dead(int deathType);	//0:马上死亡，无动画；1：压扁；2：击飞
 	void crashedAnimate();
 	void turnOverAnimate();
-	void draw(HDC hdc);
+	virtual void Draw(HDC hdc) override;
 };
 

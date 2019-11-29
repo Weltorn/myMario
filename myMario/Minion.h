@@ -65,7 +65,7 @@ public:
 	bool isInEvent() { return inEvent; }
 	virtual void startEvent(int eventId);
 	virtual void playAnimation();
-	virtual void draw(HDC hdc) {}
+	virtual void Draw(HDC hdc)override {}
 
 };
 

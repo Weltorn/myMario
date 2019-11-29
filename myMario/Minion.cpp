@@ -181,8 +181,6 @@ void Minion::updateFrame()
 	//帧图选择
 	LoopFrame(12,true);
 	currentFrmIndex = frameSequence[forward];
-
-
 }
 void Minion::update()
 {
@@ -193,13 +191,10 @@ void Minion::update()
 		{
 			speedY = 0;
 		}
-		if (T_Scene::getPlayer()->IsActive())//玩家层碰撞检测
-		{
-			CollideWith(T_Scene::getPlayer());	
-		}
+			
 		updatePosition();					//更新坐标
 		CollideWith(T_Scene::getBarrier());	//障碍层碰撞检测		
-		updateFrame();						//更新帧图
+		updateFrame();						//更新帧图		
 	}
 	else
 	{
@@ -263,7 +258,6 @@ void Minion::startEvent(int eventId)
 
 	speedX = 0;
 	speedY = 0;
-	playAnimation();
 }
 
 //播放事件动画

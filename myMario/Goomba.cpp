@@ -45,7 +45,7 @@ bool Goomba::CollideWith(T_Sprite* target, int distance)
 			{
 				(dynamic_cast<Player*>(target))->startJump();
 				(dynamic_cast<Player*>(target))->stopBooting();
-				//dead(1);	//被压扁
+				dead(1);	//被压扁
 			}
 			break;
 		case DIR_DOWN:
@@ -63,6 +63,7 @@ void Goomba::dead(int deathType)
 	{
 	case 0 :
 		SetDead(true);
+		SetVisible(false);
 		SetActive(false);
 		break;
 	case 1:
@@ -87,14 +88,15 @@ void Goomba::crashedAnimate()
 		++currentStep;
 		break;
 	case 1:			
-		if (eventTimer + 1500 >= GetTickCount())	//显示被压扁的状态1.5秒
+		if (eventTimer + 1500 <= GetTickCount())	//显示被压扁的状态1.5秒
 		{
 			++currentStep;
 		}
 		break;
 	default:
-		inEvent = false;
-		eventId = -1;
+		Util::myprintf(L"goomba crash end\n --------------------------------------");
+		dead(0);
+		break;
 	}
 }
 void Goomba::turnOverAnimate()
@@ -136,9 +138,28 @@ void Goomba::playAnimation()
 		break;
 	}
 }
-void Goomba::draw(HDC hdc)
+
+//更新帧图
+void Goomba::updateFrame()
 {
-	
+	//朝向控制
+	if (dir == DIR_LEFT)
+	{
+		frameRotate = TRANS_HFLIP_NOROT;
+	}
+	else if (dir == DIR_RIGHT)
+	{
+		frameRotate = TRANS_NONE;
+	}
+	if (active)
+	{
+		//帧图选择
+		LoopFrame(12, true);
+		currentFrmIndex = frameSequence[forward];
+	}
+}
+void Goomba::Draw(HDC hdc)
+{	
 	spImg.PaintFrame(
 		spImg.GetBmpHandle(), hdc, (int)X, (int)Y, currentFrmIndex,
 		frameCols, Width, Height, frameRatio, frameRotate, frameAlpha
