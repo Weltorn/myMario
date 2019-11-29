@@ -43,7 +43,7 @@ Player::~Player()
 //更新玩家横坐标
 void Player::updatePositionX()
 {
-	Util::myprintf(L"current speedx: %d\n", speedX);
+	//Util::myprintf(L"current speedx: %d\n", speedX);
 
 	if (!bSquat)		//非下蹲状态下可水平移动
 	{
@@ -142,7 +142,7 @@ void  Player::gravityEffect()
 			jumpStatus = 1;
 		}
 		
-	Util::myprintf(L"current SpeedY: %d\n", speedY);
+	//Util::myprintf(L"current SpeedY: %d\n", speedY);
 	
 }
 //更新玩家坐标
@@ -221,7 +221,6 @@ void Player::update()
 	}
 	else
 	{
-		Util::myprintf(L"play animation now!-----------------------------------------------------\n");
 		playAnimation();
 	}
 	

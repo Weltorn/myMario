@@ -37,6 +37,7 @@ bool Goomba::CollideWith(T_Sprite* target, int distance)
 		case DIR_RIGHT:	
 			if (target->GetLayerTypeID() == LAYER_TYPE::LAYER_PLY&&target->IsActive())
 			{
+				Util::myprintf(L"minion and player collide now -----------------------\n");
 				(dynamic_cast<Player*>(target))->playerDeath(false);
 			}		
 			break;
@@ -160,6 +161,9 @@ void Goomba::updateFrame()
 }
 void Goomba::Draw(HDC hdc)
 {	
+	lastX = X;
+	lastY = Y;
+
 	spImg.PaintFrame(
 		spImg.GetBmpHandle(), hdc, (int)X, (int)Y, currentFrmIndex,
 		frameCols, Width, Height, frameRatio, frameRotate, frameAlpha

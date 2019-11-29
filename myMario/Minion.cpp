@@ -150,7 +150,7 @@ void Minion::updatePositionY()
 {
 	gravityEffect();		//重力作用
 
-	lastY = Y;
+	
 	Y = Y - speedY;
 }
 //水平移动						
@@ -162,7 +162,7 @@ void Minion::updatePositionX()
 		ispeedX = -abs(speedX);
 	else if (dir == DIR_RIGHT)
 		ispeedX = abs(speedX);
-	lastX = X;
+	
 	X += ispeedX;
 }
 //更新帧图
