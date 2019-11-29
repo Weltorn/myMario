@@ -38,8 +38,8 @@ Minion* MinionFactory::getMinion(MINION_TYPE type, int px, int py)
 		minion_Info.SpeedX = 1;
 		minion_Info.SpeedY = 0;
 		minion_Info.Alpha = 255;
-		minion_Info.X = 400;
-		minion_Info.Y = 200;
+		minion_Info.X = px;
+		minion_Info.Y = py;
 		minion_Info.Visible = true;
 		minion->Initiate(minion_Info);
 		minion->SetSequence(Sequence, 2);

@@ -58,8 +58,9 @@ void MarioGame::GameLogic()
 					playerRelife();
 				}
 			}
-			gameScene->ScrollScene(player);			//根据玩家位置，滚动场景
 			gameScene->update();						//更新地图、怪物、玩家状态
+			gameScene->ScrollScene(player);			//根据玩家位置，滚动场景
+			
 			break;
 		}
 		case GAME_PAUSE:		//暂停游戏界面
@@ -495,7 +496,7 @@ void MarioGame::LoadPlayer()
 	gameScene->Append(gameLayer);
 	player->SetStartTime(GetTickCount());
 
-	Minion *minion= MinionFactory::getMinion(MINION_TYPE::MINION_GOOMBA,200,200);
+	Minion *minion= MinionFactory::getMinion(MINION_TYPE::MINION_GOOMBA,1100,200);
 	gameLayer.layer = minion;
 	gameLayer.type_id = LAYER_TYPE::LAYER_NPC;
 	gameLayer.z_order = gameScene->getSceneLayers()->size() + 1;

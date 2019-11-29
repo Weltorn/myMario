@@ -95,7 +95,7 @@ bool Minion::CollideWith(IN T_Map* map)
 				isCollide = true;
 				mapBlockPT.x = col;	// 记录当前障碍图块的列
 				mapBlockPT.y = row;	// 记录当前障碍图块的行
-
+				Util::myprintf(L"mioion map collide now------------------\n");
 				//碰撞的地图块
 				RECT blockRect = { col*map->getTileWidth() + (map->GetX()) ,row*map->getTileHeight() + (map->GetY()),
 					(col + 1)*map->getTileWidth() + (map->GetX()),(row + 1)*map->getTileHeight() + (map->GetY()) };
@@ -107,7 +107,7 @@ bool Minion::CollideWith(IN T_Map* map)
 				case DIR_LEFT:
 					x = map->GetX() + (col + 1)*map->getTileWidth();
 					y = GetY();
-					dir = DIR_RIGHT;					
+					dir = DIR_RIGHT;	
 					break;
 				case DIR_RIGHT:
 					x = map->GetX() + col*map->getTileWidth() - GetRatioSize().cx;
@@ -125,6 +125,9 @@ bool Minion::CollideWith(IN T_Map* map)
 					onPlantform = true;
 					speedY = 0;					
 					break;
+				default:
+					x = lastX;
+					y = lastY;
 				}
 				// 将角色定位在障碍物边界
 				SetPosition(x, y);

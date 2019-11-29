@@ -43,7 +43,7 @@ Player::~Player()
 //更新玩家横坐标
 void Player::updatePositionX()
 {
-	//Util::myprintf(L"current speedx: %d\n", speedX);
+	Util::myprintf(L"current x: %d\n", X-T_Scene::getBarrier()->GetX());
 
 	if (!bSquat)		//非下蹲状态下可水平移动
 	{
@@ -101,6 +101,10 @@ void Player::updatePositionY()
 	gravityEffect();		//重力作用	
 	Y = Y - speedY;
 	
+	if (Y > T_Scene::getBarrier()->GetHeight())
+	{
+		this->playerDeath(true);
+	}
 }
 //开始跳跃
 void Player::startJump()
