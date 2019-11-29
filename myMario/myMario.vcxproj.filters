@@ -72,6 +72,18 @@
     <ClCompile Include="GameMenu.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Brick.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="BrickFactory.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalBrick.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PropBrick.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MarioGame.h">
@@ -138,6 +150,18 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="GameConfig.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Brick.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="BrickFactory.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="NormalBrick.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PropBrick.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

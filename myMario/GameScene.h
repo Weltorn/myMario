@@ -1,12 +1,15 @@
 
 #include "T_Scene.h"
 #include "GameMap.h"
+#include "Brick.h"
 typedef vector<Minion*> LMinion;
+typedef vector<Brick*> LBrick;
 class GameScene :
 	public T_Scene
 {
 private:
 	LMinion pMinions;				// 怪物、奖励指针，包含在sceneLayers中
+	LBrick	pBricks;				// 各种砖块指针，包含在sceneLayers中
 public:
 	GameScene();
 	~GameScene();

@@ -383,7 +383,7 @@ void MarioGame::GameMouseAction(int x, int y, int Action)
 // ¼ÓÔØÓÎÏ·µØÍ¼³¡¾°,¿É°üÀ¨±³¾°¡¢ÕÏ°­¡¢ÕÚÕÖ²ã
 void MarioGame::LoadMap()
 {
-	if (!gameScene->LoadTxtMap("res\\map\\marioMap.txt"))
+	if (!gameScene->LoadTxtMap("res\\map\\marioMapReDraw.txt"))
 	{
 		Util::myprintf(L"Load map failure!\n");
 		exit(1);
