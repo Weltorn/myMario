@@ -11,6 +11,7 @@ Goomba::~Goomba()
 {
 }
 
+
 bool Goomba::CollideWith(T_Sprite* target, int distance)
 {
 	bool isCollide = false;
@@ -36,8 +37,7 @@ bool Goomba::CollideWith(T_Sprite* target, int distance)
 		case DIR_LEFT:			
 		case DIR_RIGHT:	
 			if (target->GetLayerTypeID() == LAYER_TYPE::LAYER_PLY&&target->IsActive())
-			{
-				Util::myprintf(L"minion and player left or right collide now -----------------------\n");
+			{				
 				(dynamic_cast<Player*>(target))->playerDeath(false);
 			}		
 			break;
@@ -58,7 +58,7 @@ bool Goomba::CollideWith(T_Sprite* target, int distance)
 	
 	return isCollide;
 }
-
+//怪物死亡deathType 	0:马上死亡，无动画；1：压扁；2：击飞
 void Goomba::dead(int deathType)
 {
 	switch (deathType)
@@ -81,6 +81,8 @@ void Goomba::dead(int deathType)
 		SetActive(false);
 	}
 }
+
+//怪物被压扁的动画
 void Goomba::crashedAnimate()
 {
 	switch (currentStep)
@@ -96,7 +98,6 @@ void Goomba::crashedAnimate()
 		}
 		break;
 	default:
-		Util::myprintf(L"goomba crash end\n --------------------------------------");
 		dead(0);
 		break;
 	}

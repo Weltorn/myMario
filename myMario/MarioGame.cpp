@@ -43,9 +43,9 @@ void MarioGame::GameLogic()
 			gameTime = GetTickCount();		//更新游戏已运行时间	
 
 			//更新玩家	
-			if (!player->IsDead() && player->IsVisible())	//未死亡或播放死亡动画未播放完
+			if (player->IsVisible())	//未死亡或播放死亡动画未播放完
 				player->update();
-			if (player->IsDead() && !player->IsVisible())	//玩家死亡，死亡动画播放完
+			if (player->IsDead())	//玩家死亡，死亡动画播放完
 			{
 				if (player->getLifeCount() == 0)
 				{
@@ -55,6 +55,7 @@ void MarioGame::GameLogic()
 				{
 					GameState = GAME_UPGRADE;			//玩家生命值不为0，继续游戏
 					//加载复活点
+					playerRelife();
 				}
 			}
 			gameScene->ScrollScene(player);			//根据玩家位置，滚动场景
@@ -752,7 +753,7 @@ void MarioGame::DisplayInfo(HDC hdc)
 		textRect.Width = wnd_width*1.0;
 		textRect.Height = 30;
 		content.push_back(L" X ");
-		content[1].append(T_Util::int_to_wstring(1));
+		content[1].append(T_Util::int_to_wstring(player->getLifeCount()));
 		T_Graph::PaintText(hdc, textRect, content[1].c_str(), FontHeight, fontName.c_str(),	
 			Color::White, FontStyleBold, StringAlignmentNear);
 		

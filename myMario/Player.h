@@ -44,8 +44,8 @@ typedef struct {
 
 //碰撞块
 typedef struct {
-	int x;
-	int y;
+	int col;
+	int row;
 	GAME_DIR dir;
 }COLLIDBLOCK;
 typedef vector<COLLIDBLOCK> COLLIDBLOCKS;
@@ -192,11 +192,24 @@ public:
 	//游戏事件相关
 	bool isInEvent() { return inEvent; }
 	void startEvent(int eventId);
+	void stopEvent()
+	{
+		inEvent = false;
+		currentStep = -1;		
+
+		//解除运动状态
+		onPlantform = false;
+		stopMove(true);
+		resetJump();
+		setSquat(false);
+	}
 	void playAnimation();
 
 	void deathAnimation();
 	void levelUpAnimation();
 
 	void playerDeath(bool immediately);
+
+	
 };
 

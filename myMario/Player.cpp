@@ -211,7 +211,6 @@ void Player::updateFrame()
 }
 void Player::update()
 {
-	
 	if (!inEvent)
 	{
 		checkOnplantForm(T_Scene::getBarrier());		
@@ -472,14 +471,14 @@ bool Player::CollideWith(IN T_Map* map)
 					y = GetY();
 					speedX = 0;					
 					block = { col ,row ,DIR_RIGHT};		//保存发生碰撞的地图块序列
-					collideBlocks.push_back(block);
+					//collideBlocks.push_back(block);
 					break;
 				case DIR_RIGHT:					
 					x = map->GetX() + col*map->getTileWidth()-GetRatioSize().cx;
 					y = GetY();
 					speedX = 0;				
 					block = { col ,row ,DIR_LEFT };		//保存发生碰撞的地图块序列
-					collideBlocks.push_back(block);
+					//collideBlocks.push_back(block);
 					break;
 				case DIR_UP:
 					x = GetX();
@@ -495,7 +494,7 @@ bool Player::CollideWith(IN T_Map* map)
 					onPlantform = true;			
 					resetJump();
 					block = { col ,row ,DIR_UP };		//保存发生碰撞的地图块序列
-					collideBlocks.push_back(block);
+					//collideBlocks.push_back(block);
 					break;
 				}
 				// 将角色定位在障碍物边界
@@ -551,7 +550,6 @@ void Player::startEvent(int eventId)
 	stopMove(true);
 	resetJump();
 	setSquat(false);
-	playAnimation();
 }
 void Player::playAnimation()
 {
@@ -597,7 +595,7 @@ void Player::deathAnimation()
 		}
 		break;
 	default:
-		playerDeath(true);
+		playerDeath(true);		//设置死亡状态
 		break;
 	}
 }
@@ -637,7 +635,7 @@ void Player::playerDeath(bool immediately)
 {
 	if (immediately)
 	{
-		active = false;
+		dead = true;
 		if(lifeCount>0)
 		{ 
 			lifeCount--;
@@ -645,6 +643,7 @@ void Player::playerDeath(bool immediately)
 	}
 	else
 	{
+		active = false;
 		startEvent(PLAYER_DEATH);
 	}
 }
