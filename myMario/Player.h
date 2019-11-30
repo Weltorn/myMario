@@ -19,6 +19,10 @@ typedef struct {
 	int squatHeight;		//下蹲时高度
 	int* runFrmSequence;	//奔跑帧序列
 	int nRunFrames;			//奔跑帧序列长度
+	int *levelUpFrmSequence;//升级帧序列
+	int nlevelUpFrames;
+	int *levelDownFrmSequence;//降级帧序列
+	int nlevelDownFrames;
 	int stopFrame;			//玩家静止帧
 	int speedDownFrame;		//减速动作帧
 	int squatFrame;			//下蹲帧

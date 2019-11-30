@@ -418,8 +418,10 @@ void MarioGame::LoadPlayer()
 	PLAYERMODE player_mode;
 
 	player = new Player(L".\\res\\sprite\\sMario.png", 24, 32);	
-	int sSequence[12] = {4,4,5,5,5,5,6,6,6,6,4,4};
-	int bSequence[12] = { 1,1,2,2,2,2,3,3,3,3,1,1 };
+	int sRunSequence[12] = {4,4,5,5,5,5,6,6,6,6,4,4};
+	int bRunSequence[12] = { 1,1,2,2,2,2,3,3,3,3,1,1 };
+	int levelUpSequence[2] = {15,0};
+	int levelDownSequence[2] = { 0,15 };
 
 	player_Info.Active = true;
 	player_Info.Dead = false;
@@ -435,16 +437,25 @@ void MarioGame::LoadPlayer()
 	player_Info.Y = 200;
 	player_Info.Visible = true;
 	player->Initiate(player_Info);
-	player->SetSequence(sSequence, 12);
+	player->SetSequence(sRunSequence, 12);
 	player->SetLayerTypeID(LAYER_PLY);
 
 	// ----- 初始化马里奥的开始状态
 	player_frame.frameHeight = 32;
 	player_frame.frameWidth = 24;
 	player_frame.img = T_Graph(L".\\res\\sprite\\sMario.png");	
+
 	player_frame.nRunFrames = 12;
 	player_frame.runFrmSequence = (int*)malloc(sizeof(int)*player_frame.nRunFrames);
-	memcpy(player_frame.runFrmSequence, sSequence, sizeof(int)*player_frame.nRunFrames);
+	memcpy(player_frame.runFrmSequence, sRunSequence, sizeof(int)*player_frame.nRunFrames);
+
+	player_frame.nlevelUpFrames = 2;
+	player_frame.levelUpFrmSequence = (int*)malloc(sizeof(int)*player_frame.nlevelUpFrames);
+	memcpy(player_frame.levelUpFrmSequence, levelUpSequence, sizeof(int)*player_frame.nlevelUpFrames);
+
+	player_frame.nlevelDownFrames = 2;
+	player_frame.levelDownFrmSequence = (int*)malloc(sizeof(int)*player_frame.nlevelDownFrames);
+	memcpy(player_frame.levelDownFrmSequence, levelDownSequence, sizeof(int)*player_frame.nlevelDownFrames);
 
 	player_frame.jumpFrame = 7;
 	player_frame.speedDownFrame = 3;
@@ -467,10 +478,18 @@ void MarioGame::LoadPlayer()
 	player_frame.frameHeight = 64;
 	player_frame.frameWidth = 32;
 	player_frame.img = T_Graph(L".\\res\\sprite\\bMario.png");
+	
 	player_frame.nRunFrames = 12;
 	player_frame.runFrmSequence = (int*)malloc(sizeof(int)*player_frame.nRunFrames);
-	memcpy(player_frame.runFrmSequence, bSequence, sizeof(int)*player_frame.nRunFrames);
+	memcpy(player_frame.runFrmSequence, bRunSequence, sizeof(int)*player_frame.nRunFrames);
 
+	player_frame.nlevelUpFrames = 2;
+	player_frame.levelUpFrmSequence = (int*)malloc(sizeof(int)*player_frame.nlevelUpFrames);
+	memcpy(player_frame.levelUpFrmSequence, levelUpSequence, sizeof(int)*player_frame.nlevelUpFrames);
+
+	player_frame.nlevelDownFrames = 2;
+	player_frame.levelDownFrmSequence = (int*)malloc(sizeof(int)*player_frame.nlevelDownFrames);
+	memcpy(player_frame.levelDownFrmSequence, levelDownSequence, sizeof(int)*player_frame.nlevelDownFrames);
 	player_frame.jumpFrame = 5;
 	player_frame.speedDownFrame = 4;
 	player_frame.squatFrame = 6;
@@ -495,14 +514,6 @@ void MarioGame::LoadPlayer()
 	gameLayer.layer->setZorder(gameLayer.z_order);
 	gameScene->Append(gameLayer);
 	player->SetStartTime(GetTickCount());
-
-	Minion *minion= MinionFactory::getMinion(MINION_TYPE::MINION_GOOMBA,1100,200);
-	gameLayer.layer = minion;
-	gameLayer.type_id = LAYER_TYPE::LAYER_NPC;
-	gameLayer.z_order = gameScene->getSceneLayers()->size() + 1;
-	gameLayer.layer->setZorder(gameLayer.z_order);
-	gameScene->Append(gameLayer);
-	gameScene->appendMinion(minion);
 
 }
 
@@ -703,7 +714,7 @@ void MarioGame::LoadGameLevel(int level)
 
 	if (gameScene == NULL) gameScene = new GameScene();
 //	if (gameMenu == NULL) gameMenu = new T_Menu();
-
+	gameScene->appendMinion(MINION_TYPE::MINION_GOOMBA,1100,200);
 	//LoadSound(m_hWnd);
 	LoadImageRes();
 //	LoadMenu();

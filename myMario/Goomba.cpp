@@ -38,7 +38,8 @@ bool Goomba::CollideWith(T_Sprite* target, int distance)
 		case DIR_RIGHT:	
 			if (target->GetLayerTypeID() == LAYER_TYPE::LAYER_PLY&&target->IsActive())
 			{				
-				(dynamic_cast<Player*>(target))->playerDeath(false);
+				//(dynamic_cast<Player*>(target))->playerDeath(false);
+				(dynamic_cast<Player*>(target))->startEvent(EVENTTYPE::PLAYER_LEVELUP);
 			}		
 			break;
 		case DIR_UP:
@@ -46,8 +47,8 @@ bool Goomba::CollideWith(T_Sprite* target, int distance)
 			{
 				(dynamic_cast<Player*>(target))->startJump();
 				(dynamic_cast<Player*>(target))->stopBooting();
-				//dead(1);	//±»Ñ¹±â
-				dead(2);	//±»»÷·É
+				dead(1);	//±»Ñ¹±â
+				//dead(2);	//±»»÷·É
 			}
 			break;
 		case DIR_DOWN:

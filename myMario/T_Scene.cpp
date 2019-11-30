@@ -92,7 +92,7 @@ void T_Scene::MoveScene(int speedX, int speedY)
 	for (p = sceneLayers.begin(); p != sceneLayers.end(); p++)
 	{
 		// 计算每个图层要平移的步长
-		Util::myprintf(L"layer type: %d\n", (*p).layer->GetLayerTypeID());
+		//Util::myprintf(L"layer type: %d\n", (*p).layer->GetLayerTypeID());
 		pX = (*p).layer->GetX();
 		pX += speedX;
 		pY = (*p).layer->GetY();

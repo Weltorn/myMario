@@ -344,8 +344,8 @@ void  Player::setPlayerMode(PLAYERSTATUS status)
 	forward = 0;												// 当前帧计数初始化
 	backward = totalFrames - 1;
 
-	frameSequence = currentMode->frameMode.runFrmSequence;
-	totalFrames = currentMode->frameMode.nRunFrames;			// 动画总帧数
+	//初始化运动帧
+	SetSequence(currentMode->frameMode.runFrmSequence, currentMode->frameMode.nRunFrames);	
 	loopForward = true;
 	
 	//恢复静止状态		
@@ -356,6 +356,8 @@ void  Player::setPlayerMode(PLAYERSTATUS status)
 void Player::Draw(HDC hdc) {
 	lastX = X;
 	lastY = Y;
+
+	Util::myprintf(L"current frame %d\n",currentFrmIndex);
 	if (bSquat)
 	{
 		spImg.PaintRegion(spImg.GetBmpHandle(),hdc,X,Y,currentMode->frameMode.frameWidth *currentFrmIndex,
@@ -608,20 +610,18 @@ void Player::levelUpAnimation()
 	switch (currentStep)
 	{
 	case 0:
+		Y -= bigRedMode->frameMode.frameHeight - Height;
 		setPlayerMode(PLAYER_BIGRED);
-		currentFrmIndex = currentMode->frameMode.stopFrame;
-		Y -= bigRedMode->frameMode.frameHeight - normalMode->frameMode.frameHeight;
-		SetAlpha(180);
+		SetSequence(currentMode->frameMode.levelUpFrmSequence , currentMode->frameMode.nlevelUpFrames);
+		forward = 0;		
+		SetAlpha(200);
 		++currentStep;
 		break;
 	case 1:
-		if (eventTimer + 1000 >= GetTickCount())
+		if (eventTimer + 1200 >= GetTickCount())
 		{
-			if (eventTimer + 100 <= GetTickCount())
-			{
-				currentFrmIndex = (currentFrmIndex == currentMode->frameMode.levelUpFrame) ?
-					currentMode->frameMode.stopFrame : currentMode->frameMode.levelUpFrame;				
-			}			
+			LoopFrame(6);
+			currentFrmIndex = frameSequence[forward];
 		}
 		else
 		{
@@ -630,8 +630,10 @@ void Player::levelUpAnimation()
 		}
 		break;
 	default:
-		inEvent = false;
-		eventId = -1;
+		SetAlpha(255);
+		SetSequence(currentMode->frameMode.runFrmSequence, currentMode->frameMode.nRunFrames);
+		forward = 0;
+		stopEvent();
 		break;
 	}
 }

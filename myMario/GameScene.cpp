@@ -9,6 +9,12 @@ GameScene::GameScene()
 
 GameScene::~GameScene()
 {
+	LMinion::iterator p;
+	for (p = pMinions.begin(); p != pMinions.end(); p++)
+	{
+		delete (*p)->GetSequence();	//释放帧序列
+		delete *p;					//释放精灵类对象
+	}
 }
 // 加载参数指定的地图文件，解析其中的地图数据，并保存到场景图层中
 //根据图层信息，生成砖块等对象，保存到GameMap中

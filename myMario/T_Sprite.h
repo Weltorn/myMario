@@ -195,12 +195,18 @@ public:
 	// 设置新的帧序列
 	void SetSequence(int* sequence, int length)			
 	{ 
+		if (frameSequence != NULL)
+		{
+			delete frameSequence;
+		}
 		frameSequence = (int*)malloc(sizeof(int)*length);
 		memcpy(frameSequence, sequence,sizeof(int)*length);
 
 		totalFrames = length;
 	}
-
+	int* GetSequence() {
+		return frameSequence;
+	}
 	//……………………………………………………………………………………
 	// 与鼠标相关的操作
 	//……………………………………………………………………………………
