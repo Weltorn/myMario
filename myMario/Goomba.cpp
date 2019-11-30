@@ -39,6 +39,7 @@ bool Goomba::CollideWith(T_Sprite* target, int distance)
 			if (target->GetLayerTypeID() == LAYER_TYPE::LAYER_PLY&&target->IsActive())
 			{				
 				//(dynamic_cast<Player*>(target))->playerDeath(false);
+				
 				(dynamic_cast<Player*>(target))->startEvent(EVENTTYPE::PLAYER_LEVELUP);
 			}		
 			break;

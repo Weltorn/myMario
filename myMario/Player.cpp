@@ -11,6 +11,7 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	eventId = -1;
 	playerStatus = PLAYER_NONE;		//角色模式
 	starStatus = false;					//是否无敌（星星）状态
+	frameFrequence = 4;
 	
 	// ---初始化位置
 	X;
@@ -205,7 +206,16 @@ void Player::updateFrame()
 	}
 	if ((bMove && !bJump) || (bSlide && !dirChanged))
 	{
-		LoopFrame();
+		//控制玩家帧速率
+		if (bSpeedUp)
+		{
+			frameFrequence = 2;
+		}
+		else
+		{
+			frameFrequence = 4;
+		}
+		LoopFrame(frameFrequence);
 		currentFrmIndex = frameSequence[forward];
 	}
 	if (bJump)
@@ -241,12 +251,14 @@ void Player::startMove() {
 //按住shift键，提高加速上限
 void Player::startSpeedup() {
 	currentMaxSpeedX = currentMode->maxRunSpeedX;
+	bSpeedUp = true;
 }
 
 //松开shift键，恢复加速上限
 //若当前速度大于正常移动速度上限，将速度设置为正常移动上限
 void Player::resetSpeedup() {
 	currentMaxSpeedX = currentMode->maxMoveSpeedX;
+	bSpeedUp = false;
 	if (speedX > currentMaxSpeedX)
 	{
 		speedX = currentMaxSpeedX;
@@ -294,8 +306,8 @@ void Player::stopMove(bool immediately) {
 
 void Player::initBigRedMode(PLAYERMODE* bigRedMode)
 {
-	this->bigRedMode = (PLAYERMODE*)malloc(sizeof(PLAYERMODE));
-	memcpy(this->bigRedMode, bigRedMode, sizeof(PLAYERMODE));
+	this->bigNormalMode = (PLAYERMODE*)malloc(sizeof(PLAYERMODE));
+	memcpy(this->bigNormalMode, bigRedMode, sizeof(PLAYERMODE));
 
 }
 void Player::initNormalMode(PLAYERMODE* normalMode)
@@ -319,12 +331,12 @@ void  Player::setPlayerMode(PLAYERSTATUS status)
 		playerStatus = status;
 		break;
 	}
-	case PLAYER_BIGRED:
+	case PLAYER_BIGNORMAL:
 	{
-		if (bigRedMode == NULL) {
-			Util::myprintf(L"Player::setPlayerMode : bigRedMode == NULL\n");
+		if (bigNormalMode == NULL) {
+			Util::myprintf(L"Player::setPlayerMode : bigNormalMode == NULL\n");
 		}
-		currentMode = bigRedMode;
+		currentMode = bigNormalMode;
 		playerStatus = status;
 		break;
 	}	
@@ -610,15 +622,15 @@ void Player::levelUpAnimation()
 	switch (currentStep)
 	{
 	case 0:
-		Y -= bigRedMode->frameMode.frameHeight - Height;
-		setPlayerMode(PLAYER_BIGRED);
+		Y -= bigNormalMode->frameMode.frameHeight - Height;	//调整玩家高度（不同状态帧图存在高度差，以玩家下边界为基准）
+		setPlayerMode(PLAYER_BIGNORMAL);
 		SetSequence(currentMode->frameMode.levelUpFrmSequence , currentMode->frameMode.nlevelUpFrames);
 		forward = 0;		
 		SetAlpha(200);
 		++currentStep;
 		break;
 	case 1:
-		if (eventTimer + 1200 >= GetTickCount())
+		if (eventTimer + 1200 >= GetTickCount())	//控制动画播放时间1200ms
 		{
 			LoopFrame(6);
 			currentFrmIndex = frameSequence[forward];
@@ -630,6 +642,7 @@ void Player::levelUpAnimation()
 		}
 		break;
 	default:
+		//动画结束
 		SetAlpha(255);
 		SetSequence(currentMode->frameMode.runFrmSequence, currentMode->frameMode.nRunFrames);
 		forward = 0;

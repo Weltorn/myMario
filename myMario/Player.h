@@ -7,8 +7,8 @@ class GameMap;
 enum PLAYERSTATUS {
 	PLAYER_NONE,
 	PLAYER_NORMAL,
-	PLAYER_BIGRED,
-	PLAYER_BIGGREEN
+	PLAYER_BIGNORMAL,
+	PLAYER_BIGRED
 };
 
 //玩家帧设置
@@ -73,11 +73,13 @@ private:
 	PLAYERSTATUS playerStatus;		//角色展示状态
 	bool starStatus;				//是否无敌（星星）状态
 	int currentFrmIndex;
+	int frameFrequence;
 		
 	//PLAYER MODE
 	PLAYERMODE* currentMode;
 	PLAYERMODE* normalMode;
-	PLAYERMODE* bigRedMode;
+	PLAYERMODE* bigNormalMode;
+	//PLAYERMODE* bigRedMode;
 
 	//PLAYER EVENT
 	unsigned eventTimer;
@@ -101,6 +103,7 @@ private:
 		
 	// ----- MOVE	
 	int currentMaxSpeedX;
+	bool bSpeedUp;		//是否处于加速状态
 	float friction;		//水平摩擦，控制惯性滑行距离	
 	float gravity;			//基础重力加速度
 	unsigned moveTimer;		//计时器

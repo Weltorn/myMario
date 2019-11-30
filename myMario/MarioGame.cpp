@@ -418,8 +418,8 @@ void MarioGame::LoadPlayer()
 	PLAYERMODE player_mode;
 
 	player = new Player(L".\\res\\sprite\\sMario.png", 24, 32);	
-	int sRunSequence[12] = {4,4,5,5,5,5,6,6,6,6,4,4};
-	int bRunSequence[12] = { 1,1,2,2,2,2,3,3,3,3,1,1 };
+	int sRunSequence[3] = {4,5,6};
+	int bRunSequence[3] = { 1,2,3 };
 	int levelUpSequence[2] = {15,0};
 	int levelDownSequence[2] = { 0,15 };
 
@@ -437,7 +437,7 @@ void MarioGame::LoadPlayer()
 	player_Info.Y = 200;
 	player_Info.Visible = true;
 	player->Initiate(player_Info);
-	player->SetSequence(sRunSequence, 12);
+	player->SetSequence(sRunSequence, 3);
 	player->SetLayerTypeID(LAYER_PLY);
 
 	// ----- 初始化马里奥的开始状态
@@ -445,7 +445,7 @@ void MarioGame::LoadPlayer()
 	player_frame.frameWidth = 24;
 	player_frame.img = T_Graph(L".\\res\\sprite\\sMario.png");	
 
-	player_frame.nRunFrames = 12;
+	player_frame.nRunFrames = 3;
 	player_frame.runFrmSequence = (int*)malloc(sizeof(int)*player_frame.nRunFrames);
 	memcpy(player_frame.runFrmSequence, sRunSequence, sizeof(int)*player_frame.nRunFrames);
 
@@ -479,7 +479,7 @@ void MarioGame::LoadPlayer()
 	player_frame.frameWidth = 32;
 	player_frame.img = T_Graph(L".\\res\\sprite\\bMario.png");
 	
-	player_frame.nRunFrames = 12;
+	player_frame.nRunFrames = 3;
 	player_frame.runFrmSequence = (int*)malloc(sizeof(int)*player_frame.nRunFrames);
 	memcpy(player_frame.runFrmSequence, bRunSequence, sizeof(int)*player_frame.nRunFrames);
 
