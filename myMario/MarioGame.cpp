@@ -280,7 +280,7 @@ void MarioGame::GameKeyAction(int Action)
 				{
 					Util::myprintf(L"Squat: %d,isJump: %d,preSpace: %d,isOnPlantform: %d\n",
 						player->getSquat() , player->isJump() , preL, player->isOnPlantform());
-					if (!player->getSquat()&& !player->isJump()&&!preL&&player->isOnPlantform())
+					if (!player->isSliding() && !player->getSquat()&& !player->isJump()&&!preL&&player->isOnPlantform())
 					{
 						player->startJump();
 						preL = true;
