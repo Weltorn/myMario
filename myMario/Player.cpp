@@ -580,6 +580,7 @@ void Player::playAnimation()
 		levelUpAnimation();
 		break;
 	case PLAYER_LEVELDOWN:
+		levelDownAnimation();
 		break;
 	case PLAYER_AFTERPOLE:
 		break;
@@ -644,6 +645,39 @@ void Player::levelUpAnimation()
 	default:
 		//动画结束
 		SetAlpha(255);
+		SetSequence(currentMode->frameMode.runFrmSequence, currentMode->frameMode.nRunFrames);
+		forward = 0;
+		stopEvent();
+		break;
+	}
+}
+void Player::levelDownAnimation()
+{
+	switch (currentStep)
+	{
+	case 0:		
+		SetSequence(currentMode->frameMode.levelUpFrmSequence, currentMode->frameMode.nlevelUpFrames);
+		forward = 0;
+		SetAlpha(200);
+		++currentStep;
+		break;
+	case 1:
+		if (eventTimer + 1200 >= GetTickCount())	//控制动画播放时间1200ms
+		{
+			LoopFrame(6);
+			currentFrmIndex = frameSequence[forward];
+		}
+		else
+		{
+			currentFrmIndex = currentMode->frameMode.stopFrame;
+			++currentStep;
+		}
+		break;
+	default:
+		//动画结束
+		SetAlpha(255);
+		Y += bigNormalMode->frameMode.frameHeight - Height;	//调整玩家高度（不同状态帧图存在高度差，以玩家下边界为基准）
+		setPlayerMode(PLAYER_NORMAL);
 		SetSequence(currentMode->frameMode.runFrmSequence, currentMode->frameMode.nRunFrames);
 		forward = 0;
 		stopEvent();

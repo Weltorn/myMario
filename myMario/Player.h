@@ -115,7 +115,7 @@ public:
 
 	void setLifeCount(int lifeCount) { this->lifeCount = lifeCount; }
 	int  getLifeCount() { return lifeCount; }
-
+	int  getPlayerStatus() { return playerStatus; }
 
 	//PLAYER FRAME
 	void initBigRedMode(PLAYERMODE* bigRedMode);
@@ -214,6 +214,7 @@ public:
 
 	void deathAnimation();
 	void levelUpAnimation();
+	void levelDownAnimation();
 
 	void playerDeath(bool immediately);
 

@@ -258,7 +258,7 @@ void MarioGame::GameKeyAction(int Action)
 				}
 				if (keys[VK_S])
 				{
-					if (!keys[VK_A] && !keys[VK_D] && !keys[VK_SPACE]&&!player->isSliding()) {
+					if (!keys[VK_A] && !keys[VK_D] && !keys[VK_L]&&!player->isSliding()) {
 						if (!preS)
 						{
 							player->setSquat(true);
@@ -266,13 +266,13 @@ void MarioGame::GameKeyAction(int Action)
 						}
 					}
 				}
-				if (keys[VK_SHIFT])
+				if (keys[VK_CAPITAL])
 				{
 					if ((keys[VK_A] || keys[VK_D])&&!player->isJump()) {
-						if (!preShift)
+						if (!preCapital)
 						{
 							player->startSpeedup();
-							preShift = true;
+							preCapital = true;
 						}
 					}
 				}
@@ -311,9 +311,9 @@ void MarioGame::GameKeyAction(int Action)
 							player->setSquat(false);
 						}
 					}
-					if (!keys[VK_SHIFT])
+					if (!keys[VK_CAPITAL])
 					{
-						preShift = false;
+						preCapital = false;
 						if (player->isSpeedUp() == true)
 						{
 							player->resetSpeedup();
@@ -506,8 +506,8 @@ void MarioGame::LoadPlayer()
 	player_mode.maxRunSpeedX = 6;
 	player->initBigRedMode(&player_mode);
 
-	player->setPlayerMode(PLAYER_NORMAL);
-	//player->setPlayerMode(PLAYER_BIGRED);
+	//player->setPlayerMode(PLAYER_NORMAL);
+	player->setPlayerMode(PLAYER_BIGNORMAL);
 	gameLayer.layer = player;
 	gameLayer.type_id = LAYER_PLY;
 	gameLayer.z_order = gameScene->getSceneLayers()->size() + 1;
