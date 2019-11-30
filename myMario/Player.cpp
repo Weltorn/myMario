@@ -228,7 +228,10 @@ void Player::update()
 {
 	if (!inEvent)
 	{
-		checkOnplantForm(T_Scene::getBarrier());		
+		if (checkOnplantForm(T_Scene::getBarrier()) || checkOnplantForm(T_Scene::getNormalBrick()))
+			onPlantform = true;
+		else
+			onPlantform = false;
 		updatePosition();	//更新玩家坐标
 		CollideWith(T_Scene::getBarrier());	//玩家与障碍层碰撞检测
 		CollideWith(T_Scene::getNormalBrick());	//玩家与障碍层碰撞检测

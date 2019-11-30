@@ -45,12 +45,12 @@ void GameMap::update()
 			else if (Y <= lastY && Y >= 280)
 			{
 				dynamic_cast<NormalBrick *>(pBricks[i])->setLastY(Y);		// 记录移动前的坐标位置
-				pBricks[i]->SetY(Y - pBricks[i]->GetHeight() / 8);			// 上移1/6个身位
+				pBricks[i]->SetY(Y - pBricks[i]->GetHeight() / 16);			// 上移1/6个身位
 			}
 			else
 			{
 				dynamic_cast<NormalBrick *>(pBricks[i])->setLastY(Y);		// 记录移动前的坐标位置
-				pBricks[i]->SetY(Y + pBricks[i]->GetHeight() / 8);			// 上移1/6个身位
+				pBricks[i]->SetY(Y + pBricks[i]->GetHeight() / 16);			// 上移1/6个身位
 			}
 			
 			updated = true;
@@ -108,7 +108,11 @@ void GameMap::Redraw(HDC hdc)
 
 			for (int i = 0; i < pBricks.size(); i++)
 			{
-				pBricks[i]->Draw(dc_buf);
+				// 只更新活跃状态的砖块
+				if (pBricks[i]->IsActive())
+				//{
+					pBricks[i]->Draw(dc_buf);
+				//}
 
 			}
 			//还原：使用原来对象替换内存设备中的位图对象
