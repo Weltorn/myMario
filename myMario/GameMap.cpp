@@ -28,7 +28,7 @@ void GameMap::update()
 		for (int j = 0; j < collideBlocks.size(); j++)
 		{
 			// 更具行、列索引找到指定砖块 且若该砖块不处于活跃状态
-			if (collideBlocks[j].col == pBricks[i]->getCol() && collideBlocks[i].row == pBricks[i]->getRow() && pBricks[i]->IsActive() == false)
+			if (collideBlocks[j].col == pBricks[i]->getCol() && collideBlocks[j].row == pBricks[i]->getRow() && pBricks[i]->IsActive() == false)
 				pBricks[i]->SetActive(true);
 		}
 
@@ -37,11 +37,22 @@ void GameMap::update()
 			int lastY = dynamic_cast<NormalBrick *>(pBricks[i])->getLastY();
 			int Y = pBricks[i]->GetY();
 			//上移
-			if (Y <= lastY )
+			if (Y == 288 && lastY!=Y)
 			{
 				dynamic_cast<NormalBrick *>(pBricks[i])->setLastY(Y);		// 记录移动前的坐标位置
-				pBricks[i]->SetY(Y - pBricks[i]->GetHeight()/6);			// 上移1/6个身位
+				pBricks[i]->SetActive(false);
 			}
+			else if (Y <= lastY && Y >= 280)
+			{
+				dynamic_cast<NormalBrick *>(pBricks[i])->setLastY(Y);		// 记录移动前的坐标位置
+				pBricks[i]->SetY(Y - pBricks[i]->GetHeight() / 8);			// 上移1/6个身位
+			}
+			else
+			{
+				dynamic_cast<NormalBrick *>(pBricks[i])->setLastY(Y);		// 记录移动前的坐标位置
+				pBricks[i]->SetY(Y + pBricks[i]->GetHeight() / 8);			// 上移1/6个身位
+			}
+			
 			updated = true;
 			// 下移
 		/*	else if (Y > lastY)
@@ -69,6 +80,7 @@ void GameMap::CreateBricks(BRICK_TYPE type)
 
 // 重新绘制当前图层全部图块
 void GameMap::Redraw(HDC hdc)
+
 {
 	// 由对象构成的图层
 	if (pBricks.size() != 0) {
@@ -194,7 +206,7 @@ void GameMap::Draw(HDC hdc)
 			Redraw(hdc);
 		}
 		if (updated == false) {
-		//	if(collideBlocks.size() != 0)
+	//		if(collideBlocks.size() != 0)
 				update();
 			BLENDFUNCTION frame_bf;
 			frame_bf.BlendOp = AC_SRC_OVER;

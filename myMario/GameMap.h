@@ -16,7 +16,7 @@ public:
 	GameMap(LAYERINFO layerInfo);		//使用地图数据构造
 	GameMap(LPCTSTR imgFilepath);		//使用背景图片构造
 	~GameMap();
-	void setCollideBlocks(COLLIDBLOCKS collideBlocks) { this->collideBlocks = collideBlocks; }
+	void setCollideBlocks(COLLIDBLOCKS collideBlocks) {	this->collideBlocks = collideBlocks; }
 	virtual void update();
 	void CreateBricks(BRICK_TYPE type);
 	void Redraw(HDC hdc);

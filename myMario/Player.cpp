@@ -519,8 +519,6 @@ bool Player::CollideWith(IN T_Map* map)
 		}
 	}
 	(dynamic_cast<GameMap*>(map))->setCollideBlocks(collideBlocks); //Ë¢ÐÂÅö×²µØÍ¼¿é
-	if (collideBlocks.size() != 0)
-		int a = 0;
 	return isCollide;
 }
 GAME_DIR Player::getCollideDir(RECT target)
