@@ -7,8 +7,8 @@ class GameMap;
 enum PLAYERSTATUS {
 	PLAYER_NONE,
 	PLAYER_NORMAL,
-	PLAYER_BIGRED,
-	PLAYER_BIGGREEN
+	PLAYER_BIGNORMAL,
+	PLAYER_BIGRED
 };
 
 //玩家帧设置
@@ -19,11 +19,16 @@ typedef struct {
 	int squatHeight;		//下蹲时高度
 	int* runFrmSequence;	//奔跑帧序列
 	int nRunFrames;			//奔跑帧序列长度
+	int *levelUpFrmSequence;//升级帧序列
+	int nlevelUpFrames;
+	int *levelDownFrmSequence;//降级帧序列
+	int nlevelDownFrames;
 	int stopFrame;			//玩家静止帧
 	int speedDownFrame;		//减速动作帧
 	int squatFrame;			//下蹲帧
 	int jumpFrame;			//跳跃帧
 	int deathFrame;			//死亡帧
+	int levelUpFrame;		//升级帧
 }PLAYERFRAME;
 
 //玩家能力设置
@@ -54,7 +59,9 @@ enum EVENTTYPE
 	PLAYER_DEATH,
 	PLAYER_LEVELUP,
 	PLAYER_LEVELDOWN,
-	PLAYER_AFTERPOLE
+	PLAYER_AFTERPOLE,
+	NPC_DEATH_CRASH,
+	NPC_DEATH_TURNOVER
 };
 
 class Player :
@@ -66,11 +73,19 @@ private:
 	PLAYERSTATUS playerStatus;		//角色展示状态
 	bool starStatus;				//是否无敌（星星）状态
 	int currentFrmIndex;
+	int frameFrequence;
 		
 	//PLAYER MODE
 	PLAYERMODE* currentMode;
 	PLAYERMODE* normalMode;
-	PLAYERMODE* bigRedMode;
+	PLAYERMODE* bigNormalMode;
+	//PLAYERMODE* bigRedMode;
+
+	//PLAYER EVENT
+	unsigned eventTimer;
+	bool inEvent;					//是否在游戏事件中
+	int eventId;					//变大、变小、死亡
+	int currentStep;
 
 	//PLAYER EVENT
 	unsigned eventTimer;
@@ -94,13 +109,10 @@ private:
 		
 	// ----- MOVE	
 	int currentMaxSpeedX;
+	bool bSpeedUp;		//是否处于加速状态
 	float friction;		//水平摩擦，控制惯性滑行距离	
 	float gravity;			//基础重力加速度
 	unsigned moveTimer;		//计时器
-
-	// ----- COLLISION
-	int lastX;			//上一次打印位置横坐标
-	int lastY;			//上一次打印位置纵坐标
 
 public:
 	Player(LPCTSTR imgPath, int frameWidth = 0, int frameHeight = 0);
@@ -109,7 +121,7 @@ public:
 
 	void setLifeCount(int lifeCount) { this->lifeCount = lifeCount; }
 	int  getLifeCount() { return lifeCount; }
-
+	int  getPlayerStatus() { return playerStatus; }
 
 	//PLAYER FRAME
 	void initBigRedMode(PLAYERMODE* bigRedMode);
@@ -186,21 +198,32 @@ public:
 	// 检测角色碰撞, distance检测碰撞的距离
 	virtual bool CollideWith(T_Sprite* target, int distance = 0)override { return false; }
 	// 检测地图碰撞
-	virtual bool CollideWith(IN T_Map* map)override;
-
-	// 判断玩家与目标矩形的碰撞方向（相对于玩家的方向）
-	GAME_DIR getCollideDir( RECT target);
+	virtual bool CollideWith(IN T_Map* map)override;	
 	// 检查玩家是否站在支持物上
 	bool checkOnplantForm(T_Map* map);
 
 	//游戏事件相关
 	bool isInEvent() { return inEvent; }
 	void startEvent(int eventId);
-	void playAnimation();
-	void endEvent(int eventId);
+	void stopEvent()
+	{
+		inEvent = false;
+		currentStep = -1;		
 
-	void playDeathAnimation();
+		//解除运动状态
+		onPlantform = false;
+		stopMove(true);
+		resetJump();
+		setSquat(false);
+	}
+	void playAnimation();
+
+	void deathAnimation();
+	void levelUpAnimation();
+	void levelDownAnimation();
 
 	void playerDeath(bool immediately);
+
+	
 };
 

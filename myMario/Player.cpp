@@ -10,7 +10,8 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	inEvent = false;
 	eventId = -1;
 	playerStatus = PLAYER_NONE;		//角色模式
-	starStatus = false;				//是否无敌（星星）状态
+	starStatus = false;					//是否无敌（星星）状态
+	frameFrequence = 4;
 	
 	// ---初始化位置
 	X;
@@ -43,7 +44,7 @@ Player::~Player()
 //更新玩家横坐标
 void Player::updatePositionX()
 {
-	Util::myprintf(L"current speedx: %d\n", speedX);
+	Util::myprintf(L"current x: %d\n", X-T_Scene::getBarrier()->GetX());
 
 	if (!bSquat)		//非下蹲状态下可水平移动
 	{
@@ -83,8 +84,6 @@ void Player::updatePositionX()
 			ispeedX = -abs(speedX);
 		else if (dir == DIR_RIGHT)
 			ispeedX = abs(speedX);
-
-		lastX = X;
 		X += ispeedX;
 	}
 }
@@ -95,10 +94,18 @@ void Player::updatePositionY()
 	{
 		isBooting = false;
 	}
-	gravityEffect();		//重力作用
-	lastY = Y;
+	if (onPlantform && jumpStatus == 1)	//如果为下落到平台则解除跳跃状态
+	{
+		resetJump();
+	}
+	
+	gravityEffect();		//重力作用	
 	Y = Y - speedY;
 	
+	if (Y > T_Scene::getBarrier()->GetHeight())
+	{
+		this->playerDeath(true);
+	}
 }
 //开始跳跃
 void Player::startJump()
@@ -141,7 +148,7 @@ void  Player::gravityEffect()
 			jumpStatus = 1;
 		}
 		
-	Util::myprintf(L"current SpeedY: %d\n", speedY);
+	//Util::myprintf(L"current SpeedY: %d\n", speedY);
 	
 }
 //更新玩家坐标
@@ -200,7 +207,16 @@ void Player::updateFrame()
 	}
 	if ((bMove && !bJump) || (bSlide && !dirChanged))
 	{
-		LoopFrame();
+		//控制玩家帧速率
+		if (bSpeedUp)
+		{
+			frameFrequence = 2;
+		}
+		else
+		{
+			frameFrequence = 4;
+		}
+		LoopFrame(frameFrequence);
 		currentFrmIndex = frameSequence[forward];
 	}
 	if (bJump)
@@ -210,32 +226,15 @@ void Player::updateFrame()
 }
 void Player::update()
 {
-	
 	if (!inEvent)
 	{
-		if (checkOnplantForm(T_Scene::getBarrier()))
-		{
-			if (jumpStatus == 1)	//如果为下落状态则解除跳跃状态
-			{
-				resetJump();
-			}
-			Util::myprintf(L" on plantform now!-----------------------------------------------------\n");
-		}
+		checkOnplantForm(T_Scene::getBarrier());		
 		updatePosition();	//更新玩家坐标
 		CollideWith(T_Scene::getBarrier());	//玩家与障碍层碰撞检测
-		CollideWith(T_Scene::getNormalBrick());	//玩家与障碍层碰撞检测
 		updateFrame();		//更新帧图
-	
-		if (onPlantform)
-		{
-			//Util::myprintf(L"player death now!-----------------------------------------------------\n");
-			//playerDeath(false);
-			//onPlantform = false;
-		}
 	}
 	else
 	{
-		Util::myprintf(L"play animation now!-----------------------------------------------------\n");
 		playAnimation();
 	}
 	
@@ -253,12 +252,14 @@ void Player::startMove() {
 //按住shift键，提高加速上限
 void Player::startSpeedup() {
 	currentMaxSpeedX = currentMode->maxRunSpeedX;
+	bSpeedUp = true;
 }
 
 //松开shift键，恢复加速上限
 //若当前速度大于正常移动速度上限，将速度设置为正常移动上限
 void Player::resetSpeedup() {
 	currentMaxSpeedX = currentMode->maxMoveSpeedX;
+	bSpeedUp = false;
 	if (speedX > currentMaxSpeedX)
 	{
 		speedX = currentMaxSpeedX;
@@ -306,8 +307,8 @@ void Player::stopMove(bool immediately) {
 
 void Player::initBigRedMode(PLAYERMODE* bigRedMode)
 {
-	this->bigRedMode = (PLAYERMODE*)malloc(sizeof(PLAYERMODE));
-	memcpy(this->bigRedMode, bigRedMode, sizeof(PLAYERMODE));
+	this->bigNormalMode = (PLAYERMODE*)malloc(sizeof(PLAYERMODE));
+	memcpy(this->bigNormalMode, bigRedMode, sizeof(PLAYERMODE));
 
 }
 void Player::initNormalMode(PLAYERMODE* normalMode)
@@ -331,12 +332,12 @@ void  Player::setPlayerMode(PLAYERSTATUS status)
 		playerStatus = status;
 		break;
 	}
-	case PLAYER_BIGRED:
+	case PLAYER_BIGNORMAL:
 	{
-		if (bigRedMode == NULL) {
-			Util::myprintf(L"Player::setPlayerMode : bigRedMode == NULL\n");
+		if (bigNormalMode == NULL) {
+			Util::myprintf(L"Player::setPlayerMode : bigNormalMode == NULL\n");
 		}
-		currentMode = bigRedMode;
+		currentMode = bigNormalMode;
 		playerStatus = status;
 		break;
 	}	
@@ -356,8 +357,8 @@ void  Player::setPlayerMode(PLAYERSTATUS status)
 	forward = 0;												// 当前帧计数初始化
 	backward = totalFrames - 1;
 
-	frameSequence = currentMode->frameMode.runFrmSequence;
-	totalFrames = currentMode->frameMode.nRunFrames;			// 动画总帧数
+	//初始化运动帧
+	SetSequence(currentMode->frameMode.runFrmSequence, currentMode->frameMode.nRunFrames);	
 	loopForward = true;
 	
 	//恢复静止状态		
@@ -366,7 +367,10 @@ void  Player::setPlayerMode(PLAYERSTATUS status)
 	setSquat(false);
 }
 void Player::Draw(HDC hdc) {
-	
+	lastX = X;
+	lastY = Y;
+
+	Util::myprintf(L"current frame %d\n",currentFrmIndex);
 	if (bSquat)
 	{
 		spImg.PaintRegion(spImg.GetBmpHandle(),hdc,X,Y,currentMode->frameMode.frameWidth *currentFrmIndex,
@@ -478,8 +482,7 @@ bool Player::CollideWith(IN T_Map* map)
 					(col+1)*map->getTileWidth() + (map->GetX()),(row+1)*map->getTileHeight() + (map->GetY()) };
 
 				int x = GetX(), y = GetY();		
-				GAME_DIR DIR = getCollideDir(blockRect);
-				
+				GAME_DIR DIR = getCollideDir(blockRect);				
 				switch (DIR)
 				{
 				case DIR_LEFT:
@@ -506,11 +509,11 @@ bool Player::CollideWith(IN T_Map* map)
 					break;
 				case DIR_DOWN:
 					x = GetX();
-					y = map->GetY() + row*map->getTileHeight() - GetRatioSize().cy;  //紧靠障碍上侧
+					y = map->GetY() + (row)*map->getTileHeight() - GetRatioSize().cy;  //紧靠障碍上侧
 					onPlantform = true;			
 					resetJump();
 					block = { col ,row ,DIR_UP };		//保存发生碰撞的地图块序列
-			//		collideBlocks.push_back(block);
+					//collideBlocks.push_back(block);
 					break;
 				}
 				// 将角色定位在障碍物边界
@@ -520,34 +523,6 @@ bool Player::CollideWith(IN T_Map* map)
 	}
 	(dynamic_cast<GameMap*>(map))->setCollideBlocks(collideBlocks); //刷新碰撞地图块
 	return isCollide;
-}
-GAME_DIR Player::getCollideDir(RECT target)
-{
-	RECT oldRect = *this->GetCollideRect();
-	RECT currentRect = *this->GetCollideRect();
-	oldRect.left = this->GetCollideRect()->left-(X-lastX);
-	oldRect.right = this->GetCollideRect()->right - (X - lastX);
-	oldRect.top = this->GetCollideRect()->top -(Y-lastY);
-	oldRect.bottom = this->GetCollideRect()->bottom - (Y - lastY);
-	
-	Util::myprintf(L" lastposX: %d,posX: %d\n,target.right: %d\n", oldRect.right, this->GetCollideRect()->right, target.left);
-	if (oldRect.left >= target.right && this->GetCollideRect()->left <= target.right)
-	{
-		return DIR_LEFT;
-	}
-	if (oldRect.right <= target.left && this->GetCollideRect()->right >= target.left)
-	{
-		return DIR_RIGHT;
-	}
- 	if (oldRect.top >= target.bottom && this->GetCollideRect()->top<=target.bottom )
-	{
-		return DIR_UP;
-	}
-	if (oldRect.bottom <=target.top && this->GetCollideRect()->bottom >= target.top)
-	{
-		return DIR_DOWN;
-	}	
-	return DIR_NONE;
 }
 bool Player::checkOnplantForm(T_Map* map)
 {
@@ -590,6 +565,7 @@ void Player::startEvent(int eventId)
 	eventTimer = GetTickCount();
 	
 	//解除运动状态
+	onPlantform = false;
 	stopMove(true);
 	resetJump();
 	playAnimation();
@@ -599,24 +575,24 @@ void Player::playAnimation()
 	switch (eventId)
 	{
 	case PLAYER_DEATH:
-		playDeathAnimation();
+		deathAnimation();
 		break;
 	case PLAYER_LEVELUP:
+		levelUpAnimation();
 		break;
 	case PLAYER_LEVELDOWN:
+		levelDownAnimation();
 		break;
 	case PLAYER_AFTERPOLE:
 		break;
 	default:
+		inEvent = false;
+		eventId = -1;
 		break;
 	}
 }
-void Player::endEvent(int eventId)
-{
 
-}
-
-void Player::playDeathAnimation()
+void Player::deathAnimation()
 {
 	currentFrmIndex = currentMode->frameMode.deathFrame;	//设置死亡帧
 	switch (currentStep)
@@ -633,13 +609,79 @@ void Player::playDeathAnimation()
 		break;
 	case 2:
 		updatePosition();
-		if (X + GetRatioSize().cy >= T_Scene::getBarrier()->GetHeight())
+		if (Y - GetRatioSize().cy >= T_Scene::getBarrier()->GetHeight())
 		{
 			++currentStep;
 		}
 		break;
 	default:
-		playerDeath(true);
+		playerDeath(true);		//设置死亡状态
+		break;
+	}
+}
+void Player::levelUpAnimation()
+{	
+	switch (currentStep)
+	{
+	case 0:
+		Y -= bigNormalMode->frameMode.frameHeight - Height;	//调整玩家高度（不同状态帧图存在高度差，以玩家下边界为基准）
+		setPlayerMode(PLAYER_BIGNORMAL);
+		SetSequence(currentMode->frameMode.levelUpFrmSequence , currentMode->frameMode.nlevelUpFrames);
+		forward = 0;		
+		SetAlpha(200);
+		++currentStep;
+		break;
+	case 1:
+		if (eventTimer + 1200 >= GetTickCount())	//控制动画播放时间1200ms
+		{
+			LoopFrame(6);
+			currentFrmIndex = frameSequence[forward];
+		}
+		else
+		{
+			currentFrmIndex = currentMode->frameMode.stopFrame;
+			++currentStep;
+		}
+		break;
+	default:
+		//动画结束
+		SetAlpha(255);
+		SetSequence(currentMode->frameMode.runFrmSequence, currentMode->frameMode.nRunFrames);
+		forward = 0;
+		stopEvent();
+		break;
+	}
+}
+void Player::levelDownAnimation()
+{
+	switch (currentStep)
+	{
+	case 0:		
+		SetSequence(currentMode->frameMode.levelUpFrmSequence, currentMode->frameMode.nlevelUpFrames);
+		forward = 0;
+		SetAlpha(200);
+		++currentStep;
+		break;
+	case 1:
+		if (eventTimer + 1200 >= GetTickCount())	//控制动画播放时间1200ms
+		{
+			LoopFrame(6);
+			currentFrmIndex = frameSequence[forward];
+		}
+		else
+		{
+			currentFrmIndex = currentMode->frameMode.stopFrame;
+			++currentStep;
+		}
+		break;
+	default:
+		//动画结束
+		SetAlpha(255);
+		Y += bigNormalMode->frameMode.frameHeight - Height;	//调整玩家高度（不同状态帧图存在高度差，以玩家下边界为基准）
+		setPlayerMode(PLAYER_NORMAL);
+		SetSequence(currentMode->frameMode.runFrmSequence, currentMode->frameMode.nRunFrames);
+		forward = 0;
+		stopEvent();
 		break;
 	}
 }
@@ -647,6 +689,7 @@ void Player::playerDeath(bool immediately)
 {
 	if (immediately)
 	{
+		dead = true;
 		if(lifeCount>0)
 		{ 
 			lifeCount--;
@@ -654,6 +697,7 @@ void Player::playerDeath(bool immediately)
 	}
 	else
 	{
+		active = false;
 		startEvent(PLAYER_DEATH);
 	}
 }

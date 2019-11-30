@@ -12,6 +12,8 @@
 #include "util.h"
 
 T_Map* T_Scene::pBarrier = NULL;			// 碰撞图层指针，包含在sceneLayers中
+T_Map* T_Scene::pMask = NULL;			// 遮罩层指针，包含在sceneLayers中
+Player* T_Scene::pPlayer = NULL;				// 玩家指针，包含在sceneLayers中
 T_Map* T_Scene::pMask = NULL;				// 遮罩层指针，包含在sceneLayers中
 T_Map* T_Scene::pNormalBrick = NULL;			// 碰撞图层指针，包含在sceneLayers中
 
@@ -92,6 +94,7 @@ void T_Scene::MoveScene(int speedX, int speedY)
 	for (p = sceneLayers.begin(); p != sceneLayers.end(); p++)
 	{
 		// 计算每个图层要平移的步长
+		//Util::myprintf(L"layer type: %d\n", (*p).layer->GetLayerTypeID());
 		pX = (*p).layer->GetX();
 		pX += speedX;
 		pY = (*p).layer->GetY();
@@ -610,8 +613,6 @@ void T_Scene::Draw(HDC hdc)
 		if((*p).layer->IsVisible() == true)
 		{
 			(*p).layer->Draw(hdc);//调用图层自己的绘制方法
-			Util::myprintf(T_Util::int_to_wstring((*p).layer->GetLayerTypeID()));
-			Util::myprintf(L"drawing....\n");
 		}
 	}
 }

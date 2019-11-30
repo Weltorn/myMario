@@ -9,6 +9,12 @@ GameScene::GameScene()
 
 GameScene::~GameScene()
 {
+	LMinion::iterator p;
+	for (p = pMinions.begin(); p != pMinions.end(); p++)
+	{
+		delete (*p)->GetSequence();	//释放帧序列
+		delete *p;					//释放精灵类对象
+	}
 }
 // 加载参数指定的地图文件，解析其中的地图数据，并保存到场景图层中
 //根据图层信息，生成砖块等对象，保存到GameMap中
@@ -342,22 +348,26 @@ void  GameScene::update()
 	//更新怪物图层
 	LMinion::iterator p1;
 	LMinion::iterator p2;
-	for (p1 = pMinions.begin(); p1 != pMinions.end();)
+	for (p1 = pMinions.begin(); p1 != pMinions.end(); )
 	{
-		if ((*p1)->IsDead())
+		if (!(*p1)->IsDead())
+		{
 			(*p1)->update();
-		else if (!(*p1)->IsDead())		//怪物死亡，删除对象
+			p1++;
+		}			
+		else if ((*p1)->IsDead())		//怪物死亡，删除对象
 		{		
 			p2 = p1;
 			p1 = pMinions.erase(p2);
 		}
 	}
 	
-	//怪物与玩家的碰撞
+	////怪物与玩家的碰撞
 	LMinion::iterator pm;
 	for (pm = pMinions.begin(); pm != pMinions.end(); pm++)
 	{
-		(*pm)->CollideWith(pPlayer);	//设置怪物、玩家碰撞后状态（如死亡、升/降级）
+		if((*pm)->IsActive() && pPlayer->IsActive())
+			(*pm)->CollideWith(pPlayer);	//设置怪物、玩家碰撞后状态（如死亡、升/降级）
 	}
 	// 如果图层发生过任何变化
 	if (LayerChanged == true)

@@ -43,9 +43,9 @@ void MarioGame::GameLogic()
 			gameTime = GetTickCount();		//更新游戏已运行时间	
 
 			//更新玩家	
-			if (!player->IsDead() && player->IsVisible())	//未死亡或播放死亡动画未播放完
+			if (player->IsVisible())	//未死亡或播放死亡动画未播放完
 				player->update();
-			if (player->IsDead() && !player->IsVisible())	//玩家死亡，死亡动画播放完
+			if (player->IsDead())	//玩家死亡，死亡动画播放完
 			{
 				if (player->getLifeCount() == 0)
 				{
@@ -55,10 +55,12 @@ void MarioGame::GameLogic()
 				{
 					GameState = GAME_UPGRADE;			//玩家生命值不为0，继续游戏
 					//加载复活点
+					playerRelife();
 				}
 			}
-			gameScene->ScrollScene(player);			//根据玩家位置，滚动场景
 			gameScene->update();						//更新地图、怪物、玩家状态
+			gameScene->ScrollScene(player);			//根据玩家位置，滚动场景
+			
 			break;
 		}
 		case GAME_PAUSE:		//暂停游戏界面
@@ -256,7 +258,7 @@ void MarioGame::GameKeyAction(int Action)
 				}
 				if (keys[VK_S])
 				{
-					if (!keys[VK_A] && !keys[VK_D] && !keys[VK_SPACE]&&!player->isSliding()) {
+					if (!keys[VK_A] && !keys[VK_D] && !keys[VK_L]&&!player->isSliding()) {
 						if (!preS)
 						{
 							player->setSquat(true);
@@ -264,13 +266,13 @@ void MarioGame::GameKeyAction(int Action)
 						}
 					}
 				}
-				if (keys[VK_SHIFT])
+				if (keys[VK_CAPITAL])
 				{
 					if ((keys[VK_A] || keys[VK_D])&&!player->isJump()) {
-						if (!preShift)
+						if (!preCapital)
 						{
 							player->startSpeedup();
-							preShift = true;
+							preCapital = true;
 						}
 					}
 				}
@@ -278,7 +280,7 @@ void MarioGame::GameKeyAction(int Action)
 				{
 					Util::myprintf(L"Squat: %d,isJump: %d,preSpace: %d,isOnPlantform: %d\n",
 						player->getSquat() , player->isJump() , preL, player->isOnPlantform());
-					if (!player->getSquat()&& !player->isJump()&&!preL&&player->isOnPlantform())
+					if (!player->isSliding() && !player->getSquat()&& !player->isJump()&&!preL&&player->isOnPlantform())
 					{
 						player->startJump();
 						preL = true;
@@ -309,9 +311,9 @@ void MarioGame::GameKeyAction(int Action)
 							player->setSquat(false);
 						}
 					}
-					if (!keys[VK_SHIFT])
+					if (!keys[VK_CAPITAL])
 					{
-						preShift = false;
+						preCapital = false;
 						if (player->isSpeedUp() == true)
 						{
 							player->resetSpeedup();
@@ -416,8 +418,10 @@ void MarioGame::LoadPlayer()
 	PLAYERMODE player_mode;
 
 	player = new Player(L".\\res\\sprite\\sMario.png", 24, 32);	
-	int sSequence[12] = {4,4,5,5,5,5,6,6,6,6,4,4};
-	int bSequence[12] = { 1,1,2,2,2,2,3,3,3,3,1,1 };
+	int sRunSequence[3] = {4,5,6};
+	int bRunSequence[3] = { 1,2,3 };
+	int levelUpSequence[2] = {15,0};
+	int levelDownSequence[2] = { 0,15 };
 
 	player_Info.Active = true;
 	player_Info.Dead = false;
@@ -433,16 +437,25 @@ void MarioGame::LoadPlayer()
 	player_Info.Y = 200;
 	player_Info.Visible = true;
 	player->Initiate(player_Info);
-	player->SetSequence(sSequence, 12);
+	player->SetSequence(sRunSequence, 3);
 	player->SetLayerTypeID(LAYER_PLY);
 
 	// ----- 初始化马里奥的开始状态
 	player_frame.frameHeight = 32;
 	player_frame.frameWidth = 24;
 	player_frame.img = T_Graph(L".\\res\\sprite\\sMario.png");	
-	player_frame.nRunFrames = 12;
+
+	player_frame.nRunFrames = 3;
 	player_frame.runFrmSequence = (int*)malloc(sizeof(int)*player_frame.nRunFrames);
-	memcpy(player_frame.runFrmSequence, sSequence, sizeof(int)*player_frame.nRunFrames);
+	memcpy(player_frame.runFrmSequence, sRunSequence, sizeof(int)*player_frame.nRunFrames);
+
+	player_frame.nlevelUpFrames = 2;
+	player_frame.levelUpFrmSequence = (int*)malloc(sizeof(int)*player_frame.nlevelUpFrames);
+	memcpy(player_frame.levelUpFrmSequence, levelUpSequence, sizeof(int)*player_frame.nlevelUpFrames);
+
+	player_frame.nlevelDownFrames = 2;
+	player_frame.levelDownFrmSequence = (int*)malloc(sizeof(int)*player_frame.nlevelDownFrames);
+	memcpy(player_frame.levelDownFrmSequence, levelDownSequence, sizeof(int)*player_frame.nlevelDownFrames);
 
 	player_frame.jumpFrame = 7;
 	player_frame.speedDownFrame = 3;
@@ -465,15 +478,24 @@ void MarioGame::LoadPlayer()
 	player_frame.frameHeight = 64;
 	player_frame.frameWidth = 32;
 	player_frame.img = T_Graph(L".\\res\\sprite\\bMario.png");
-	player_frame.nRunFrames = 12;
+	
+	player_frame.nRunFrames = 3;
 	player_frame.runFrmSequence = (int*)malloc(sizeof(int)*player_frame.nRunFrames);
-	memcpy(player_frame.runFrmSequence, bSequence, sizeof(int)*player_frame.nRunFrames);
+	memcpy(player_frame.runFrmSequence, bRunSequence, sizeof(int)*player_frame.nRunFrames);
 
+	player_frame.nlevelUpFrames = 2;
+	player_frame.levelUpFrmSequence = (int*)malloc(sizeof(int)*player_frame.nlevelUpFrames);
+	memcpy(player_frame.levelUpFrmSequence, levelUpSequence, sizeof(int)*player_frame.nlevelUpFrames);
+
+	player_frame.nlevelDownFrames = 2;
+	player_frame.levelDownFrmSequence = (int*)malloc(sizeof(int)*player_frame.nlevelDownFrames);
+	memcpy(player_frame.levelDownFrmSequence, levelDownSequence, sizeof(int)*player_frame.nlevelDownFrames);
 	player_frame.jumpFrame = 5;
 	player_frame.speedDownFrame = 4;
 	player_frame.squatFrame = 6;
 	player_frame.squatHeight = 64*2/3;
 	player_frame.stopFrame = 0;
+	player_frame.levelUpFrame = 15;
 
 	player_mode.frameMode = player_frame;
 	player_mode.basicJumpSpeedY = 8;
@@ -484,14 +506,15 @@ void MarioGame::LoadPlayer()
 	player_mode.maxRunSpeedX = 6;
 	player->initBigRedMode(&player_mode);
 
-	player->setPlayerMode(PLAYER_NORMAL);
-	//player->setPlayerMode(PLAYER_BIGRED);
+	//player->setPlayerMode(PLAYER_NORMAL);
+	player->setPlayerMode(PLAYER_BIGNORMAL);
 	gameLayer.layer = player;
 	gameLayer.type_id = LAYER_PLY;
 	gameLayer.z_order = gameScene->getSceneLayers()->size() + 1;
 	gameLayer.layer->setZorder(gameLayer.z_order);
 	gameScene->Append(gameLayer);
 	player->SetStartTime(GetTickCount());
+
 }
 
 // 加载游戏菜单
@@ -691,7 +714,7 @@ void MarioGame::LoadGameLevel(int level)
 
 	if (gameScene == NULL) gameScene = new GameScene();
 //	if (gameMenu == NULL) gameMenu = new T_Menu();
-
+	gameScene->appendMinion(MINION_TYPE::MINION_GOOMBA,1100,200);
 	//LoadSound(m_hWnd);
 	LoadImageRes();
 //	LoadMenu();
@@ -742,7 +765,7 @@ void MarioGame::DisplayInfo(HDC hdc)
 		textRect.Width = wnd_width*1.0;
 		textRect.Height = 30;
 		content.push_back(L" X ");
-		content[1].append(T_Util::int_to_wstring(1));
+		content[1].append(T_Util::int_to_wstring(player->getLifeCount()));
 		T_Graph::PaintText(hdc, textRect, content[1].c_str(), FontHeight, fontName.c_str(),	
 			Color::White, FontStyleBold, StringAlignmentNear);
 		

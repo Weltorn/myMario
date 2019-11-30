@@ -1,6 +1,7 @@
 
 #include "T_Scene.h"
 #include "GameMap.h"
+#include "MinionFactory.h"
 #include "Brick.h"
 typedef vector<Minion*> LMinion;
 class GameScene :
@@ -17,7 +18,15 @@ public:
 	void update();
 	void RePosition(int wnd_width, int wnd_height);			// 地图重定位
 
-	// 加载参数指定的地图文件，解析其中的地图数据，并保存到场景图层中
-	//virtual bool LoadTxtMap(const char* txtmap_path);
-
+	void appendMinion(MINION_TYPE type,int px,int py)
+	{ 
+		GAMELAYER gameLayer;
+		Minion *minion = MinionFactory::getMinion(type, px, py);
+		gameLayer.layer = minion;
+		gameLayer.type_id = LAYER_TYPE::LAYER_NPC;
+		gameLayer.z_order = getSceneLayers()->size() + 1;
+		gameLayer.layer->setZorder(gameLayer.z_order);
+		Append(gameLayer);
+		pMinions.push_back(minion); 
+	}
 };

@@ -63,6 +63,9 @@ protected:
 	int		colideHeight;			// 碰撞区域高度
 	POINT	mapBlockPT;				// 碰撞到障碍时的位置
 
+	int lastX;			//上一次打印位置横坐标
+	int lastY;			//上一次打印位置纵坐标
+
 public:
 	//……………………………………………………………………………………
 	// 构造函数、析构函数及类名获取函数
@@ -139,7 +142,12 @@ public:
 	//……………………………………………………………………………………
 	// 与碰撞相关的操作
 	//……………………………………………………………………………………
-
+	//获取上一次位置
+	int getLastX() { return lastX; }
+	int getLastY() { return lastY; }
+	// 判断怪物与目标矩形的碰撞方向（相对于怪物的方向）
+	GAME_DIR getCollideDir(RECT target);
+	GAME_DIR getCollideDir(T_Sprite* target, int distance=0);
 	// 计算扩大或收缩后的碰撞检测区宽高(px、py为正值放大、负值缩小，单位为像素)
 	void AdjustCollideRect(int px=0, int py=0);	
 	// 获得缩放后的实际碰撞检测矩形区域
@@ -187,12 +195,18 @@ public:
 	// 设置新的帧序列
 	void SetSequence(int* sequence, int length)			
 	{ 
+		if (frameSequence != NULL)
+		{
+			delete frameSequence;
+		}
 		frameSequence = (int*)malloc(sizeof(int)*length);
 		memcpy(frameSequence, sequence,sizeof(int)*length);
 
 		totalFrames = length;
 	}
-
+	int* GetSequence() {
+		return frameSequence;
+	}
 	//……………………………………………………………………………………
 	// 与鼠标相关的操作
 	//……………………………………………………………………………………

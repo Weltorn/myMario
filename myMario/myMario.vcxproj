@@ -122,6 +122,7 @@
     <ClCompile Include="GameMap.cpp" />
     <ClCompile Include="GameMenu.cpp" />
     <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="Goomba.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MarioGame.cpp" />
     <ClCompile Include="Minion.cpp" />
@@ -148,6 +149,7 @@
     <ClInclude Include="GameMap.h" />
     <ClInclude Include="GameMenu.h" />
     <ClInclude Include="GameScene.h" />
+    <ClInclude Include="Goomba.h" />
     <ClInclude Include="MarioGame.h" />
     <ClInclude Include="Minion.h" />
     <ClInclude Include="MinionFactory.h" />

@@ -6,6 +6,7 @@
 #include "T_Audio.h"
 #include "T_Menu.h"
 #include "Player.h"
+#include "MinionFactory.h"
 
 class MarioGame:public T_Engine
 {
@@ -19,7 +20,7 @@ private:
 	bool preS;
 	bool preD;
 	bool preL;
-	bool preShift;
+	bool preCapital;
 
 
 	//游戏常量
@@ -99,6 +100,17 @@ public:
 	
 	//游戏对象加载
 	void LoadPlayer();								// 加载游戏玩家角色
+	void playerRelife()
+	{
+		//清除按键状态
+		preA = preS = preD = preL = preCapital = false;
+		
+		player->stopEvent();
+		player->SetPosition(wnd_width / 5, 200);
+		player->SetDead(false);
+		player->SetActive(true);
+		player->SetVisible(true);
+	}
 	void LoadMap();									// 加载游戏地图场景	
 	void LoadGameMenu();							// 加载游戏菜单
 
