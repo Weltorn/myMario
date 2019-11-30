@@ -231,6 +231,7 @@ void Player::update()
 		checkOnplantForm(T_Scene::getBarrier());		
 		updatePosition();	//更新玩家坐标
 		CollideWith(T_Scene::getBarrier());	//玩家与障碍层碰撞检测
+		CollideWith(T_Scene::getNormalBrick());	//玩家与障碍层碰撞检测
 		updateFrame();		//更新帧图
 	}
 	else

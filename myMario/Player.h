@@ -87,12 +87,6 @@ private:
 	int eventId;					//变大、变小、死亡
 	int currentStep;
 
-	//PLAYER EVENT
-	unsigned eventTimer;
-	bool inEvent;					//是否在游戏事件中
-	int eventId;					//变大、变小、死亡
-	int currentStep;
-
 	// ----- MOVE STATUS
 	bool bMove;		//水平移动状态
 	bool bSquat;	//下蹲状态
