@@ -200,7 +200,7 @@ bool T_Util::Timer(int seconds)
 	if (beginTick == 0)
 		beginTick = GetTickCount();	//开始计时
 
-	if (GetTickCount() - beginTick >= seconds * 1000) {
+	if ((int)GetTickCount() - beginTick >= seconds * 1000) {
 		beginTick = 0;
 		return true;
 	}

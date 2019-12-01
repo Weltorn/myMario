@@ -29,7 +29,7 @@ static const int WIN_WIDTH		 = 802;				// 默认游戏窗口宽
 static const int WIN_HEIGHT		 = 453;				// 默认游戏窗口高
 static const COLORREF WIN_BKCLR = RGB(50, 50, 50);	// 默认窗口背景色(更新: 2019-09-28)
 
-static const int FRAME_SPEED	 = 100;				// 默认游戏帧频
+static const int FRAME_SPEED	 = 75;				// 默认游戏帧频
 
 static const int MENU_WIDTH		 = 200;				// 默认菜单宽
 static const int MENU_HEIGHT	 = 60;				// 默认菜单高

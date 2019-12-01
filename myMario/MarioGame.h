@@ -59,7 +59,7 @@ private:
 	// 与游戏对象类相关的变量
 	Player* player;									// 游戏玩家
 	GameScene* gameScene;							// 游戏场景
-	Color bkColor;									// 游戏背景色
+	COLORREF bkColor;									// 游戏背景色
 
 
 	//------------------与菜单相关的变量-----------------------------------

@@ -101,7 +101,7 @@ void MarioGame::GamePaint(HDC hdc)
 	{
 	case GAME_START:		//游戏开始菜单
 	{
-		T_Graph::PaintBlank(hdc, 0, 0, wnd_width, wnd_height, RGB(93, 148, 252), 255);
+		T_Graph::PaintBlank(hdc, 0, 0, wnd_width, wnd_height, bkColor, 255);
 		gameScene->Draw(hdc);
 		gameMenu->DrawMenu(hdc);
 		DisplayInfo(hdc);		//显示顶部游戏状态信息
@@ -109,7 +109,7 @@ void MarioGame::GamePaint(HDC hdc)
 	}
 	case GAME_RUN:			//游戏进行时界面
 	{
-		T_Graph::PaintBlank(hdc,0,0,wnd_width,wnd_height,RGB(100,200,200),255);
+		T_Graph::PaintBlank(hdc,0,0,wnd_width,wnd_height, bkColor,255);
 		gameScene->Draw(hdc);
 		DisplayInfo(hdc);		//显示顶部游戏状态信息
 
@@ -392,6 +392,8 @@ void MarioGame::LoadMap()
 	}
 
 	gameScene->RePosition(wnd_width,wnd_height);
+
+	bkColor = RGB(125,148,254);
 	//scn_width = gameScene->getBarrier()->GetWidth();
 	//scn_height = gameScene->getBarrier()->GetHeight();
 
@@ -751,19 +753,19 @@ void MarioGame::DisplayInfo(HDC hdc)
 		statusMario->Draw(hdc);												// 马里奥
 		
 		// 关卡信息
-		textRect.X = (REAL)statusMario->GetX()*1.0 - 2 * statusMario->GetWidth();
-		textRect.Y = (REAL)statusMario->GetY()*1.0 - 2 * statusMario->GetHeight(); 
-		textRect.Width = wnd_width;
-		textRect.Height = 30;
+		textRect.X = (REAL)(statusMario->GetX()*1.0 - 2 * statusMario->GetWidth());
+		textRect.Y = (REAL)(statusMario->GetY()*1.0 - 2 * statusMario->GetHeight()); 
+		textRect.Width = (REAL)wnd_width;
+		textRect.Height = (REAL)30;
 		content.push_back(L" WORLD 1-1 ");
 		T_Graph::PaintText(hdc, textRect, content[0].c_str(), FontHeight, fontName.c_str(),
 			Color::White, FontStyleBold, StringAlignmentNear);
 
 		// 马里奥生命信息														
-		textRect.X = statusMario->GetX() + statusMario->GetWidth();
-		textRect.Y = statusMario->GetY();// statusMario->GetHeight()/3;
-		textRect.Width = wnd_width*1.0;
-		textRect.Height = 30;
+		textRect.X = (REAL)(statusMario->GetX() + statusMario->GetWidth());
+		textRect.Y = (REAL)(statusMario->GetY());// statusMario->GetHeight()/3;
+		textRect.Width = (REAL)(wnd_width*1.0);
+		textRect.Height = (REAL)30; 
 		content.push_back(L" X ");
 		content[1].append(T_Util::int_to_wstring(player->getLifeCount()));
 		T_Graph::PaintText(hdc, textRect, content[1].c_str(), FontHeight, fontName.c_str(),	
@@ -785,10 +787,10 @@ void MarioGame::DisplayInfo(HDC hdc)
 	case GAME_ABOUT:
 
 		//制作信息
-		textRect.X = (REAL)wnd_width/5.0;
-		textRect.Y = (REAL)wnd_height/6.0;
-		textRect.Width = (REAL)wnd_width * 1.0;
-		textRect.Height = (REAL)wnd_height / 4.0;
+		textRect.X = (REAL)wnd_width/5;
+		textRect.Y = (REAL)wnd_height/6;
+		textRect.Width = (REAL)wnd_width;
+		textRect.Height = (REAL)wnd_height / 4;
 
 		
 		content.push_back(L"MARIO V1.0  - C++ ");
