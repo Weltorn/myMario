@@ -53,7 +53,7 @@ Minion* MinionFactory::getMinion(MINION_TYPE type, int px, int py)
 		break;
 	case MINION_PLAYERBULLET:
 	{
-		minion = new Goomba(L".\\res\\sprite\\fireball.png", 32, 32);
+		minion = new PlayerBullet(L".\\res\\sprite\\fireball.png", 32, 32);
 		minion_Info.Active = true;
 		minion_Info.Dead = false;
 		minion_Info.Dir = DIR_NONE;

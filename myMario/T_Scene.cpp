@@ -614,6 +614,7 @@ void T_Scene::Draw(HDC hdc)
 			// 如果图层可见,将其绘制出来
 			if ((*p1).layer->IsVisible() == true)
 			{
+				//Util::myprintf(L"layer type id %d\n", (*p1).layer->GetLayerTypeID());
 				(*p1).layer->Draw(hdc);//调用图层自己的绘制方法
 			}
 			p1++;

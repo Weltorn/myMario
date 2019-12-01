@@ -7,6 +7,7 @@ PlayerBullet::PlayerBullet(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	:Minion(imgPath, frameWidth, frameHeight)
 {
 	frameFrequence = 6;
+	gravity = 20;
 }
 
 
@@ -18,15 +19,10 @@ void PlayerBullet::update()
 {
 	if (!inEvent)
 	{
-		checkOnplantForm(T_Scene::getBarrier());
-		if (onPlantform)		//在平台上，竖直速度为零
-		{
-			speedY = -speedY;
-		}
-
 		updatePosition();					//更新坐标
 		CollideWith(T_Scene::getBarrier());	//障碍层碰撞检测		
 		updateFrame();						//更新帧图		
+		Util::myprintf(L"bullet current frameIndex: %d,x: %d,y: %d\n",currentFrmIndex,X,Y);
 	}
 	else
 	{
@@ -125,7 +121,7 @@ bool PlayerBullet::CollideWith(IN T_Map* map)
 				{
 				case DIR_LEFT:					
 				case DIR_RIGHT:
-					startEvent(EVENTTYPE::BULLET_EXPLODE);
+					//startEvent(EVENTTYPE::BULLET_EXPLODE);
 					break;
 				case DIR_UP:
 					x = GetX();
@@ -136,7 +132,8 @@ bool PlayerBullet::CollideWith(IN T_Map* map)
 					x = GetX();
 					y = map->GetY() + (row)*map->getTileHeight() - GetRatioSize().cy;  //紧靠障碍上侧
 					onPlantform = true;
-					speedY = abs(speedY);
+					//speedY = abs(speedY);
+					speedY = 3;
 					break;
 				default:
 					x = lastX;
@@ -193,4 +190,15 @@ void PlayerBullet::playAnimation()
 void PlayerBullet::explode()
 {
 
+}
+
+void PlayerBullet::Draw(HDC hdc)
+{
+	lastX = X;
+	lastY = Y;
+
+	spImg.PaintFrame(
+		spImg.GetBmpHandle(), hdc, (int)X, (int)Y, currentFrmIndex,
+		frameCols, Width, Height, frameRatio, frameRotate, frameAlpha
+	);
 }

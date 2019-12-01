@@ -153,9 +153,7 @@ void Minion::updatePosition()
 //竖直移动
 void Minion::updatePositionY()
 {
-	gravityEffect();		//重力作用
-
-	
+	gravityEffect();		//重力作用	
 	Y = Y - speedY;
 }
 //水平移动						
@@ -242,14 +240,11 @@ void  Minion::gravityEffect()
 {
 	float currentGravity = gravity;		//单击跳跃	
 	
-	if (!onPlantform && (GetTickCount() - timer)* currentGravity / 270 >6-abs(speedY))
+	if ((GetTickCount() - timer)* currentGravity / 270 >6-abs(speedY))
 	{
-		speedY -= 1;	
-	}	
-	if (onPlantform)		//更新计时器
-	{
+		speedY -= 1;
 		timer = GetTickCount();
-	}
+	}	
 }
 
 

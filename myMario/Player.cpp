@@ -47,7 +47,7 @@ Player::~Player()
 //更新玩家横坐标
 void Player::updatePositionX()
 {
-	Util::myprintf(L"current x: %d\n", X-T_Scene::getBarrier()->GetX());
+	Util::myprintf(L"current x: %d,tickcount: %d\n", X-T_Scene::getBarrier()->GetX(), GetTickCount());
 
 	if (!bSquat)		//非下蹲状态下可水平移动
 	{
@@ -230,6 +230,7 @@ void Player::update()
 {
 	if (!inEvent)
 	{
+		Util::myprintf(L"player update----------------------------------\n");
 		checkOnplantForm(T_Scene::getBarrier());
 		updatePosition();	//更新玩家坐标
 		CollideWith(T_Scene::getBarrier());	//玩家与障碍层碰撞检测
