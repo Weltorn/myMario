@@ -11,9 +11,11 @@
 #include "T_Scene.h"
 #include "util.h"
 
+SCENE_LAYERS T_Scene::sceneLayers;		// 保存游戏中场景图层的vector容器
 T_Map* T_Scene::pBarrier = NULL;			// 碰撞图层指针，包含在sceneLayers中
 T_Map* T_Scene::pMask = NULL;			// 遮罩层指针，包含在sceneLayers中
 Player* T_Scene::pPlayer = NULL;				// 玩家指针，包含在sceneLayers中
+bool T_Scene::LayerChanged;				// 图层是否发生变化(添加图层后，置为true)
 
 // 构造函数
 T_Scene::T_Scene()

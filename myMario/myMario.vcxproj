@@ -126,6 +126,7 @@
     <ClCompile Include="Minion.cpp" />
     <ClCompile Include="MinionFactory.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerBullet.cpp" />
     <ClCompile Include="T_AI.cpp" />
     <ClCompile Include="T_Audio.cpp" />
     <ClCompile Include="T_Display.cpp" />
@@ -148,6 +149,7 @@
     <ClInclude Include="Minion.h" />
     <ClInclude Include="MinionFactory.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerBullet.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="T_AI.h" />
     <ClInclude Include="T_Audio.h" />

@@ -21,5 +21,4 @@ GameMap::~GameMap()
 void GameMap::update()
 {	
 	//¸üÐÂ×©¿é×´Ì¬
-
 }

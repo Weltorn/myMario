@@ -13,6 +13,7 @@ enum MINION_TYPE
 
 	MINION_GOOMBA,				// 板栗仔（蘑菇一样的怪物）
 	MINION_KOOPA,				// 库帕龟
+	MINION_PLAYERBULLET,
 };
 
 class Minion :

@@ -1,6 +1,8 @@
 #include "GameScene.h"
 #include "Util.h"
 
+LPlayerBullet GameScene::pPlayerBullets;	//Íæ¼ÒÅÚµ¯
+
 GameScene::GameScene()
 	:T_Scene()
 {

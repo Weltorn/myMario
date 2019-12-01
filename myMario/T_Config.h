@@ -179,4 +179,14 @@ typedef struct
 	Color	focusTextColor;		// 焦点菜单文字颜色
 }MENU_INFO;
 
+enum EVENTTYPE
+{
+	PLAYER_DEATH,
+	PLAYER_LEVELUP,
+	PLAYER_LEVELDOWN,
+	PLAYER_AFTERPOLE,
+	NPC_DEATH_CRASH,
+	NPC_DEATH_TURNOVER,
+	BULLET_EXPLODE
+};
 #endif

@@ -54,15 +54,7 @@ typedef struct {
 }COLLIDBLOCK;
 typedef vector<COLLIDBLOCK> COLLIDBLOCKS;
 
-enum EVENTTYPE
-{
-	PLAYER_DEATH,
-	PLAYER_LEVELUP,
-	PLAYER_LEVELDOWN,
-	PLAYER_AFTERPOLE,
-	NPC_DEATH_CRASH,
-	NPC_DEATH_TURNOVER
-};
+
 
 class Player :
 	public T_Sprite
@@ -73,7 +65,6 @@ private:
 	PLAYERSTATUS playerStatus;		//½ÇÉ«Õ¹Ê¾×´Ì¬
 	bool starStatus;				//ÊÇ·ñÎÞµÐ£¨ÐÇÐÇ£©×´Ì¬
 	int currentFrmIndex;
-	int frameFrequence;
 		
 	//PLAYER MODE
 	PLAYERMODE* currentMode;
