@@ -286,6 +286,16 @@ void MarioGame::GameKeyAction(int Action)
 						preL = true;
 					}
 				}
+				if (keys[VK_SPACE])
+				{
+					Util::myprintf(L"fire ball \n");
+						
+					if (!player->isSliding() && !player->getSquat() && !preSpace)
+					{
+						player->createFireBall();
+						preSpace = true;
+					}
+				}
 			}
 			else if (Action == KEY_UP)	//ÊÍ·Å¼ü
 				{
@@ -329,6 +339,10 @@ void MarioGame::GameKeyAction(int Action)
 								player->SetSpeedY(3);
 							}
 						}
+					}
+					if (!keys[VK_SPACE])
+					{
+						preSpace = false;
 					}
 				}
 		}
@@ -712,7 +726,7 @@ void MarioGame::LoadGameLevel(int level)
 	SetFrame(FRAME_SPEED);
 	gameScene = NULL;
 
-	if (gameScene == NULL) gameScene = new GameScene();
+	if (gameScene == NULL) gameScene = GameScene::getInstance();
 //	if (gameMenu == NULL) gameMenu = new T_Menu();
 	gameScene->appendMinion(MINION_TYPE::MINION_GOOMBA,1100,200);
 	//LoadSound(m_hWnd);

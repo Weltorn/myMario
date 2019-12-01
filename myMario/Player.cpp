@@ -1,5 +1,5 @@
 #include "Player.h"
-#include "T_Scene.h"
+#include "GameScene.h"
 #include "GameMap.h"
 #include "Util.h"
 Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
@@ -35,6 +35,9 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	gravity = 6;				//基础重力加速度
 	jumpTimer = GetTickCount();
 	
+	// -----FIREBALL
+	fireballCD = 200;
+	fireballTimer = GetTickCount();
 }
 
 
@@ -227,7 +230,7 @@ void Player::update()
 {
 	if (!inEvent)
 	{
-		if(checkOnplantForm(T_Scene::getBarrier()))
+		checkOnplantForm(T_Scene::getBarrier());
 		updatePosition();	//更新玩家坐标
 		CollideWith(T_Scene::getBarrier());	//玩家与障碍层碰撞检测
 		updateFrame();		//更新帧图
@@ -304,6 +307,25 @@ void Player::stopMove(bool immediately) {
 	
 }
 
+//发射炮弹
+void  Player::createFireBall()
+{
+	if (fireballTimer + fireballCD <= GetTickCount())	//子弹冷却时间控制
+	{
+		int bulletX, bulletY;
+		if (dir == DIR_LEFT)
+		{
+			bulletX = X -24;
+		}
+		else
+		{
+			bulletX = X + GetRatioSize().cx-8;
+		}
+		bulletY = Y + GetRatioSize().cy / 4-8;
+		GameScene::getInstance()->appendPlayerBullet(bulletX, bulletY, GetDir());
+		fireballTimer = GetTickCount();
+	}	
+}
 void Player::initBigRedMode(PLAYERMODE* bigRedMode)
 {
 	this->bigNormalMode = (PLAYERMODE*)malloc(sizeof(PLAYERMODE));

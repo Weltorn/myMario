@@ -190,3 +190,7 @@ void PlayerBullet::playAnimation()
 		break;
 	}
 }
+void PlayerBullet::explode()
+{
+
+}

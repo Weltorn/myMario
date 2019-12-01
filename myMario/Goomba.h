@@ -10,7 +10,7 @@ private:
 	bool crashed;	//ÊÇ·ñ±»Ñ¹±â×´Ì¬
 public:
 	Goomba::Goomba(LPCTSTR imgPath, int frameWidth, int frameHeight);
-	~Goomba();
+	virtual ~Goomba();
 
 	virtual bool CollideWith(T_Sprite* target, int distance = 0);
 	virtual void updateFrame();

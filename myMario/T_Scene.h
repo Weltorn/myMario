@@ -28,7 +28,7 @@ typedef vector<GAMELAYER> SCENE_LAYERS;
 class T_Scene
 {
 protected:
-	static SCENE_LAYERS sceneLayers;		// 保存游戏中场景图层的vector容器
+	SCENE_LAYERS sceneLayers;		// 保存游戏中场景图层的vector容器
 	static Player* pPlayer;				// 玩家指针，包含在sceneLayers中
 	static T_Map* pBarrier;			// 碰撞图层指针，包含在sceneLayers中
 	static T_Map* pMask;			// 遮罩层指针，包含在sceneLayers中
@@ -37,7 +37,7 @@ protected:
 	int WinWidth, WinHeight;		// 窗口的宽、高
 	int lastSceneX, lastSceneY;		// 场景上一次的坐标位置
 	int SceneX, SceneY;				// 场景当前的坐标位置
-	static bool LayerChanged;				// 图层是否发生变化(添加图层后，置为true)
+	bool LayerChanged;				// 图层是否发生变化(添加图层后，置为true)
 	
 	//图层排序比较函数（该函数必须为静态函数）
 	static bool SortByZorder(const GAMELAYER &l1, const GAMELAYER &l2);
@@ -67,7 +67,7 @@ public:
 	// 场景中图层总数
 	int GetTotalLayers(){ return (int)(sceneLayers.size()); }
 	// 获取场景图层容器对象
-	static SCENE_LAYERS* getSceneLayers(){ return &sceneLayers; }	
+	SCENE_LAYERS* getSceneLayers(){ return &sceneLayers; }	
 	
 	//……………………………………………………………………………………
 	// 与场景操作相关的函数
@@ -89,7 +89,7 @@ public:
 	// 与图层操作相关的函数
 	//……………………………………………………………………………………
 	// 添加图层
-	static void Append(GAMELAYER gm_layer);
+	void Append(GAMELAYER gm_layer);
 	// 在指定的图层索引号前插入图层
 	void Insert(GAMELAYER gm_layer, int index);
 	// 删除指定图层

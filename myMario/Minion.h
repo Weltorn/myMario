@@ -37,7 +37,7 @@ protected:
 	int currentStep;	
 public:
 	Minion(LPCTSTR imgPath, int frameWidth, int frameHeight);
-	~Minion();
+	virtual ~Minion();
 	virtual string ClassName() { return "Minion"; }
 	MINION_TYPE getMinionType() { return minionType; }
 	void setMinionType(MINION_TYPE minionType) {

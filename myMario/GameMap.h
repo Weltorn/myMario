@@ -12,7 +12,7 @@ private:
 public:
 	GameMap(LAYERINFO layerInfo);		//使用地图数据构造
 	GameMap(LPCTSTR imgFilepath);		//使用背景图片构造
-	~GameMap();
+	virtual ~GameMap();
 	void setCollideBlocks(COLLIDBLOCKS collideBlocks) { this->collideBlocks = collideBlocks; }
 	virtual void update();
 };

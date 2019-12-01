@@ -90,18 +90,21 @@ private:
 	int jumpStatus;		//跳跃状态0：上升，1：下降
 	bool isBooting;		//是否跳跃加速状态
 	int startHeight;	//跳跃起始高度
-	unsigned jumpTimer;		//计时器
+	unsigned jumpTimer;		//计时器,控制加速时间
 		
 	// ----- MOVE	
 	int currentMaxSpeedX;
 	bool bSpeedUp;		//是否处于加速状态
 	float friction;		//水平摩擦，控制惯性滑行距离	
 	float gravity;			//基础重力加速度
-	unsigned moveTimer;		//计时器
+	unsigned moveTimer;		//计时器,控制加速时间
 
+	// -----FIREBALL
+	unsigned fireballCD;
+	unsigned fireballTimer;
 public:
 	Player(LPCTSTR imgPath, int frameWidth = 0, int frameHeight = 0);
-	~Player();
+	virtual ~Player();
 	virtual string ClassName() { return "Player"; }
 
 	void setLifeCount(int lifeCount) { this->lifeCount = lifeCount; }
@@ -119,15 +122,14 @@ public:
 	void resetSpeedup();		//恢复为正常移动状态
 	void stopMove(bool immediately);			//停止水平移动，immediately：是否含惯性处理
 	
-
+	//发射炮弹
+	void createFireBall();
 	//------JUMP
 	bool isJump() { return bJump; }
 	void startJump();		//起跳，设置为加速状态
 	void resetJump();		//落地，设置竖直静止
 	void gravityEffect();
 
-
-	
 	//垂直加速状态设置
 	bool getBooting() { return isBooting; }
 	void stopBooting()

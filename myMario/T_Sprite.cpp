@@ -55,7 +55,7 @@ T_Sprite::T_Sprite(LPCTSTR imgPath, int frameWidth, int frameHeight)
 
 T_Sprite::~T_Sprite(void)
 {	
-	delete frameSequence;
+	
 }
 
 void T_Sprite::Initiate(SPRITEINFO spInfo)

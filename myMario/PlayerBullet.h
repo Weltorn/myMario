@@ -5,7 +5,7 @@ class PlayerBullet :
 {
 public:
 	PlayerBullet(LPCTSTR imgPath, int frameWidth, int frameHeight);
-	~PlayerBullet();
+	virtual ~PlayerBullet();
 
 	//¸üÐÂ¹ÖÎï×´Ì¬
 	virtual void update();

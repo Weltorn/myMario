@@ -21,6 +21,7 @@ private:
 	bool preD;
 	bool preL;
 	bool preCapital;
+	bool preSpace;
 
 
 	//游戏常量
@@ -103,7 +104,7 @@ public:
 	void playerRelife()
 	{
 		//清除按键状态
-		preA = preS = preD = preL = preCapital = false;
+		preA = preS = preD = preL = preCapital= preSpace = false;
 		
 		player->stopEvent();
 		player->SetPosition(wnd_width / 5, 200);
