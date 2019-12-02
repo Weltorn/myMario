@@ -646,6 +646,7 @@ void Player::levelUpAnimation()
 	switch (currentStep)
 	{
 	case 0:
+		active = false;
 		Y -= bigNormalMode->frameMode.frameHeight - Height;	//调整玩家高度（不同状态帧图存在高度差，以玩家下边界为基准）
 		setPlayerMode(PLAYER_BIGNORMAL);
 		SetSequence(currentMode->frameMode.levelUpFrmSequence , currentMode->frameMode.nlevelUpFrames);
@@ -667,6 +668,7 @@ void Player::levelUpAnimation()
 		break;
 	default:
 		//动画结束
+		active = true;
 		SetAlpha(255);
 		SetSequence(currentMode->frameMode.runFrmSequence, currentMode->frameMode.nRunFrames);
 		forward = 0;
@@ -679,6 +681,7 @@ void Player::levelDownAnimation()
 	switch (currentStep)
 	{
 	case 0:		
+		active = false;
 		SetSequence(currentMode->frameMode.levelUpFrmSequence, currentMode->frameMode.nlevelUpFrames);
 		forward = 0;
 		SetAlpha(200);
@@ -698,6 +701,7 @@ void Player::levelDownAnimation()
 		break;
 	default:
 		//动画结束
+		active = true;
 		SetAlpha(255);
 		Y += bigNormalMode->frameMode.frameHeight - Height;	//调整玩家高度（不同状态帧图存在高度差，以玩家下边界为基准）
 		setPlayerMode(PLAYER_NORMAL);
