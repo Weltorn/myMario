@@ -168,8 +168,10 @@ public:
 	void LoopFrame(bool ahead = true);
 	// 往前或往后循环播放所有帧 times为引擎帧刷新速率与角色自定义帧刷新速率之比
 	void LoopFrame(int times, bool ahead = true);
+	
 	// 往前或往后循环播放一轮所有帧
-	bool LoopFrameOnce(bool ahead = true);				
+	bool LoopFrameOnce(bool ahead = true);	
+	bool LoopFrameOnce(int times, bool ahead = true);
 	// 获取原始帧的长度
 	int GetRawFrames(){ return rawFrames; }	
 	// 计算帧序列数组长度

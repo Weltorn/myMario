@@ -15,6 +15,27 @@ PlayerBullet::~PlayerBullet()
 {
 	delete frameSequence;
 }
+void PlayerBullet::gravityEffect()
+{
+	float currentGravity = gravity;		//单击跳跃	
+
+	if ((GetTickCount() - timer)* currentGravity / 270 >6 - abs(speedY))
+	{
+		speedY -= 1;
+		timer = GetTickCount();
+	}
+}
+//竖直移动
+void PlayerBullet::updatePositionY()
+{
+	gravityEffect();		//重力作用	
+	Y = Y - speedY;
+}
+void PlayerBullet::updatePosition()
+{
+	updatePositionX();
+	updatePositionY();
+}
 void PlayerBullet::update()
 {
 	if (!inEvent)
@@ -119,9 +140,9 @@ bool PlayerBullet::CollideWith(IN T_Map* map)
 				GAME_DIR DIR = getCollideDir(blockRect);
 				switch (DIR)
 				{
-				case DIR_LEFT:					
+				case DIR_LEFT:
 				case DIR_RIGHT:
-					//startEvent(EVENTTYPE::BULLET_EXPLODE);
+					startEvent(EVENTTYPE::BULLET_EXPLODE);
 					break;
 				case DIR_UP:
 					x = GetX();
@@ -136,11 +157,10 @@ bool PlayerBullet::CollideWith(IN T_Map* map)
 					speedY = 3;
 					break;
 				default:
-					x = lastX;
-					y = lastY;
+					//startEvent(EVENTTYPE::BULLET_EXPLODE);
+					// 将角色定位在障碍物边界
+					SetPosition(x, y);
 				}
-				// 将角色定位在障碍物边界
-				SetPosition(x, y);
 			}
 		}
 	}
@@ -189,7 +209,31 @@ void PlayerBullet::playAnimation()
 }
 void PlayerBullet::explode()
 {
-
+	switch (currentStep)
+	{
+	case 0:
+		active = false;
+		SetSequence(explodeFrmSequence, 3);
+		forward = 0;
+		SetAlpha(200);
+		++currentStep;
+		break;
+	case 1:
+		if (!LoopFrameOnce(6))
+		{
+			currentFrmIndex = frameSequence[forward];
+		}
+		else
+		{
+			++currentStep;
+		}
+		break;
+	default:
+		//动画结束
+		dead = true;
+		Visible = false;
+		break;
+	}
 }
 
 void PlayerBullet::Draw(HDC hdc)

@@ -206,6 +206,7 @@ void  GameScene::update()
 		else if ((*bp1)->IsDead())		//死亡，删除对象
 		{
 			bp2 = bp1;
+			(*bp2)->SetLayerTypeID(LAYER_TYPE::LAYER_NONE);		//设置为无效图层
 			bp1 = pPlayerBullets.erase(bp2);
 		}
 	}

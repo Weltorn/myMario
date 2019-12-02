@@ -143,18 +143,60 @@ void T_Sprite::LoopFrame(int times, bool ahead)
 		}
 	}
 }
-bool T_Sprite::LoopFrameOnce(bool ahead)
+bool T_Sprite::LoopFrameOnce(int times, bool ahead)
 {
+	frameCount++;
 	loopForward = ahead;
 	if(totalFrames<=0) return true;//非帧图，返回
 	if(totalFrames>0)
 	{
 		if(ahead == true)
 		{
+			if (frameCount > times) {
+				forward = forward + 1;
+				if (forward > totalFrames - 1)
+				{
+					forward = 0;
+					return true;//播放完一轮所有帧
+				}
+				else
+				{
+					return false;
+				}
+				frameCount = 0;
+			}			
+		}
+		if(ahead == false)
+		{
+			if (frameCount > times) {
+				backward = backward - 1;
+				if (backward < 0)
+				{
+					backward = totalFrames - 1;
+					return true;//播放完一轮所有帧
+				}
+				else
+				{
+					return false;
+				}
+				frameCount = 0;
+			}			
+		}
+	}
+	return true;
+}
+bool T_Sprite::LoopFrameOnce(bool ahead)
+{
+	loopForward = ahead;
+	if (totalFrames <= 0) return true;//非帧图，返回
+	if (totalFrames>0)
+	{
+		if (ahead == true)
+		{
 			forward = forward + 1;
-			if(forward > totalFrames-1) 
+			if (forward > totalFrames - 1)
 			{
-				forward = 0; 
+				forward = 0;
 				return true;//播放完一轮所有帧
 			}
 			else
@@ -162,12 +204,12 @@ bool T_Sprite::LoopFrameOnce(bool ahead)
 				return false;
 			}
 		}
-		if(ahead == false)
+		if (ahead == false)
 		{
 			backward = backward - 1;
-			if(backward < 0) 
+			if (backward < 0)
 			{
-				backward = totalFrames-1;
+				backward = totalFrames - 1;
 				return true;//播放完一轮所有帧
 			}
 			else
@@ -405,19 +447,23 @@ GAME_DIR T_Sprite::getCollideDir(RECT target)
 	oldRect.top = this->GetCollideRect()->top - (Y - lastY);
 	oldRect.bottom = this->GetCollideRect()->bottom - (Y - lastY);
 
-	if (oldRect.left >= target.right && this->GetCollideRect()->left <= target.right)
+	if (oldRect.left >= target.right && this->GetCollideRect()->left <= target.right&&
+		(oldRect.top<= target.bottom&& oldRect.bottom >= target.top))
 	{
 		return DIR_LEFT;
 	}
-	if (oldRect.right <= target.left && this->GetCollideRect()->right >= target.left)
+	if (oldRect.right <= target.left && this->GetCollideRect()->right >= target.left &&
+		(oldRect.top <= target.bottom && oldRect.bottom >= target.top))
 	{
-		return DIR_RIGHT;
+ 		return DIR_RIGHT;
 	}
-	if (oldRect.top >= target.bottom && this->GetCollideRect()->top <= target.bottom)
+	if (oldRect.top >= target.bottom && this->GetCollideRect()->top <= target.bottom &&
+		(oldRect.left <= target.right && oldRect.right >= target.left))
 	{
 		return DIR_UP;
 	}
-	if (oldRect.bottom <= target.top && this->GetCollideRect()->bottom >= target.top)
+	if (oldRect.bottom <= target.top && this->GetCollideRect()->bottom >= target.top &&
+		(oldRect.left <= target.right && oldRect.right >= target.left))
 	{
 		return DIR_DOWN;
 	}
@@ -447,19 +493,23 @@ GAME_DIR T_Sprite::getCollideDir(T_Sprite* target, int distance)
 	oldTargetRect.top = targetRect.top - (target->GetY() - target->getLastY());
 	oldTargetRect.bottom = targetRect.bottom - (target->GetY() - target->getLastY());
 
-	if (oldRect.left >= oldTargetRect.right && currentRect.left <= targetRect.right)
+	if (oldRect.left >= oldTargetRect.right && currentRect.left <= targetRect.right &&
+		(oldRect.top <= oldTargetRect.bottom&& oldRect.bottom >= oldTargetRect.top))
 	{
 		return DIR_LEFT;
 	}
-	if (oldRect.right <= oldTargetRect.left && currentRect.right >= targetRect.left)
+	if (oldRect.right <= oldTargetRect.left && currentRect.right >= targetRect.left &&
+		(oldRect.top <= oldTargetRect.bottom&& oldRect.bottom >= oldTargetRect.top))
 	{
 		return DIR_RIGHT;
 	}
-	if (oldRect.top >= oldTargetRect.bottom && currentRect.top <= targetRect.bottom)
+	if (oldRect.top >= oldTargetRect.bottom && currentRect.top <= targetRect.bottom &&
+		(oldRect.left <= oldTargetRect.right && oldRect.right >= oldTargetRect.left))
 	{
 		return DIR_UP;
 	}
-	if (oldRect.bottom <= oldTargetRect.top && currentRect.bottom >= targetRect.top)
+	if (oldRect.bottom <= oldTargetRect.top && currentRect.bottom >= targetRect.top &&
+		(oldRect.left <= oldTargetRect.right && oldRect.right >= oldTargetRect.left))
 	{
 		return DIR_DOWN;
 	}

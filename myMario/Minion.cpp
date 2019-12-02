@@ -12,7 +12,6 @@ Minion::Minion(LPCTSTR imgPath, int frameWidth, int frameHeight)
 }
 Minion::~Minion()
 {
-	delete frameSequence;
 }
 
 bool Minion::CollideWith(IN T_Map* map)
@@ -207,7 +206,7 @@ void Minion::update()
 
 //检查是否在平台上
 bool Minion::checkOnplantForm(T_Map* map)
-{	
+{
 	if ((Y + GetRatioSize().cy - map->GetY()) % map->getTileHeight() < 2)
 	{
 		//怪物下方的地图块
@@ -240,7 +239,7 @@ void  Minion::gravityEffect()
 {
 	float currentGravity = gravity;		//单击跳跃	
 	
-	if ((GetTickCount() - timer)* currentGravity / 270 >6-abs(speedY))
+	if (!onPlantform&&(GetTickCount() - timer)* currentGravity / 270 >6-abs(speedY))
 	{
 		speedY -= 1;
 		timer = GetTickCount();
