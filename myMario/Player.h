@@ -29,6 +29,7 @@ typedef struct {
 	int jumpFrame;			//跳跃帧
 	int deathFrame;			//死亡帧
 	int levelUpFrame;		//升级帧
+	int fireBallFrame;		//发射炮弹帧
 }PLAYERFRAME;
 
 //玩家能力设置
@@ -100,6 +101,7 @@ private:
 	unsigned moveTimer;		//计时器,控制加速时间
 
 	// -----FIREBALL
+	bool onCreateFireBall;
 	unsigned fireballCD;
 	unsigned fireballTimer;
 public:

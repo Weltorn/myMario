@@ -156,15 +156,12 @@ bool PlayerBullet::CollideWith(IN T_Map* map)
 					break;
 				case DIR_DOWN:
 					x = GetX();
-					y = map->GetY() + (row)*map->getTileHeight() - GetRatioSize().cy;  //紧靠障碍上侧
+					y = map->GetY() + (row)*map->getTileHeight() - (GetRatioSize().cy+colideHeight)/2;  //紧靠障碍上侧
 					SetPosition(x, y);
-					//speedY = abs(speedY);
 					speedY = 4;
 					break;
-				default:
-					//startEvent(EVENTTYPE::BULLET_EXPLODE);
-					// 将角色定位在障碍物边界
-					SetPosition(x, y);
+				default:					
+					startEvent(EVENTTYPE::BULLET_EXPLODE);					
 				}
 			}
 		}

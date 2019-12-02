@@ -36,7 +36,7 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	jumpTimer = GetTickCount();
 	
 	// -----FIREBALL
-	fireballCD = 200;
+	fireballCD = 300;
 	fireballTimer = GetTickCount();
 }
 
@@ -225,6 +225,15 @@ void Player::updateFrame()
 	{
 		currentFrmIndex = currentMode->frameMode.jumpFrame;
 	}	
+	if (onCreateFireBall)
+	{
+		currentFrmIndex = currentMode->frameMode.fireBallFrame;
+		//´Ó·¢ÉäÅÚµ¯×´Ì¬»Ö¸´
+		if (fireballTimer+200<GetTickCount())
+		{
+			onCreateFireBall = false;
+		}
+	}
 }
 void Player::update()
 {
@@ -325,6 +334,7 @@ void  Player::createFireBall()
 		bulletY = Y + GetRatioSize().cy / 4-8;
 		GameScene::getInstance()->appendPlayerBullet(bulletX, bulletY, GetDir());
 		fireballTimer = GetTickCount();
+		onCreateFireBall = true;
 	}	
 }
 void Player::initBigRedMode(PLAYERMODE* bigRedMode)
