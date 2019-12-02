@@ -47,7 +47,6 @@ Player::~Player()
 //更新玩家横坐标
 void Player::updatePositionX()
 {
-	Util::myprintf(L"current x: %d,tickcount: %d\n", X-T_Scene::getBarrier()->GetX(), GetTickCount());
 
 	if (!bSquat)		//非下蹲状态下可水平移动
 	{
@@ -239,7 +238,6 @@ void Player::update()
 {
 	if (!inEvent)
 	{
-		Util::myprintf(L"player update----------------------------------\n");
 		checkOnplantForm(T_Scene::getBarrier());
 		updatePosition();	//更新玩家坐标
 		CollideWith(T_Scene::getBarrier());	//玩家与障碍层碰撞检测
@@ -402,7 +400,7 @@ void Player::Draw(HDC hdc) {
 	lastX = X;
 	lastY = Y;
 
-	Util::myprintf(L"current frame %d\n",currentFrmIndex);
+	Util::myprintf(L"player x: %d,player y: %d\n",X-GameScene::getInstance()->getSceneX(),Y - GameScene::getInstance()->getSceneY());
 	if (bSquat)
 	{
 		spImg.PaintRegion(spImg.GetBmpHandle(),hdc,X,Y,currentMode->frameMode.frameWidth *currentFrmIndex,
@@ -455,7 +453,7 @@ bool Player::CollideWith(IN T_Map* map)
 	}
 	if (this->X+this->GetRatioSize().cx >= mapRight)
 	{
-		this->X = mapRight - this->GetRatioSize().cx-1;
+		this->X = mapRight - this->GetRatioSize().cx;
 	}
 	// 获得地图图层中使用的图块的宽高
 	int tW = map->getTileWidth();
@@ -496,63 +494,255 @@ bool Player::CollideWith(IN T_Map* map)
 
 	COLLIDBLOCKS collideBlocks;
 	// 根据角色矩形上、下、左、右的矩形区域判断哪个矩形区域为障碍
-	for (int row = startRow; row <= endRow; ++row)
+	if (speedY <= 0)
 	{
-		for (int col = startCol; col <= endCol; ++col)
+		for (int row = startRow; row <= endRow; ++row)
 		{
-			// 如果当前矩形所在的图块在地图数据中为非0，就表示是障碍
-			if (map->getTile(col, row) != 0)
+			if (dir == DIR_RIGHT)
 			{
-				isCollide = true;
-				mapBlockPT.x = col;	// 记录当前障碍图块的列
- 				mapBlockPT.y = row;	// 记录当前障碍图块的行
-
-				COLLIDBLOCK block;
-
-				//碰撞的地图块
-				RECT blockRect = { col*map->getTileWidth()+(map->GetX()) ,row*map->getTileHeight()+(map->GetY()),
-					(col+1)*map->getTileWidth() + (map->GetX()),(row+1)*map->getTileHeight() + (map->GetY()) };
-
-				int x = GetX(), y = GetY();		
-				GAME_DIR DIR = getCollideDir(blockRect);				
-				switch (DIR)
+				for (int col = startCol; col <= endCol; ++col)
 				{
-				case DIR_LEFT:
-					x = map->GetX() + (col+1)*map->getTileWidth();
-					y = GetY();
-					speedX = 0;					
-					block = { col ,row ,DIR_RIGHT};		//保存发生碰撞的地图块序列
-					//collideBlocks.push_back(block);
-					break;
-				case DIR_RIGHT:					
-					x = map->GetX() + col*map->getTileWidth()-GetRatioSize().cx;
-					y = GetY();
-					speedX = 0;				
-					block = { col ,row ,DIR_LEFT };		//保存发生碰撞的地图块序列
-					//collideBlocks.push_back(block);
-					break;
-				case DIR_UP:
-					x = GetX();
-					y = map->GetY()+(row + 1)*map->getTileHeight();		//紧靠障碍下侧
-					speedY = -abs(speedY);
-					block = { col ,row ,DIR_DOWN };	
-					//保存发生碰撞的地图块序列
-					collideBlocks.push_back(block);
-					break;
-				case DIR_DOWN:
-					x = GetX();
-					y = map->GetY() + (row)*map->getTileHeight() - GetRatioSize().cy;  //紧靠障碍上侧
-					onPlantform = true;			
-					resetJump();
-					block = { col ,row ,DIR_UP };		//保存发生碰撞的地图块序列
-					//collideBlocks.push_back(block);
-					break;
+					// 如果当前矩形所在的图块在地图数据中为非0，就表示是障碍
+					if (map->getTile(col, row) != 0)
+					{
+						isCollide = true;
+						mapBlockPT.x = col;	// 记录当前障碍图块的列
+						mapBlockPT.y = row;	// 记录当前障碍图块的行
+
+						COLLIDBLOCK block;
+
+						//碰撞的地图块
+						RECT blockRect = { col*map->getTileWidth() + (map->GetX()) ,row*map->getTileHeight() + (map->GetY()),
+							(col + 1)*map->getTileWidth() + (map->GetX()),(row + 1)*map->getTileHeight() + (map->GetY()) };
+
+						int x = GetX(), y = GetY();
+						GAME_DIR DIR = getCollideDir(blockRect);
+						switch (DIR)
+						{
+						case DIR_LEFT:
+							x = map->GetX() + (col + 1)*map->getTileWidth();
+							y = GetY();
+							speedX = 0;
+							block = { col ,row ,DIR_RIGHT };		//保存发生碰撞的地图块序列
+																	//collideBlocks.push_back(block);
+							break;
+						case DIR_RIGHT:
+							x = map->GetX() + col*map->getTileWidth() - GetRatioSize().cx;
+							y = GetY();
+							speedX = 0;
+							block = { col ,row ,DIR_LEFT };		//保存发生碰撞的地图块序列
+																//collideBlocks.push_back(block);
+							break;
+						case DIR_UP:
+							x = GetX();
+							y = map->GetY() + (row + 1)*map->getTileHeight();		//紧靠障碍下侧
+							speedY = -abs(speedY);
+							block = { col ,row ,DIR_DOWN };
+							Util::myprintf(L"player collide top \n");
+							//保存发生碰撞的地图块序列
+							collideBlocks.push_back(block);
+							break;
+						case DIR_DOWN:
+							x = GetX();
+							y = map->GetY() + (row)*map->getTileHeight() - GetRatioSize().cy;  //紧靠障碍上侧
+							onPlantform = true;
+							resetJump();
+							block = { col ,row ,DIR_UP };		//保存发生碰撞的地图块序列
+							Util::myprintf(L"player collide down \n");
+							//collideBlocks.push_back(block);
+							break;
+						}
+						// 将角色定位在障碍物边界
+						SetPosition(x, y);
+					}
 				}
-				// 将角色定位在障碍物边界
-				SetPosition(x, y);
+			}
+			else if (dir == DIR_LEFT)
+			{
+				for (int col = endCol; col >= startCol; --col)
+				{
+					// 如果当前矩形所在的图块在地图数据中为非0，就表示是障碍
+					if (map->getTile(col, row) != 0)
+					{
+						isCollide = true;
+						mapBlockPT.x = col;	// 记录当前障碍图块的列
+						mapBlockPT.y = row;	// 记录当前障碍图块的行
+
+						COLLIDBLOCK block;
+
+						//碰撞的地图块
+						RECT blockRect = { col*map->getTileWidth() + (map->GetX()) ,row*map->getTileHeight() + (map->GetY()),
+							(col + 1)*map->getTileWidth() + (map->GetX()),(row + 1)*map->getTileHeight() + (map->GetY()) };
+
+						int x = GetX(), y = GetY();
+						GAME_DIR DIR = getCollideDir(blockRect);
+						switch (DIR)
+						{
+						case DIR_LEFT:
+							x = map->GetX() + (col + 1)*map->getTileWidth();
+							y = GetY();
+							speedX = 0;
+							block = { col ,row ,DIR_RIGHT };		//保存发生碰撞的地图块序列
+																	//collideBlocks.push_back(block);
+							break;
+						case DIR_RIGHT:
+							x = map->GetX() + col*map->getTileWidth() - GetRatioSize().cx;
+							y = GetY();
+							speedX = 0;
+							block = { col ,row ,DIR_LEFT };		//保存发生碰撞的地图块序列
+																//collideBlocks.push_back(block);
+							break;
+						case DIR_UP:
+							x = GetX();
+							y = map->GetY() + (row + 1)*map->getTileHeight();		//紧靠障碍下侧
+							speedY = -abs(speedY);
+							block = { col ,row ,DIR_DOWN };
+							Util::myprintf(L"player collide top \n");
+							//保存发生碰撞的地图块序列
+							collideBlocks.push_back(block);
+							break;
+						case DIR_DOWN:
+							x = GetX();
+							y = map->GetY() + (row)*map->getTileHeight() - GetRatioSize().cy;  //紧靠障碍上侧
+							onPlantform = true;
+							resetJump();
+							block = { col ,row ,DIR_UP };		//保存发生碰撞的地图块序列
+							Util::myprintf(L"player collide down \n");
+							//collideBlocks.push_back(block);
+							break;
+						}
+						// 将角色定位在障碍物边界
+						SetPosition(x, y);
+					}
+				}
 			}
 		}
 	}
+	else if (speedY > 0)
+	{
+		for (int row = endRow; row >= startRow; --row)
+		{
+			if (dir == DIR_RIGHT)
+			{
+				for (int col = startCol; col <= endCol; ++col)
+				{
+					// 如果当前矩形所在的图块在地图数据中为非0，就表示是障碍
+					if (map->getTile(col, row) != 0)
+					{
+						isCollide = true;
+						mapBlockPT.x = col;	// 记录当前障碍图块的列
+						mapBlockPT.y = row;	// 记录当前障碍图块的行
+
+						COLLIDBLOCK block;
+
+						//碰撞的地图块
+						RECT blockRect = { col*map->getTileWidth() + (map->GetX()) ,row*map->getTileHeight() + (map->GetY()),
+							(col + 1)*map->getTileWidth() + (map->GetX()),(row + 1)*map->getTileHeight() + (map->GetY()) };
+
+						int x = GetX(), y = GetY();
+						GAME_DIR DIR = getCollideDir(blockRect);
+						switch (DIR)
+						{
+						case DIR_LEFT:
+							x = map->GetX() + (col + 1)*map->getTileWidth();
+							y = GetY();
+							speedX = 0;
+							block = { col ,row ,DIR_RIGHT };		//保存发生碰撞的地图块序列
+																	//collideBlocks.push_back(block);
+							break;
+						case DIR_RIGHT:
+							x = map->GetX() + col*map->getTileWidth() - GetRatioSize().cx;
+							y = GetY();
+							speedX = 0;
+							block = { col ,row ,DIR_LEFT };		//保存发生碰撞的地图块序列
+																//collideBlocks.push_back(block);
+							break;
+						case DIR_UP:
+							x = GetX();
+							y = map->GetY() + (row + 1)*map->getTileHeight();		//紧靠障碍下侧
+							speedY = -abs(speedY);
+							block = { col ,row ,DIR_DOWN };
+							Util::myprintf(L"player collide top \n");
+							//保存发生碰撞的地图块序列
+							collideBlocks.push_back(block);
+							break;
+						case DIR_DOWN:
+							x = GetX();
+							y = map->GetY() + (row)*map->getTileHeight() - GetRatioSize().cy;  //紧靠障碍上侧
+							onPlantform = true;
+							resetJump();
+							block = { col ,row ,DIR_UP };		//保存发生碰撞的地图块序列
+							Util::myprintf(L"player collide down \n");
+							//collideBlocks.push_back(block);
+							break;
+						}
+						// 将角色定位在障碍物边界
+						SetPosition(x, y);
+					}
+				}
+			}
+			else if (dir == DIR_LEFT)
+			{
+				for (int col = endCol; col >= startCol; --col)
+				{
+					// 如果当前矩形所在的图块在地图数据中为非0，就表示是障碍
+					if (map->getTile(col, row) != 0)
+					{
+						isCollide = true;
+						mapBlockPT.x = col;	// 记录当前障碍图块的列
+						mapBlockPT.y = row;	// 记录当前障碍图块的行
+
+						COLLIDBLOCK block;
+
+						//碰撞的地图块
+						RECT blockRect = { col*map->getTileWidth() + (map->GetX()) ,row*map->getTileHeight() + (map->GetY()),
+							(col + 1)*map->getTileWidth() + (map->GetX()),(row + 1)*map->getTileHeight() + (map->GetY()) };
+
+						int x = GetX(), y = GetY();
+						GAME_DIR DIR = getCollideDir(blockRect);
+						switch (DIR)
+						{
+						case DIR_LEFT:
+							x = map->GetX() + (col + 1)*map->getTileWidth();
+							y = GetY();
+							speedX = 0;
+							block = { col ,row ,DIR_RIGHT };		//保存发生碰撞的地图块序列
+																	//collideBlocks.push_back(block);
+							break;
+						case DIR_RIGHT:
+							x = map->GetX() + col*map->getTileWidth() - GetRatioSize().cx;
+							y = GetY();
+							speedX = 0;
+							block = { col ,row ,DIR_LEFT };		//保存发生碰撞的地图块序列
+																//collideBlocks.push_back(block);
+							break;
+						case DIR_UP:
+							x = GetX();
+							y = map->GetY() + (row + 1)*map->getTileHeight();		//紧靠障碍下侧
+							speedY = -abs(speedY);
+							block = { col ,row ,DIR_DOWN };
+							Util::myprintf(L"player collide top \n");
+							//保存发生碰撞的地图块序列
+							collideBlocks.push_back(block);
+							break;
+						case DIR_DOWN:
+							x = GetX();
+							y = map->GetY() + (row)*map->getTileHeight() - GetRatioSize().cy;  //紧靠障碍上侧
+							onPlantform = true;
+							resetJump();
+							block = { col ,row ,DIR_UP };		//保存发生碰撞的地图块序列
+							Util::myprintf(L"player collide down \n");
+							//collideBlocks.push_back(block);
+							break;
+						}
+						// 将角色定位在障碍物边界
+						SetPosition(x, y);
+					}
+				}
+			}
+		}
+	}
+	
 	(dynamic_cast<GameMap*>(map))->setCollideBlocks(collideBlocks); //刷新碰撞地图块
 	return isCollide;
 }

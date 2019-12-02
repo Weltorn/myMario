@@ -147,7 +147,7 @@ public:
 	int getLastX() { return lastX; }
 	int getLastY() { return lastY; }
 	// 判断怪物与目标矩形的碰撞方向（相对于怪物的方向）
-	GAME_DIR getCollideDir(RECT target);
+	GAME_DIR getCollideDir(RECT target,bool horizontalFirst = true);
 	GAME_DIR getCollideDir(T_Sprite* target, int distance=0);
 	// 计算扩大或收缩后的碰撞检测区宽高(px、py为正值放大、负值缩小，单位为像素)
 	void AdjustCollideRect(int px=0, int py=0);	

@@ -438,7 +438,7 @@ int T_Sprite::GetDir(POINT mousePT)
 }
 
 // 判断怪物与目标矩形的碰撞方向（相对于怪物的方向）
-GAME_DIR T_Sprite::getCollideDir(RECT target)
+GAME_DIR T_Sprite::getCollideDir(RECT target, bool horizontalFirst)
 {
 	RECT oldRect = *this->GetCollideRect();
 	RECT currentRect = *this->GetCollideRect();
@@ -447,28 +447,123 @@ GAME_DIR T_Sprite::getCollideDir(RECT target)
 	oldRect.top = this->GetCollideRect()->top - (Y - lastY);
 	oldRect.bottom = this->GetCollideRect()->bottom - (Y - lastY);
 
-	if (oldRect.left >= target.right && this->GetCollideRect()->left <= target.right&&
-		(oldRect.top<= target.bottom&& oldRect.bottom >= target.top))
+	GAME_DIR dir  = DIR_NONE;
+	int oldSpeedX = abs(X - lastX);
+	int oldSpeedY = abs(Y - lastY);
+	int distanceX = 0;
+	int distanceY = 0;
+	if (oldSpeedX == 0 && oldSpeedY == 0)	//初始化时碰撞
 	{
-		return DIR_LEFT;
+		return dir;
 	}
-	if (oldRect.right <= target.left && this->GetCollideRect()->right >= target.left &&
-		(oldRect.top <= target.bottom && oldRect.bottom >= target.top))
+	if (oldRect.left >= target.right && currentRect.left <= target.right)
 	{
- 		return DIR_RIGHT;
+		dir= DIR_LEFT;
 	}
-	if (oldRect.top >= target.bottom && this->GetCollideRect()->top <= target.bottom &&
-		(oldRect.left < target.right && oldRect.right > target.left))
+	if (oldRect.right <= target.left && currentRect.right >= target.left)
 	{
-		return DIR_UP;
+		dir = DIR_RIGHT;
 	}
-	if (oldRect.bottom <= target.top && this->GetCollideRect()->bottom >= target.top &&
-		(oldRect.left < target.right && oldRect.right > target.left))
+	if (oldRect.top >= target.bottom && currentRect.top <= target.bottom)
 	{
-		return DIR_DOWN;
+		if (dir == DIR_LEFT)
+		{
+			distanceY = oldRect.top - target.bottom;
+			distanceX = oldRect.left- target.right;
+			if (oldSpeedX*distanceY >= oldSpeedY*distanceX)
+			{
+				dir = DIR_UP;
+				if (horizontalFirst&&oldSpeedX*distanceY == oldSpeedY*distanceX)
+				{
+					dir = DIR_LEFT;
+				}
+			}
+		}
+		else if (dir == DIR_RIGHT)
+		{
+			distanceY = oldRect.top - target.bottom;
+			distanceX = target.right-oldRect.left;
+			if (oldSpeedX*distanceY >= oldSpeedY*distanceX)
+			{
+				dir = DIR_UP;
+				if (horizontalFirst&&oldSpeedX*distanceY == oldSpeedY*distanceX)
+				{
+					dir = DIR_RIGHT;
+				}
+			}
+		}
+		else
+		{
+			dir = DIR_UP;
+		}		
 	}
-	return DIR_NONE;
+	if (oldRect.bottom <= target.top && currentRect.bottom >= target.top)
+	{
+		if (dir == DIR_LEFT)
+		{
+			distanceY = target.top - oldRect.bottom;
+			distanceX = oldRect.left-target.right;
+			if (oldSpeedX*distanceY >= oldSpeedY*distanceX)
+			{
+				dir = DIR_DOWN;
+				if (horizontalFirst&&oldSpeedX*distanceY == oldSpeedY*distanceX)
+				{
+					dir = DIR_LEFT;
+				}
+			}
+		}
+		else if (dir == DIR_RIGHT)
+		{
+			distanceY = target.top - oldRect.bottom;
+			distanceX = target.left-oldRect.right;
+			if (oldSpeedX*distanceY >= oldSpeedY*distanceX)
+			{
+				dir = DIR_DOWN;
+				if (horizontalFirst&&oldSpeedX*distanceY == oldSpeedY*distanceX)
+				{
+					dir = DIR_RIGHT;
+				}
+			}
+		}
+		else
+		{
+			dir = DIR_DOWN;
+		}		
+	}
+	return dir;
 }
+//// 判断怪物与目标矩形的碰撞方向（相对于怪物的方向）
+//GAME_DIR T_Sprite::getCollideDir(RECT target)
+//{
+//	RECT oldRect = *this->GetCollideRect();
+//	RECT currentRect = *this->GetCollideRect();
+//	oldRect.left = this->GetCollideRect()->left - (X - lastX);
+//	oldRect.right = this->GetCollideRect()->right - (X - lastX);
+//	oldRect.top = this->GetCollideRect()->top - (Y - lastY);
+//	oldRect.bottom = this->GetCollideRect()->bottom - (Y - lastY);
+//
+//	if (oldRect.left >= target.right && this->GetCollideRect()->left <= target.right &&
+//		(oldRect.top< target.bottom&& oldRect.bottom > target.top))
+//	{
+//		return DIR_LEFT;
+//	}
+//	if (oldRect.right <= target.left && this->GetCollideRect()->right >= target.left &&
+//		(oldRect.top < target.bottom && oldRect.bottom > target.top))
+//	{
+//		return DIR_RIGHT;
+//	}
+//	if (oldRect.top >= target.bottom && this->GetCollideRect()->top <= target.bottom &&
+//		(oldRect.left < target.right && oldRect.right > target.left))
+//	{
+//		return DIR_UP;
+//	}
+//	if (oldRect.bottom <= target.top && this->GetCollideRect()->bottom >= target.top &&
+//		(oldRect.left < target.right && oldRect.right > target.left))
+//	{
+//		return DIR_DOWN;
+//	}
+//	return DIR_NONE;
+//}
 
 // 判断怪物与目标的碰撞方向（相对于怪物的方向）
 GAME_DIR T_Sprite::getCollideDir(T_Sprite* target, int distance)

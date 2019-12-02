@@ -141,7 +141,7 @@ bool PlayerBullet::CollideWith(IN T_Map* map)
 					(col + 1)*map->getTileWidth() + (map->GetX()),(row + 1)*map->getTileHeight() + (map->GetY()) };
 
 				int x = GetX(), y = GetY();
-				GAME_DIR DIR = getCollideDir(blockRect);
+				GAME_DIR DIR = getCollideDir(blockRect,false);
 				switch (DIR)
 				{
 				case DIR_LEFT:
