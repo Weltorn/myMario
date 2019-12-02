@@ -183,7 +183,7 @@ bool T_Sprite::LoopFrameOnce(int times, bool ahead)
 			}			
 		}
 	}
-	return true;
+	return false;
 }
 bool T_Sprite::LoopFrameOnce(bool ahead)
 {
@@ -458,12 +458,12 @@ GAME_DIR T_Sprite::getCollideDir(RECT target)
  		return DIR_RIGHT;
 	}
 	if (oldRect.top >= target.bottom && this->GetCollideRect()->top <= target.bottom &&
-		(oldRect.left <= target.right && oldRect.right >= target.left))
+		(oldRect.left < target.right && oldRect.right > target.left))
 	{
 		return DIR_UP;
 	}
 	if (oldRect.bottom <= target.top && this->GetCollideRect()->bottom >= target.top &&
-		(oldRect.left <= target.right && oldRect.right >= target.left))
+		(oldRect.left < target.right && oldRect.right > target.left))
 	{
 		return DIR_DOWN;
 	}

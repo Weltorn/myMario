@@ -22,6 +22,10 @@ void PlayerBullet::gravityEffect()
 	if ((GetTickCount() - timer)* currentGravity / 270 >6 - abs(speedY))
 	{
 		speedY -= 1;
+		if (speedY >= 12)
+		{
+			speedY = 12;
+		}
 		timer = GetTickCount();
 	}
 }
@@ -147,14 +151,15 @@ bool PlayerBullet::CollideWith(IN T_Map* map)
 				case DIR_UP:
 					x = GetX();
 					y = map->GetY() + (row + 1)*map->getTileHeight();		//½ô¿¿ÕÏ°­ÏÂ²à
+					SetPosition(x, y);
 					speedY = -abs(speedY);
 					break;
 				case DIR_DOWN:
 					x = GetX();
 					y = map->GetY() + (row)*map->getTileHeight() - GetRatioSize().cy;  //½ô¿¿ÕÏ°­ÉÏ²à
-					onPlantform = true;
+					SetPosition(x, y);
 					//speedY = abs(speedY);
-					speedY = 3;
+					speedY = 4;
 					break;
 				default:
 					//startEvent(EVENTTYPE::BULLET_EXPLODE);
