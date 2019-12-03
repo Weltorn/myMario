@@ -38,6 +38,9 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	// -----FIREBALL
 	fireballCD = 300;
 	fireballTimer = GetTickCount();
+
+	safeTime = 5000;		//变小后的安全时间
+	blinkCount = 0;
 }
 
 
@@ -233,6 +236,25 @@ void Player::updateFrame()
 			onCreateFireBall = false;
 		}
 	}
+	//安全时间闪烁提示
+	if (bSafe)
+	{
+		if (blinkCount > 8)
+		{
+			int alpha = (GetAlpha() == 255) ? 150 : 255;
+			SetAlpha(alpha);
+			blinkCount = 0;
+		}	
+		else
+		{
+			blinkCount++;
+		}
+		if (GetTickCount() >= startTime + safeTime)
+		{
+			SetAlpha(255);
+			bSafe = false;
+		}
+	}
 }
 void Player::update()
 {
@@ -318,7 +340,7 @@ void Player::stopMove(bool immediately) {
 //发射炮弹
 void  Player::createFireBall()
 {
-	if (fireballTimer + fireballCD <= GetTickCount())	//子弹冷却时间控制
+	if (playerStatus != PLAYERSTATUS::PLAYER_NORMAL&& fireballTimer + fireballCD <= GetTickCount())	//子弹冷却时间控制
 	{
 		int bulletX, bulletY;
 		if (dir == DIR_LEFT)
@@ -900,6 +922,8 @@ void Player::levelDownAnimation()
 	default:
 		//动画结束
 		active = true;
+		bSafe = true;
+		startTime = GetTickCount();	//安全时间开始计时
 		SetAlpha(255);
 		Y += bigNormalMode->frameMode.frameHeight - Height;	//调整玩家高度（不同状态帧图存在高度差，以玩家下边界为基准）
 		setPlayerMode(PLAYER_NORMAL);

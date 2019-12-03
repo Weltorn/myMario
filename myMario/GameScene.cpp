@@ -232,7 +232,7 @@ void  GameScene::update()
 	LMinion::iterator pm;
 	for (pm = pMinions.begin(); pm != pMinions.end(); pm++)
 	{
-		if((*pm)->IsActive() && pPlayer->IsActive())
+		if((*pm)->IsActive() && pPlayer->IsActive()&& !pPlayer->isSafe())
 			(*pm)->CollideWith(pPlayer);	//设置怪物、玩家碰撞后状态（如死亡、升/降级）
 	}
 	// 如果图层发生过任何变化

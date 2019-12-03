@@ -77,7 +77,7 @@ private:
 	unsigned eventTimer;
 	bool inEvent;					//是否在游戏事件中
 	int eventId;					//变大、变小、死亡
-	int currentStep;
+	int currentStep;				//目前事件进度
 
 	// ----- MOVE STATUS
 	bool bMove;		//水平移动状态
@@ -85,6 +85,9 @@ private:
 	bool bJump;		//跳跃状态
 	bool bSlide;	//减速滑行状态
 	bool dirChanged;//滑行状态改变方向
+	bool bSafe;		//降级后的安全状态,不会与怪物相撞
+	unsigned safeTime;
+	unsigned blinkCount;	//控制安全状态闪烁频率
 
 	// -----JUMP STATUS
 	bool onPlantform;
@@ -169,6 +172,7 @@ public:
 	bool isOnPlantform() { return onPlantform; }
 	//是否加速状态（shift）
 	bool isSpeedUp() { return currentMaxSpeedX == currentMode->maxRunSpeedX; }
+	bool isSafe() { return bSafe; }
 	//更新玩家坐标
 	void updatePosition();
 	void updatePositionY();			//竖直移动
