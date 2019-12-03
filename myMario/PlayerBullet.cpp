@@ -126,42 +126,175 @@ bool PlayerBullet::CollideWith(IN T_Map* map)
 	int endCol = (spRight < mapRight) ? (spRight - 1 - mapLeft) / tW : tNumCols - 1;
 
 	// 根据角色矩形上、下、左、右的矩形区域判断哪个矩形区域为障碍
-	for (int row = startRow; row <= endRow; ++row)
-	{
-		for (int col = startCol; col <= endCol; ++col)
-		{
-			// 如果当前矩形所在的图块在地图数据中为非0，就表示是障碍
-			if (map->getTile(col, row) != 0)
-			{
-				isCollide = true;
-				mapBlockPT.x = col;	// 记录当前障碍图块的列
-				mapBlockPT.y = row;	// 记录当前障碍图块的行
-				//碰撞的地图块
-				RECT blockRect = { col*map->getTileWidth() + (map->GetX()) ,row*map->getTileHeight() + (map->GetY()),
-					(col + 1)*map->getTileWidth() + (map->GetX()),(row + 1)*map->getTileHeight() + (map->GetY()) };
 
-				int x = GetX(), y = GetY();
-				GAME_DIR DIR = getCollideDir(blockRect,false);
-				switch (DIR)
+	if (speedY <= 0)
+	{
+		for (int row = startRow; row <= endRow; ++row)
+		{
+			if (dir == DIR_RIGHT)
+			{
+				for (int col = startCol; col <= endCol; ++col)
 				{
-				case DIR_LEFT:
-				case DIR_RIGHT:
-					startEvent(EVENTTYPE::BULLET_EXPLODE);
-					break;
-				case DIR_UP:
-					x = GetX();
-					y = map->GetY() + (row + 1)*map->getTileHeight();		//紧靠障碍下侧
-					SetPosition(x, y);
-					speedY = -abs(speedY);
-					break;
-				case DIR_DOWN:
-					x = GetX();
-					y = map->GetY() + (row)*map->getTileHeight() - (GetRatioSize().cy+colideHeight)/2;  //紧靠障碍上侧
-					SetPosition(x, y);
-					speedY = 4;
-					break;
-				default:					
-					startEvent(EVENTTYPE::BULLET_EXPLODE);					
+					// 如果当前矩形所在的图块在地图数据中为非0，就表示是障碍
+					if (map->getTile(col, row) != 0)
+					{
+						isCollide = true;
+						mapBlockPT.x = col;	// 记录当前障碍图块的列
+						mapBlockPT.y = row;	// 记录当前障碍图块的行
+											//碰撞的地图块
+						RECT blockRect = { col*map->getTileWidth() + (map->GetX()) ,row*map->getTileHeight() + (map->GetY()),
+							(col + 1)*map->getTileWidth() + (map->GetX()),(row + 1)*map->getTileHeight() + (map->GetY()) };
+
+						int x = GetX(), y = GetY();
+						GAME_DIR DIR = getCollideDir(blockRect, false);
+						switch (DIR)
+						{
+						case DIR_LEFT:
+						case DIR_RIGHT:
+							startEvent(EVENTTYPE::BULLET_EXPLODE);
+							break;
+						case DIR_UP:
+							x = GetX();
+							y = map->GetY() + (row + 1)*map->getTileHeight();		//紧靠障碍下侧
+							SetPosition(x, y);
+							speedY = -abs(speedY);
+							break;
+						case DIR_DOWN:
+							x = GetX();
+							y = map->GetY() + (row)*map->getTileHeight() - (GetRatioSize().cy + colideHeight) / 2;  //紧靠障碍上侧
+							SetPosition(x, y);
+							speedY = 4;
+							break;
+						default:
+							startEvent(EVENTTYPE::BULLET_EXPLODE);
+						}
+					}
+				}
+			}
+			else if (dir == DIR_LEFT)
+			{
+				for (int col = endCol; col >= startCol; --col)
+				{
+					// 如果当前矩形所在的图块在地图数据中为非0，就表示是障碍
+					if (map->getTile(col, row) != 0)
+					{
+						isCollide = true;
+						mapBlockPT.x = col;	// 记录当前障碍图块的列
+						mapBlockPT.y = row;	// 记录当前障碍图块的行
+											//碰撞的地图块
+						RECT blockRect = { col*map->getTileWidth() + (map->GetX()) ,row*map->getTileHeight() + (map->GetY()),
+							(col + 1)*map->getTileWidth() + (map->GetX()),(row + 1)*map->getTileHeight() + (map->GetY()) };
+
+						int x = GetX(), y = GetY();
+						GAME_DIR DIR = getCollideDir(blockRect, false);
+						switch (DIR)
+						{
+						case DIR_LEFT:
+						case DIR_RIGHT:
+							startEvent(EVENTTYPE::BULLET_EXPLODE);
+							break;
+						case DIR_UP:
+							x = GetX();
+							y = map->GetY() + (row + 1)*map->getTileHeight();		//紧靠障碍下侧
+							SetPosition(x, y);
+							speedY = -abs(speedY);
+							break;
+						case DIR_DOWN:
+							x = GetX();
+							y = map->GetY() + (row)*map->getTileHeight() - (GetRatioSize().cy + colideHeight) / 2;  //紧靠障碍上侧
+							SetPosition(x, y);
+							speedY = 4;
+							break;
+						default:
+							startEvent(EVENTTYPE::BULLET_EXPLODE);
+						}
+					}
+				}
+			}
+		}
+	}
+	else if (speedY > 0)
+	{
+		for (int row = endRow; row >= startRow; --row)
+		{
+			if (dir == DIR_RIGHT)
+			{
+				for (int col = startCol; col <= endCol; ++col)
+				{
+					// 如果当前矩形所在的图块在地图数据中为非0，就表示是障碍
+					if (map->getTile(col, row) != 0)
+					{
+						isCollide = true;
+						mapBlockPT.x = col;	// 记录当前障碍图块的列
+						mapBlockPT.y = row;	// 记录当前障碍图块的行
+											//碰撞的地图块
+						RECT blockRect = { col*map->getTileWidth() + (map->GetX()) ,row*map->getTileHeight() + (map->GetY()),
+							(col + 1)*map->getTileWidth() + (map->GetX()),(row + 1)*map->getTileHeight() + (map->GetY()) };
+
+						int x = GetX(), y = GetY();
+						GAME_DIR DIR = getCollideDir(blockRect, false);
+						switch (DIR)
+						{
+						case DIR_LEFT:
+						case DIR_RIGHT:
+							startEvent(EVENTTYPE::BULLET_EXPLODE);
+							break;
+						case DIR_UP:
+							x = GetX();
+							y = map->GetY() + (row + 1)*map->getTileHeight();		//紧靠障碍下侧
+							SetPosition(x, y);
+							speedY = -abs(speedY);
+							break;
+						case DIR_DOWN:
+							x = GetX();
+							y = map->GetY() + (row)*map->getTileHeight() - (GetRatioSize().cy + colideHeight) / 2;  //紧靠障碍上侧
+							SetPosition(x, y);
+							speedY = 4;
+							break;
+						default:
+							startEvent(EVENTTYPE::BULLET_EXPLODE);
+						}
+					}
+				}
+			}
+			else if (dir == DIR_LEFT)
+			{
+				for (int col = endCol; col >= startCol; --col)
+				{
+					// 如果当前矩形所在的图块在地图数据中为非0，就表示是障碍
+					if (map->getTile(col, row) != 0)
+					{
+						isCollide = true;
+						mapBlockPT.x = col;	// 记录当前障碍图块的列
+						mapBlockPT.y = row;	// 记录当前障碍图块的行
+											//碰撞的地图块
+						RECT blockRect = { col*map->getTileWidth() + (map->GetX()) ,row*map->getTileHeight() + (map->GetY()),
+							(col + 1)*map->getTileWidth() + (map->GetX()),(row + 1)*map->getTileHeight() + (map->GetY()) };
+
+						int x = GetX(), y = GetY();
+						GAME_DIR DIR = getCollideDir(blockRect, false);
+						switch (DIR)
+						{
+						case DIR_LEFT:
+						case DIR_RIGHT:
+							startEvent(EVENTTYPE::BULLET_EXPLODE);
+							break;
+						case DIR_UP:
+							x = GetX();
+							y = map->GetY() + (row + 1)*map->getTileHeight();		//紧靠障碍下侧
+							SetPosition(x, y);
+							speedY = -abs(speedY);
+							break;
+						case DIR_DOWN:
+							x = GetX();
+							y = map->GetY() + (row)*map->getTileHeight() - (GetRatioSize().cy + colideHeight) / 2;  //紧靠障碍上侧
+							SetPosition(x, y);
+							speedY = 4;
+							break;
+						default:
+							startEvent(EVENTTYPE::BULLET_EXPLODE);
+						}
+					}
 				}
 			}
 		}

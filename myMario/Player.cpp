@@ -538,7 +538,6 @@ bool Player::CollideWith(IN T_Map* map)
 							y = map->GetY() + (row + 1)*map->getTileHeight();		//紧靠障碍下侧
 							speedY = -abs(speedY);
 							block = { col ,row ,DIR_DOWN };
-							Util::myprintf(L"player collide top \n");
 							//保存发生碰撞的地图块序列
 							collideBlocks.push_back(block);
 							break;
@@ -548,7 +547,6 @@ bool Player::CollideWith(IN T_Map* map)
 							onPlantform = true;
 							resetJump();
 							block = { col ,row ,DIR_UP };		//保存发生碰撞的地图块序列
-							Util::myprintf(L"player collide down \n");
 							//collideBlocks.push_back(block);
 							break;
 						}

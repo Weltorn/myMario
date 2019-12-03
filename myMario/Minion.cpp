@@ -85,6 +85,214 @@ bool Minion::CollideWith(IN T_Map* map)
 	int startCol = (spLeft <= mapLeft) ? 0 : (spLeft - mapLeft) / tW;
 	int endCol = (spRight < mapRight) ? (spRight - 1 - mapLeft) / tW : tNumCols - 1;
 
+	if (speedY <= 0)
+	{
+		for (int row = startRow; row <= endRow; ++row)
+		{
+			if (dir == DIR_RIGHT)
+			{
+				for (int col = startCol; col <= endCol; ++col)
+				{
+					// 如果当前矩形所在的图块在地图数据中为非0，就表示是障碍
+					if (map->getTile(col, row) != 0)
+					{
+						isCollide = true;
+						mapBlockPT.x = col;	// 记录当前障碍图块的列
+						mapBlockPT.y = row;	// 记录当前障碍图块的行
+						Util::myprintf(L"mioion map collide now------------------\n");
+						//碰撞的地图块
+						RECT blockRect = { col*map->getTileWidth() + (map->GetX()) ,row*map->getTileHeight() + (map->GetY()),
+							(col + 1)*map->getTileWidth() + (map->GetX()),(row + 1)*map->getTileHeight() + (map->GetY()) };
+
+						int x = GetX(), y = GetY();
+						GAME_DIR DIR = getCollideDir(blockRect);
+						switch (DIR)
+						{
+						case DIR_LEFT:
+							x = map->GetX() + (col + 1)*map->getTileWidth();
+							y = GetY();
+							dir = DIR_RIGHT;
+							break;
+						case DIR_RIGHT:
+							x = map->GetX() + col*map->getTileWidth() - GetRatioSize().cx;
+							y = GetY();
+							dir = DIR_LEFT;
+							break;
+						case DIR_UP:
+							x = GetX();
+							y = map->GetY() + (row + 1)*map->getTileHeight();		//紧靠障碍下侧
+							speedY = -abs(speedY);
+							break;
+						case DIR_DOWN:
+							x = GetX();
+							y = map->GetY() + (row)*map->getTileHeight() - GetRatioSize().cy;  //紧靠障碍上侧
+							onPlantform = true;
+							speedY = 0;
+							break;
+						default:
+							x = lastX;
+							y = lastY;
+						}
+						// 将角色定位在障碍物边界
+						SetPosition(x, y);
+					}
+				}
+			}
+			else if (dir == DIR_LEFT)
+			{
+				for (int col = endCol; col >= startCol; --col)
+				{
+					// 如果当前矩形所在的图块在地图数据中为非0，就表示是障碍
+					if (map->getTile(col, row) != 0)
+					{
+						isCollide = true;
+						mapBlockPT.x = col;	// 记录当前障碍图块的列
+						mapBlockPT.y = row;	// 记录当前障碍图块的行
+						Util::myprintf(L"mioion map collide now------------------\n");
+						//碰撞的地图块
+						RECT blockRect = { col*map->getTileWidth() + (map->GetX()) ,row*map->getTileHeight() + (map->GetY()),
+							(col + 1)*map->getTileWidth() + (map->GetX()),(row + 1)*map->getTileHeight() + (map->GetY()) };
+
+						int x = GetX(), y = GetY();
+						GAME_DIR DIR = getCollideDir(blockRect);
+						switch (DIR)
+						{
+						case DIR_LEFT:
+							x = map->GetX() + (col + 1)*map->getTileWidth();
+							y = GetY();
+							dir = DIR_RIGHT;
+							break;
+						case DIR_RIGHT:
+							x = map->GetX() + col*map->getTileWidth() - GetRatioSize().cx;
+							y = GetY();
+							dir = DIR_LEFT;
+							break;
+						case DIR_UP:
+							x = GetX();
+							y = map->GetY() + (row + 1)*map->getTileHeight();		//紧靠障碍下侧
+							speedY = -abs(speedY);
+							break;
+						case DIR_DOWN:
+							x = GetX();
+							y = map->GetY() + (row)*map->getTileHeight() - GetRatioSize().cy;  //紧靠障碍上侧
+							onPlantform = true;
+							speedY = 0;
+							break;
+						default:
+							x = lastX;
+							y = lastY;
+						}
+						// 将角色定位在障碍物边界
+						SetPosition(x, y);
+					}
+				}
+			}
+		}
+	}
+	else if (speedY > 0)
+	{
+		for (int row = endRow; row >= startRow; --row)
+		{
+			if (dir == DIR_RIGHT)
+			{
+				for (int col = startCol; col <= endCol; ++col)
+				{
+					// 如果当前矩形所在的图块在地图数据中为非0，就表示是障碍
+					if (map->getTile(col, row) != 0)
+					{
+						isCollide = true;
+						mapBlockPT.x = col;	// 记录当前障碍图块的列
+						mapBlockPT.y = row;	// 记录当前障碍图块的行
+						Util::myprintf(L"mioion map collide now------------------\n");
+						//碰撞的地图块
+						RECT blockRect = { col*map->getTileWidth() + (map->GetX()) ,row*map->getTileHeight() + (map->GetY()),
+							(col + 1)*map->getTileWidth() + (map->GetX()),(row + 1)*map->getTileHeight() + (map->GetY()) };
+
+						int x = GetX(), y = GetY();
+						GAME_DIR DIR = getCollideDir(blockRect);
+						switch (DIR)
+						{
+						case DIR_LEFT:
+							x = map->GetX() + (col + 1)*map->getTileWidth();
+							y = GetY();
+							dir = DIR_RIGHT;
+							break;
+						case DIR_RIGHT:
+							x = map->GetX() + col*map->getTileWidth() - GetRatioSize().cx;
+							y = GetY();
+							dir = DIR_LEFT;
+							break;
+						case DIR_UP:
+							x = GetX();
+							y = map->GetY() + (row + 1)*map->getTileHeight();		//紧靠障碍下侧
+							speedY = -abs(speedY);
+							break;
+						case DIR_DOWN:
+							x = GetX();
+							y = map->GetY() + (row)*map->getTileHeight() - GetRatioSize().cy;  //紧靠障碍上侧
+							onPlantform = true;
+							speedY = 0;
+							break;
+						default:
+							x = lastX;
+							y = lastY;
+						}
+						// 将角色定位在障碍物边界
+						SetPosition(x, y);
+					}
+				}
+			}
+			else if (dir == DIR_LEFT)
+			{
+				for (int col = endCol; col >= startCol; --col)
+				{
+					// 如果当前矩形所在的图块在地图数据中为非0，就表示是障碍
+					if (map->getTile(col, row) != 0)
+					{
+						isCollide = true;
+						mapBlockPT.x = col;	// 记录当前障碍图块的列
+						mapBlockPT.y = row;	// 记录当前障碍图块的行
+						Util::myprintf(L"mioion map collide now------------------\n");
+						//碰撞的地图块
+						RECT blockRect = { col*map->getTileWidth() + (map->GetX()) ,row*map->getTileHeight() + (map->GetY()),
+							(col + 1)*map->getTileWidth() + (map->GetX()),(row + 1)*map->getTileHeight() + (map->GetY()) };
+
+						int x = GetX(), y = GetY();
+						GAME_DIR DIR = getCollideDir(blockRect);
+						switch (DIR)
+						{
+						case DIR_LEFT:
+							x = map->GetX() + (col + 1)*map->getTileWidth();
+							y = GetY();
+							dir = DIR_RIGHT;
+							break;
+						case DIR_RIGHT:
+							x = map->GetX() + col*map->getTileWidth() - GetRatioSize().cx;
+							y = GetY();
+							dir = DIR_LEFT;
+							break;
+						case DIR_UP:
+							x = GetX();
+							y = map->GetY() + (row + 1)*map->getTileHeight();		//紧靠障碍下侧
+							speedY = -abs(speedY);
+							break;
+						case DIR_DOWN:
+							x = GetX();
+							y = map->GetY() + (row)*map->getTileHeight() - GetRatioSize().cy;  //紧靠障碍上侧
+							onPlantform = true;
+							speedY = 0;
+							break;
+						default:
+							x = lastX;
+							y = lastY;
+						}
+						// 将角色定位在障碍物边界
+						SetPosition(x, y);
+					}
+				}
+			}
+		}
+	}
 	// 根据角色矩形上、下、左、右的矩形区域判断哪个矩形区域为障碍
 	for (int row = startRow; row <= endRow; ++row)
 	{
