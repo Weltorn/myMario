@@ -866,9 +866,14 @@ void Player::levelUpAnimation()
 	switch (currentStep)
 	{
 	case 0:
-		active = false;
-		Y -= bigNormalMode->frameMode.frameHeight - Height;	//调整玩家高度（不同状态帧图存在高度差，以玩家下边界为基准）
+		active = false;		
 		setPlayerMode(PLAYER_BIGNORMAL);
+		//检测碰撞（防止变大后嵌入到障碍物中）
+		if (CollideWith(GameScene::getInstance()->getBarrier()))
+		{
+			X -= (GetCollideRect()->right) % GameScene::getInstance()->getBarrier()->getTileWidth();
+		}
+		Y -= bigNormalMode->frameMode.frameHeight - normalMode->frameMode.frameHeight;	//调整玩家高度（不同状态帧图存在高度差，以玩家下边界为基准）
 		SetSequence(currentMode->frameMode.levelUpFrmSequence , currentMode->frameMode.nlevelUpFrames);
 		forward = 0;		
 		SetAlpha(200);
