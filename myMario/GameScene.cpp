@@ -145,7 +145,31 @@ bool GameScene::LoadTxtMap(const char* txtmap_path)
 				else if (currentlayerName == minionName &&
 					currentlayerName != L"" && minionName != L"")
 				{
+					int a = 0;
+					for (int i = 0; i < layerInfo.data.size(); i++)
+					{
+						for (int j = 0; j < layerInfo.data[0].size(); j++)
+						{
+							if (layerInfo.data[i][j] == 1)
+							{
+								appendMinion(MINION_TYPE::MINION_GOOMBA, 32 * j, 32 * (i - 1));
+								a++;
+							}
+							if (a > 5)
+								return true;
+
+							//switch (layerInfo.data[j][i]) {
+							//case 1:			
+							//	appendMinion(MINION_TYPE::MINION_GOOMBA, 32 * j, 32 * i);
+							//	break;
+							
+						}
+					
+					}
 					continue;
+					// 根据txt文件生成所有怪物
+					//	gameScene->appendMinion(MINION_TYPE::MINION_GOOMBA,1100,200);
+				//	continue;
 				//	mapLayer.z_order = layerCount;
 				//	mapLayer.layer->setZorder(layerCount);
 				}
@@ -159,7 +183,6 @@ bool GameScene::LoadTxtMap(const char* txtmap_path)
 					//父指针无法直接调用子类函数
 					dynamic_cast<GameMap *>(mapLayer.layer)->CreateBricks(NORMAL_BRICK);
 					pNormalBrick = (GameMap*)mapLayer.layer;
-					//	pMask = (GameMap*)mapLayer.layer;
 					mapLayer.layer->SetLayerTypeID(LAYER_NORMAL_BRICK);
 					mapLayer.type_id = LAYER_NORMAL_BRICK;
 					layerInfo.type_id = LAYER_NORMAL_BRICK;
@@ -342,8 +365,11 @@ void  GameScene::update()
 {
 
 	//更新障碍地图
-	if (pBarrier->IsVisible())
-		pBarrier->update();
+	//if (pBarrier->IsVisible())
+	//	pBarrier->update();
+	// 更新不同砖块层
+	if (pNormalBrick->IsVisible())
+		pNormalBrick->update();
 
 	//更新怪物图层
 	LMinion::iterator p1;

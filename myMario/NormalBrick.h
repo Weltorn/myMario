@@ -6,8 +6,7 @@ class NormalBrick :
 	public Brick
 {
 protected:
-//	int lastX;		
-	int lastY;			//普通砖块会可上下移动
+	//int lastY;			//普通砖块会可上下移动
 public:
 	NormalBrick(LPCTSTR imgPath, int frameWidth, int frameHeight);
 	~NormalBrick();

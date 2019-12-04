@@ -83,7 +83,6 @@ void MarioGame::GameLogic()
 		}
 		case GAME_ABOUT:		//游戏制作信息界面
 		{
-			
 			//背景颜色变换
 			T_Util::ChangeRGB(&red,&green,&blue,&lastRed,&lastBlue,&lastGreen,&changeIndex);
 			// 坐标处理
@@ -110,7 +109,7 @@ void MarioGame::GamePaint(HDC hdc)
 	case GAME_RUN:			//游戏进行时界面
 	{
 		T_Graph::PaintBlank(hdc,0,0,wnd_width,wnd_height, bkColor,255);
-		gameScene->Draw(hdc);
+		gameScene->Draw(hdc);	//<=39ms?
 		DisplayInfo(hdc);		//显示顶部游戏状态信息
 
 		break;
@@ -776,7 +775,7 @@ void MarioGame::DisplayInfo(HDC hdc)
 		textRect.Y = (REAL)7*wnd_height/8;
 		textRect.Width = (REAL)wnd_width;
 		textRect.Height = (REAL)30;
-		content.push_back(L"REMEMBER THAT YOU CAN RUN WITH LSHIFT");
+		content.push_back(L"REMEMBER THAT YOU CAN RUN WITH CPAS");
 		T_Graph::PaintText(hdc, textRect, content[2].c_str(), FontHeight, fontName.c_str(),	
 			Color::White, FontStyleBold, StringAlignmentNear);
 		break;
@@ -839,7 +838,7 @@ void MarioGame::ShowTitleInfo(HDC hdc) {
 	{
 		if (i == 5) {	//金币数前需要打印一个图片
 			statusCoin->Draw(hdc);
-			statusCoin->LoopFrame(20,true);	//如此裸露的维护帧计数器。。。。
+			statusCoin->LoopFrame(15,true);	//如此裸露的维护帧计数器。。。。
 		}	
 		
 		T_Graph::PaintText(hdc, textRect, content[i].c_str(), FontHeight, fontName.c_str(),

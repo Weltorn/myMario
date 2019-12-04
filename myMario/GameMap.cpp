@@ -5,7 +5,7 @@
 GameMap::GameMap(LAYERINFO layerInfo)
 	:T_Map(layerInfo)
 {
-	 
+	init = false;
 }
 
 GameMap::GameMap(LPCTSTR imgFilepath)
@@ -45,6 +45,7 @@ void GameMap::update()
 			else if (Y <= lastY && Y >= 280)
 			{
 				dynamic_cast<NormalBrick *>(pBricks[i])->setLastY(Y);		// 记录移动前的坐标位置
+				int a = dynamic_cast<NormalBrick *>(pBricks[i])->getLastY();
 				pBricks[i]->SetY(Y - pBricks[i]->GetHeight() / 16);			// 上移1/6个身位
 			}
 			else
@@ -75,7 +76,6 @@ void GameMap::CreateBricks(BRICK_TYPE type)
 				pBricks.push_back(BrickFactory::getBrick(type, j, i));
 		}
 	}
-
 }
 
 // 重新绘制当前图层全部图块
@@ -84,47 +84,56 @@ void GameMap::Redraw(HDC hdc)
 {
 	// 由对象构成的图层
 	if (pBricks.size() != 0) {
-
+	
 		int width = (int)GetWidth();
 		int height = (int)GetHeight();
-
 		SelectObject(dc_buf, hbmp_old);
-		DeleteObject(hbmp_layer);
-		hbmp_layer = NULL;
-		hbmp_layer = T_Graph::CreateBlankBitmap(width, height, Color::White);
+
+		if (!init) {
+			DeleteObject(hbmp_layer);
+			hbmp_layer = NULL;
+			hbmp_layer = T_Graph::CreateBlankBitmap(width, height, Color::White);	//这句代码能花12ms...
+		}
+
 		hbmp_old = (HBITMAP)SelectObject(dc_buf, hbmp_layer);
+
 
 		if (Visible == true)
 		{
 			int tileIndex = 0;
-
 			int tX = 0, tY = 0;
 			int r = 0, c = 0;
 			int img_col = 0, img_row = 0;
-
 			int tileImageWidth = graph->GetImageWidth();
+
 			HDC memDC = CreateCompatibleDC(hdc);
 			HBITMAP OldMemBmp = (HBITMAP)SelectObject(memDC, graph->GetBmpHandle());
-
+				
+		
 			for (unsigned int i = 0; i < pBricks.size(); i++)
 			{
-				// 只更新活跃状态的砖块
-				if (pBricks[i]->IsActive())
-				//{
+				// 先将所有对象绘制buffer中
+				if(!init)
 					pBricks[i]->Draw(dc_buf);
-				//}
+				else
+				{
+					// 只更新活跃状态的砖块
+					if (pBricks[i]->IsActive())
+					{
+						// 绘制背景色填补空缺
+						T_Graph::PaintBlank(dc_buf,pBricks[i]->getLastX(),pBricks[i]->getLastY(),pBricks[i]->GetWidth(),pBricks[i]->GetHeight(), RGB(125, 148, 254),255);	//
+						// 重绘砖块
+						pBricks[i]->Draw(dc_buf);
 
+					}
+				}
 			}
 			//还原：使用原来对象替换内存设备中的位图对象
 			SelectObject(memDC, OldMemBmp);
 			DeleteDC(memDC);//删除内存设备
 			DeleteObject(OldMemBmp);//删除位图对象
-			updated = false;
 		}
-
-
-
-
+		init = true;	// 已经绘制完所有砖 + 位图创建完毕
 		updated = false;
 	}
 
@@ -215,8 +224,6 @@ void GameMap::Draw(HDC hdc)
 			Redraw(hdc);
 		}
 		if (updated == false) {
-	//		if(collideBlocks.size() != 0)
-				update();
 			BLENDFUNCTION frame_bf;
 			frame_bf.BlendOp = AC_SRC_OVER;
 			frame_bf.BlendFlags = 0;
