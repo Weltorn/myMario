@@ -82,6 +82,8 @@ bool Koopa::CollideWith(T_Sprite* target, int distance)
 					{
 						if (target->GetLayerTypeID() == LAYER_TYPE::LAYER_PLY&&target->IsActive())
 						{
+							(dynamic_cast<Player*>(target))->startJump();
+							(dynamic_cast<Player*>(target))->stopBooting();
 							SetDir(target->GetDir());
 							speedX = 4;
 						}
