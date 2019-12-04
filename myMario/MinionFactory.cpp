@@ -50,6 +50,26 @@ Minion* MinionFactory::getMinion(MINION_TYPE type, int px, int py)
 	}		
 		break;
 	case MINION_KOOPA:
+	{
+		minion = new Koopa(L".\\res\\sprite\\minion\\koopa.png", 32, 48);
+		minion_Info.Active = true;
+		minion_Info.Dead = false;
+		minion_Info.Dir = DIR_RIGHT;
+		minion_Info.Rotation = TRANS_NONE;
+		minion_Info.Ratio = 1.0f;
+		minion_Info.Level = 0;
+		minion_Info.Score = 0;
+		minion_Info.SpeedX = 1;
+		minion_Info.SpeedY = 0;
+		minion_Info.Alpha = 255;
+		minion_Info.X = px;
+		minion_Info.Y = py;
+		minion_Info.Visible = true;
+		minion->Initiate(minion_Info);
+		minion->SetSequence(GoombaSequence, 2);
+		minion->SetLayerTypeID(LAYER_TYPE::LAYER_NPC);
+		minion->setMinionType(MINION_TYPE::MINION_KOOPA);
+	}
 		break;
 	case MINION_PLAYERBULLET:
 	{

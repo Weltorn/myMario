@@ -1,6 +1,7 @@
 #pragma once
 #include "Minion.h"
 #include "Goomba.h"
+#include "Koopa.h"
 #include "PlayerBullet.h"
 
 class MinionFactory

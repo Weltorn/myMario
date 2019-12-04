@@ -471,3 +471,14 @@ void Minion::startEvent(int eventId)
 void Minion::playAnimation()
 {	
 }
+
+void Minion::Draw(HDC hdc)
+{
+	lastX = X;
+	lastY = Y;
+
+	spImg.PaintFrame(
+		spImg.GetBmpHandle(), hdc, (int)X, (int)Y, currentFrmIndex,
+		frameCols, Width, Height, frameRatio, frameRotate, frameAlpha
+	);
+}

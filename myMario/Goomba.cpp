@@ -1,5 +1,5 @@
 #include "Goomba.h"
-#include "T_Scene.h"
+#include "GameScene.h"
 
 
 Goomba::Goomba(LPCTSTR imgPath, int frameWidth, int frameHeight)
@@ -31,7 +31,7 @@ bool Goomba::CollideWith(T_Sprite* target, int distance)
 	{
 		isCollide = true;
 		int x = GetX(), y = GetY();
-		GAME_DIR DIR = getCollideDir(target);
+		GAME_DIR DIR = getCollideDir(target,distance);
 		switch (DIR)
 		{
 		case DIR_LEFT:			
@@ -50,8 +50,7 @@ bool Goomba::CollideWith(T_Sprite* target, int distance)
 			{
 				(dynamic_cast<Player*>(target))->startJump();
 				(dynamic_cast<Player*>(target))->stopBooting();
-				dead(1);	//被压扁
-				//dead(2);	//被击飞
+				die(2);	//被压扁
 			}
 			break;
 		case DIR_DOWN:
@@ -62,8 +61,8 @@ bool Goomba::CollideWith(T_Sprite* target, int distance)
 	
 	return isCollide;
 }
-//怪物死亡deathType 	0:马上死亡，无动画；1：压扁；2：击飞
-void Goomba::dead(int deathType)
+//怪物死亡deathType 	0:马上死亡，无动画；2：压扁；1：击飞
+void Goomba::die(int deathType)
 {
 	switch (deathType)
 	{
@@ -71,14 +70,14 @@ void Goomba::dead(int deathType)
 		SetDead(true);
 		SetVisible(false);
 		SetActive(false);
-		break;
+		break;	
 	case 1:
 		SetActive(false);
-		startEvent(EVENTTYPE::NPC_DEATH_CRASH);
+		startEvent(EVENTTYPE::NPC_DEATH_TURNOVER);
 		break;
 	case 2:
 		SetActive(false);
-		startEvent(EVENTTYPE::NPC_DEATH_TURNOVER);
+		startEvent(EVENTTYPE::NPC_DEATH_CRASH);
 		break;
 	default:
 		SetDead(true);
@@ -102,7 +101,7 @@ void Goomba::crashedAnimate()
 		}
 		break;
 	default:
-		dead(0);
+		die(0);
 		break;
 	}
 }
@@ -166,14 +165,4 @@ void Goomba::updateFrame()
 		LoopFrame(12, true);
 		currentFrmIndex = frameSequence[forward];
 	}
-}
-void Goomba::Draw(HDC hdc)
-{	
-	lastX = X;
-	lastY = Y;
-
-	spImg.PaintFrame(
-		spImg.GetBmpHandle(), hdc, (int)X, (int)Y, currentFrmIndex,
-		frameCols, Width, Height, frameRatio, frameRotate, frameAlpha
-	);
 }
