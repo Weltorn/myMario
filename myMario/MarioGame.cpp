@@ -464,7 +464,7 @@ void MarioGame::LoadPlayer()
 	player_frame.stopFrame = 0;
 	player_frame.deathFrame = 9;
 	player_frame.fireBallFrame = 16;
-	player->initSmallFrameMode(&player_frame);
+	player->initFrameMode(0,&player_frame);
 
 	// ----- 初始化马里奥嗑药后的状态
 	player_frame.frameHeight = 64;
@@ -491,27 +491,40 @@ void MarioGame::LoadPlayer()
 	player_frame.stopFrame = 0;
 	player_frame.levelUpFrame = 15;
 	player_frame.fireBallFrame = 16;
-	player->initBigFrameMode(&player_frame);
+	player->initFrameMode(1, &player_frame);
+
 
 	//玩家小型状态
 	player_mode.basicJumpSpeedY = 8;
 	player_mode.basicSpeedX = 0;
 	player_mode.canSquat = false;
+	player_mode.canCreateFireBall = false;
 	player_mode.maxBootTime = 1500;
 	player_mode.maxMoveSpeedX = 4;
 	player_mode.maxRunSpeedX = 6;
-	player->initNormalMode(&player_mode);
+	player->initPlayerMode(PLAYERSTATUS::PLAYER_NORMAL,&player_mode);
 	//玩家吃红色蘑菇后状态
 	player_mode.basicJumpSpeedY = 8;
 	player_mode.basicSpeedX = 0;
 	player_mode.canSquat = true;
+	player_mode.canCreateFireBall = false;
 	player_mode.maxBootTime = 1500;
 	player_mode.maxMoveSpeedX = 4;
 	player_mode.maxRunSpeedX = 6;
-	player->initBigNormalMode(&player_mode);
+	player->initPlayerMode(PLAYERSTATUS::PLAYER_BIGNORMAL,&player_mode);
+	//玩家吃花后状态
+	player_mode.basicJumpSpeedY = 8;
+	player_mode.basicSpeedX = 0;
+	player_mode.canSquat = true;
+	player_mode.canCreateFireBall = true;
+	player_mode.maxBootTime = 1500;
+	player_mode.maxMoveSpeedX = 6;
+	player_mode.maxRunSpeedX = 8;
+	player->initPlayerMode(PLAYERSTATUS::PLAYER_BIGRED, &player_mode);
 
 	//player->setPlayerMode(PLAYER_NORMAL);
-	player->setPlayerMode(PLAYER_BIGNORMAL);
+	//player->setPlayerMode(PLAYER_BIGNORMAL);
+	player->setPlayerMode(PLAYER_BIGRED);
 	gameLayer.layer = player;
 	gameLayer.type_id = LAYER_PLY;
 	gameLayer.z_order = gameScene->getSceneLayers()->size() + 1;

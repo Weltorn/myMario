@@ -128,11 +128,9 @@ public:
 	int  getPlayerStatus() { return playerStatus; }
 
 	//PLAYER FRAME
-	void initBigNormalMode(PLAYERMODE* bigRedMode);
-	//void initBigRedMode(PLAYERMODE* normalMode);
-	void initNormalMode(PLAYERMODE* normalMode);
-	void initSmallFrameMode(PLAYERFRAME* smallFrame);
-	void initBigFrameMode(PLAYERFRAME* bigFrame);
+	void initPlayerMode(PLAYERSTATUS state,PLAYERMODE* playerMode);
+	
+	void initFrameMode(int frameType,PLAYERFRAME* bigFrame);
 	//设置玩家模式（普通、吃了红色蘑菇、吃了绿色蘑菇）
 	void setPlayerMode(PLAYERSTATUS status);
 

@@ -258,6 +258,8 @@ void Player::updateFrame()
 	}
 	//颜色选择
 	currentFrmIndex += PlayerColor*frameCols;
+
+	Util::myprintf(L"currentFrmIndex: %d-------------------------------------\n", currentFrmIndex);
 }
 void Player::update()
 {
@@ -365,28 +367,44 @@ void  Player::createFireBall()
 		onCreateFireBall = true;
 	}	
 }
-void Player::initBigNormalMode(PLAYERMODE* bigNormalMode)
-{
-	this->bigNormalMode = (PLAYERMODE*)malloc(sizeof(PLAYERMODE));
-	memcpy(this->bigNormalMode, bigNormalMode, sizeof(PLAYERMODE));
 
-}
-void Player::initNormalMode(PLAYERMODE* normalMode)
+void Player::initPlayerMode(PLAYERSTATUS state,PLAYERMODE* playerMode)
 {
-	this->normalMode = (PLAYERMODE*)malloc(sizeof(PLAYERMODE));
-	memcpy(this->normalMode, normalMode, sizeof(PLAYERMODE));
+	switch (state)
+	{
+	case PLAYER_NORMAL:
+		this->normalMode = (PLAYERMODE*)malloc(sizeof(PLAYERMODE));
+		memcpy(this->normalMode, playerMode, sizeof(PLAYERMODE));
+		break;
+	case PLAYER_BIGNORMAL:
+		this->bigNormalMode = (PLAYERMODE*)malloc(sizeof(PLAYERMODE));
+		memcpy(this->bigNormalMode, playerMode, sizeof(PLAYERMODE));
+		break;
+	case PLAYER_BIGRED:
+		this->bigRedMode = (PLAYERMODE*)malloc(sizeof(PLAYERMODE));
+		memcpy(this->bigRedMode, playerMode, sizeof(PLAYERMODE));
+		break;
+	default:
+		break;
+	}
 }
 
-void Player::initSmallFrameMode(PLAYERFRAME* smallFrame)
+//初始化帧模式，frameType：0小型角色，1大型角色
+void Player::initFrameMode(int frameType,PLAYERFRAME* playerFrame)
 {
-	this->smallFrame = (PLAYERFRAME*)malloc(sizeof(PLAYERFRAME));
-	memcpy(this->smallFrame, smallFrame, sizeof(PLAYERFRAME));
+	switch (frameType)
+	{
+	case 0:
+		this->smallFrame = (PLAYERFRAME*)malloc(sizeof(PLAYERFRAME));
+		memcpy(this->smallFrame, playerFrame, sizeof(PLAYERFRAME));
+		break;
+	case 1:
+		this->bigFrame = (PLAYERFRAME*)malloc(sizeof(PLAYERFRAME));
+		memcpy(this->bigFrame, playerFrame, sizeof(PLAYERFRAME));
+		break;
+	}
 }
-void Player::initBigFrameMode(PLAYERFRAME* bigFrame)
-{
-	this->bigFrame = (PLAYERFRAME*)malloc(sizeof(PLAYERFRAME));
-	memcpy(this->bigFrame, bigFrame, sizeof(PLAYERFRAME));
-}
+
 void  Player::setPlayerMode(PLAYERSTATUS status)
 {
 	if (playerStatus == status) {
@@ -416,6 +434,17 @@ void  Player::setPlayerMode(PLAYERSTATUS status)
 		playerStatus = status;
 		break;
 	}	
+	case PLAYER_BIGRED:
+	{
+		if (bigRedMode == NULL) {
+			Util::myprintf(L"Player::setPlayerMode : bigRedMode == NULL\n");
+		}
+		currentMode = bigRedMode;
+		currentFrame = bigFrame;
+		PlayerColor = 10;		//选择颜色
+		playerStatus = status;
+		break;
+	}
 	}
 
 	//更新T_Sprite属性
@@ -449,14 +478,9 @@ void Player::Draw(HDC hdc) {
 	Util::myprintf(L"player x: %d,player y: %d\n",X-GameScene::getInstance()->getSceneX(),Y - GameScene::getInstance()->getSceneY());
 	if (bSquat)
 	{
-		spImg.PaintRegion(spImg.GetBmpHandle(),hdc,X,Y, currentFrame->frameWidth *currentFrmIndex,
+		spImg.PaintRegion(spImg.GetBmpHandle(),hdc,X,Y, currentFrame->frameWidth *(currentFrmIndex%frameCols),
 			currentFrame->frameHeight - currentFrame->squatHeight,
 			currentFrame->frameWidth, currentFrame->squatHeight,frameRatio, frameRotate, frameAlpha);
-	}
-	else if (bJump)
-	{
-		spImg.PaintRegion(spImg.GetBmpHandle(), hdc, X, Y, Width*currentFrmIndex, 0, Width, Height,
-			frameRatio, frameRotate, frameAlpha);
 	}
 	else
 	{
