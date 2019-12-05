@@ -67,9 +67,10 @@ public:
 	virtual void startEvent(int eventId);
 	virtual void playAnimation();
 	virtual void Draw(HDC hdc)override;
-	virtual void die(int type)
+	virtual void die(int type =0)
 	{
 		SetDead(true);
+		Visible = false;
 		active = false;
 	}
 	

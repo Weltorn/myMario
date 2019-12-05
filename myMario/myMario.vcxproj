@@ -129,6 +129,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerBullet.cpp" />
     <ClCompile Include="RedMushroom.cpp" />
+    <ClCompile Include="Star.cpp" />
     <ClCompile Include="T_AI.cpp" />
     <ClCompile Include="T_Audio.cpp" />
     <ClCompile Include="T_Display.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="PlayerBullet.h" />
     <ClInclude Include="RedMushroom.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Star.h" />
     <ClInclude Include="T_AI.h" />
     <ClInclude Include="T_Audio.h" />
     <ClInclude Include="T_Config.h" />

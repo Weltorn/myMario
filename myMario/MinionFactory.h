@@ -4,6 +4,8 @@
 #include "Koopa.h"
 #include "PlayerBullet.h"
 #include "RedMushroom.h"
+#include "Star.h"
+
 
 class MinionFactory
 {

@@ -734,6 +734,7 @@ void MarioGame::LoadGameLevel(int level)
 	gameScene->appendMinion(MINION_TYPE::MINION_GOOMBA, 1100, 200);
 	gameScene->appendMinion(MINION_TYPE::MINION_KOOPA, 1500, 200);
 	gameScene->appendMinion(MINION_TYPE::MINION_REDMUSHROOM, 1600, 200);
+	gameScene->appendMinion(MINION_TYPE::MINION_STAR, 1600, 200);
 }
 
 // 清除关卡数据
