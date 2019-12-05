@@ -34,32 +34,34 @@ void GameMap::update()
 
 		// 更新活跃状态砖块
 		if (pBricks[i]->IsActive()) {
-			int lastY = dynamic_cast<NormalBrick *>(pBricks[i])->getLastY();
-			int Y = pBricks[i]->GetY();
-			//上移
-			if (Y == 288 && lastY!=Y)
-			{
-				dynamic_cast<NormalBrick *>(pBricks[i])->setLastY(Y);		// 记录移动前的坐标位置
-				pBricks[i]->SetActive(false);
-			}
-			else if (Y <= lastY && Y >= 280)
-			{
-				dynamic_cast<NormalBrick *>(pBricks[i])->setLastY(Y);		// 记录移动前的坐标位置
-				int a = dynamic_cast<NormalBrick *>(pBricks[i])->getLastY();
-				pBricks[i]->SetY(Y - pBricks[i]->GetHeight() / 16);			// 上移1/6个身位
-			}
-			else
-			{
-				dynamic_cast<NormalBrick *>(pBricks[i])->setLastY(Y);		// 记录移动前的坐标位置
-				pBricks[i]->SetY(Y + pBricks[i]->GetHeight() / 16);			// 上移1/6个身位
-			}
-			
-			updated = true;
-			// 下移
-		/*	else if (Y > lastY)
-			{
-				
-			}*/    
+			updated = dynamic_cast<NormalBrick *>(pBricks[i])->Bounce();
+		//	int lastY = dynamic_cast<NormalBrick *>(pBricks[i])->getLastY();
+		//	int Y = pBricks[i]->GetY();
+		//	//上移
+		//	if (Y == 288 && lastY!=Y)
+		//	{
+		//		//pBricks[i]->setlast
+		//		dynamic_cast<NormalBrick *>(pBricks[i])->SetLastY(Y);		// 记录移动前的坐标位置
+		//		pBricks[i]->SetActive(false);
+		//	}
+		//	else if (Y <= lastY && Y >= 280)
+		//	{
+		//		dynamic_cast<NormalBrick *>(pBricks[i])->setLastY(Y);		// 记录移动前的坐标位置
+		//		int a = dynamic_cast<NormalBrick *>(pBricks[i])->getLastY();
+		//		pBricks[i]->SetY(Y - pBricks[i]->GetHeight() / 16);			// 上移1/6个身位
+		//	}
+		//	else
+		//	{
+		//		dynamic_cast<NormalBrick *>(pBricks[i])->setLastY(Y);		// 记录移动前的坐标位置
+		//		pBricks[i]->SetY(Y + pBricks[i]->GetHeight() / 16);			// 上移1/6个身位
+		//	}
+		//	
+		//	updated = true;
+		//	// 下移
+		///*	else if (Y > lastY)
+		//	{
+		//		
+		//	}*/    
 		}
 			
 	}
@@ -124,7 +126,6 @@ void GameMap::Redraw(HDC hdc)
 						T_Graph::PaintBlank(dc_buf,pBricks[i]->getLastX(),pBricks[i]->getLastY(),pBricks[i]->GetWidth(),pBricks[i]->GetHeight(), RGB(125, 148, 254),255);	//
 						// 重绘砖块
 						pBricks[i]->Draw(dc_buf);
-
 					}
 				}
 			}
