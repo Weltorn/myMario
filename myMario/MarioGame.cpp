@@ -442,6 +442,8 @@ void MarioGame::LoadPlayer()
 	player_frame.frameHeight = 32;
 	player_frame.frameWidth = 24;
 	player_frame.img = T_Graph(L".\\res\\sprite\\sMario_all.png");	
+	player_frame.totalColor = 11;
+	player_frame.initColor = 0;
 
 	player_frame.nRunFrames = 3;
 	player_frame.runFrmSequence = (int*)malloc(sizeof(int)*player_frame.nRunFrames);
@@ -468,6 +470,8 @@ void MarioGame::LoadPlayer()
 	player_frame.frameHeight = 64;
 	player_frame.frameWidth = 32;
 	player_frame.img = T_Graph(L".\\res\\sprite\\bMario_all.png");
+	player_frame.totalColor = 11;
+	player_frame.initColor = 0;
 	
 	player_frame.nRunFrames = 3;
 	player_frame.runFrmSequence = (int*)malloc(sizeof(int)*player_frame.nRunFrames);

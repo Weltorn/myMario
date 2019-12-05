@@ -256,6 +256,8 @@ void Player::updateFrame()
 			bSafe = false;
 		}
 	}
+	//颜色选择
+	currentFrmIndex += PlayerColor*frameCols;
 }
 void Player::update()
 {
@@ -399,6 +401,7 @@ void  Player::setPlayerMode(PLAYERSTATUS status)
 		}
 		currentMode = normalMode;
 		currentFrame = smallFrame;
+		PlayerColor = currentFrame->initColor;		//选择颜色
 		playerStatus = status;
 		break;
 	}
@@ -409,6 +412,7 @@ void  Player::setPlayerMode(PLAYERSTATUS status)
 		}
 		currentMode = bigNormalMode;
 		currentFrame = bigFrame;
+		PlayerColor = currentFrame->initColor;		//选择颜色
 		playerStatus = status;
 		break;
 	}	
@@ -420,6 +424,7 @@ void  Player::setPlayerMode(PLAYERSTATUS status)
 	SetHeight(currentFrame->frameHeight);
 	colideWidth = GetRatioSize().cx;
 	colideHeight = GetRatioSize().cy;
+	
 
 	frameCols = currentFrame->img.GetImageWidth() / GetWidth();		// 动画帧图片总列数
 	frameRows = currentFrame->img.GetImageHeight() / GetHeight();		// 动画帧图片总行数

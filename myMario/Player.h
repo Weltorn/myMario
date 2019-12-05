@@ -30,6 +30,10 @@ typedef struct {
 	int deathFrame;			//死亡帧
 	int levelUpFrame;		//升级帧
 	int fireBallFrame;		//发射炮弹帧
+
+	//颜色控制
+	int totalColor;
+	int initColor;
 }PLAYERFRAME;
 
 //玩家能力设置
@@ -72,12 +76,13 @@ private:
 	PLAYERFRAME* currentFrame;
 	PLAYERFRAME* bigFrame;
 	PLAYERFRAME* smallFrame;
+	unsigned PlayerColor;
 
 	//PLAYER MODE
 	PLAYERMODE* currentMode;
 	PLAYERMODE* normalMode;
 	PLAYERMODE* bigNormalMode;
-	//PLAYERMODE* bigRedMode;
+	PLAYERMODE* bigRedMode;
 
 	//PLAYER EVENT
 	unsigned eventTimer;
@@ -124,6 +129,7 @@ public:
 
 	//PLAYER FRAME
 	void initBigNormalMode(PLAYERMODE* bigRedMode);
+	//void initBigRedMode(PLAYERMODE* normalMode);
 	void initNormalMode(PLAYERMODE* normalMode);
 	void initSmallFrameMode(PLAYERFRAME* smallFrame);
 	void initBigFrameMode(PLAYERFRAME* bigFrame);
