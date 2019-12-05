@@ -34,8 +34,6 @@ Brick* BrickFactory::getBrick(BRICK_TYPE type, int px, int py)
 		brick->Initiate(info);
 		brick->setCol(px);
 		brick->setRow(py);
-//		dynamic_cast<NormalBrick *> (brick)->setLastY(py*32);
-
 		break;
 	case PROP_BRICK:
 

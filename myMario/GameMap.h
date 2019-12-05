@@ -10,13 +10,10 @@ class GameMap :
 private:
 	//添加砖块等可变场景对象
 	LBrick	pBricks;				// 各种砖块指针，包含在sceneLayers中
-	COLLIDBLOCKS collideBlocks;		//玩家发生碰撞的地图块，包括受碰方向，指导地图更新
+	COLLIDBLOCKS collideBlocks;		// 玩家发生碰撞的地图块，包括受碰方向，指导地图更新
 
-	// 魔改
-	bool init;						// 记录位图是否被初始化	解决了卡帧问题
-	//HDC memDC;// = CreateCompatibleDC(hdc);
-	//HBITMAP OldMemBmp;
-	// 魔改end	魔改失败 fk!
+	bool init;						// 记录位图是否被初始化	实现位图局部刷新 解决卡帧问题
+
 	
 
 public:
