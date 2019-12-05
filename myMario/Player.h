@@ -70,7 +70,6 @@ private:
 	int lifeCount;					//生命值
 	PLAYERSTATUS playerStatus;		//角色展示状态
 	bool starStatus;				//是否无敌（星星）状态
-	int currentFrmIndex;
 		
 	//FRAME MODE
 	PLAYERFRAME* currentFrame;

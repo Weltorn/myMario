@@ -173,7 +173,7 @@ bool GameScene::LoadTxtMap(const char* txtmap_path)
 					currentlayerName != L"" && minionName != L"")
 				{
 					// 根据txt文件生成所有怪物
-			/*		for (unsigned int i = 0; i < layerInfo.data.size(); i++)
+					for (unsigned int i = 0; i < layerInfo.data.size(); i++)
 					{
 						for (unsigned int j = 0; j < layerInfo.data[0].size(); j++)
 						{
@@ -186,7 +186,8 @@ bool GameScene::LoadTxtMap(const char* txtmap_path)
 								break;
 							}
 						}
-					}*/
+					}
+					continue;
 				}
 				//如果为普通砖层,则z_order为LAYER_MAX
 				else if (currentlayerName == normalBrickName &&

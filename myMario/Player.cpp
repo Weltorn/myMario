@@ -259,7 +259,7 @@ void Player::updateFrame()
 	//颜色选择
 	currentFrmIndex += PlayerColor*frameCols;
 
-	Util::myprintf(L"currentFrmIndex: %d-------------------------------------\n", currentFrmIndex);
+	//Util::myprintf(L"currentFrmIndex: %d-------------------------------------\n", currentFrmIndex);
 }
 void Player::update()
 {
@@ -350,7 +350,7 @@ void Player::stopMove(bool immediately) {
 //发射炮弹
 void  Player::createFireBall()
 {
-	if (playerStatus != PLAYERSTATUS::PLAYER_NORMAL&& fireballTimer + fireballCD <= GetTickCount())	//子弹冷却时间控制
+	if (currentMode->canCreateFireBall&& fireballTimer + fireballCD <= GetTickCount())	//子弹冷却时间控制
 	{
 		int bulletX, bulletY;
 		if (dir == DIR_LEFT)
@@ -578,7 +578,7 @@ bool Player::CollideWith(IN T_Map* map)
 						isCollide = true;
 						mapBlockPT.x = col;	// 记录当前障碍图块的列
 						mapBlockPT.y = row;	// 记录当前障碍图块的行
-
+					
 						COLLIDBLOCK block;
 
 						//碰撞的地图块
@@ -634,8 +634,7 @@ bool Player::CollideWith(IN T_Map* map)
 					{
 						isCollide = true;
 						mapBlockPT.x = col;	// 记录当前障碍图块的列
-						mapBlockPT.y = row;	// 记录当前障碍图块的行
-
+						mapBlockPT.y = row;	// 记录当前障碍图块的行						
 						COLLIDBLOCK block;
 
 						//碰撞的地图块
@@ -700,7 +699,6 @@ bool Player::CollideWith(IN T_Map* map)
 						isCollide = true;
 						mapBlockPT.x = col;	// 记录当前障碍图块的列
 						mapBlockPT.y = row;	// 记录当前障碍图块的行
-
 						COLLIDBLOCK block;
 
 						//碰撞的地图块
@@ -730,7 +728,6 @@ bool Player::CollideWith(IN T_Map* map)
 							y = map->GetY() + (row + 1)*map->getTileHeight();		//紧靠障碍下侧
 							speedY = -abs(speedY);
 							block = { col ,row ,DIR_DOWN };
-							Util::myprintf(L"player collide top \n");
 							//保存发生碰撞的地图块序列
 							collideBlocks.push_back(block);
 							break;
@@ -740,7 +737,6 @@ bool Player::CollideWith(IN T_Map* map)
 							onPlantform = true;
 							resetJump();
 							block = { col ,row ,DIR_UP };		//保存发生碰撞的地图块序列
-							Util::myprintf(L"player collide down \n");
 							//collideBlocks.push_back(block);
 							break;
 						}
@@ -759,7 +755,6 @@ bool Player::CollideWith(IN T_Map* map)
 						isCollide = true;
 						mapBlockPT.x = col;	// 记录当前障碍图块的列
 						mapBlockPT.y = row;	// 记录当前障碍图块的行
-
 						COLLIDBLOCK block;
 
 						//碰撞的地图块
@@ -858,7 +853,6 @@ void Player::startEvent(int eventId)
 	onPlantform = false;
 	stopMove(true);
 	resetJump();
-	playAnimation();
 }
 void Player::playAnimation()
 {
@@ -917,10 +911,17 @@ void Player::levelUpAnimation()
 		active = false;		
 		setPlayerMode(PLAYER_BIGNORMAL);
 		//检测碰撞（防止变大后嵌入到障碍物中）
-		if (CollideWith(GameScene::getInstance()->getBarrier()))
+		
+		if ((GetCollideRect()->left - GameScene::getInstance()->getSceneX()) % GameScene::getInstance()->getBarrier()->getTileWidth() != 0)
 		{
-			X -= (GetCollideRect()->right) % GameScene::getInstance()->getBarrier()->getTileWidth();
+			if (CollideWith(GameScene::getInstance()->getBarrier())||
+				CollideWith(GameScene::getInstance()->getNormalBrick())||
+					CollideWith(GameScene::getInstance()->getPropBrick()))
+			{
+				X -= (GetCollideRect()->right) % GameScene::getInstance()->getBarrier()->getTileWidth();
+			}
 		}
+		
 		Y -= bigFrame->frameHeight - smallFrame->frameHeight;	//调整玩家高度（不同状态帧图存在高度差，以玩家下边界为基准）
 		SetSequence(currentFrame->levelUpFrmSequence , currentFrame->nlevelUpFrames);
 		forward = 0;		

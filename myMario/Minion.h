@@ -24,7 +24,7 @@ protected:
 
 	//状态信息
 	bool onPlantform;		//是否在支持物上
-	int currentFrmIndex;
+//	int currentFrmIndex;
 
 	// ----- MOVE		
 	float gravity;			//基础重力加速度

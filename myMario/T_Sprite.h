@@ -38,6 +38,8 @@ protected:
 
 	int		frameCount;				// 用于维护自己独立的帧计数器
 	int		frameFrequence;			//帧图更新倍率
+	int		currentFrmIndex;
+
 
 	//……………………………………………………………………………………
 	// 与角色状态相关的属性
