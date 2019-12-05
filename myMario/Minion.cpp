@@ -346,15 +346,19 @@ void Minion::update()
 {
 	if (!inEvent)
 	{
-		checkOnplantForm(T_Scene::getBarrier());
+		if (checkOnplantForm(T_Scene::getBarrier()) || checkOnplantForm(T_Scene::getNormalBrick()) || checkOnplantForm(T_Scene::getPropBrick()))
+			onPlantform = true;
+		else
+			onPlantform = false;
 		if (onPlantform)		//在平台上，竖直速度为零
 		{
 			speedY = 0;
 		}
-			
-		updatePosition();					//更新坐标
-		CollideWith(T_Scene::getBarrier());	//障碍层碰撞检测	
-		updateFrame();						//更新帧图		
+		updatePosition();	//更新玩家坐标
+		CollideWith(T_Scene::getBarrier());		//玩家与障碍层碰撞检测
+		CollideWith(T_Scene::getNormalBrick());	//玩家与砖层碰撞检测
+		CollideWith(T_Scene::getPropBrick());	//玩家与砖层碰撞检测
+		updateFrame();		//更新帧图				//更新帧图		
 	}
 	else
 	{

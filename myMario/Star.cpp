@@ -39,17 +39,12 @@ void Star::updatePosition()
 	updatePositionY();
 }
 void Star::update()
-{
-	if (!inEvent)
-	{
-		updatePosition();					//更新坐标
-		CollideWith(T_Scene::getBarrier());	//障碍层碰撞检测		
-		updateFrame();						//更新帧图		
-	}
-	else
-	{
-		playAnimation();
-	}
+{	
+	updatePosition();					//更新坐标
+	CollideWith(T_Scene::getBarrier());		//与障碍层碰撞检测
+	CollideWith(T_Scene::getNormalBrick());	//与砖层碰撞检测
+	CollideWith(T_Scene::getPropBrick());	//与砖层碰撞检测
+	updateFrame();						//更新帧图			
 }
 bool Star::CollideWith(IN T_Map* map)
 {

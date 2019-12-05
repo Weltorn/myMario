@@ -45,9 +45,11 @@ void PlayerBullet::update()
 	if (!inEvent)
 	{
 		updatePosition();					//¸üĞÂ×ø±ê
-		CollideWith(T_Scene::getBarrier());	//ÕÏ°­²ãÅö×²¼ì²â		
+		CollideWith(T_Scene::getBarrier());		//ÓëÕÏ°­²ãÅö×²¼ì²â
+		CollideWith(T_Scene::getNormalBrick());	//Óë×©²ãÅö×²¼ì²â
+		CollideWith(T_Scene::getPropBrick());	//Óë×©²ãÅö×²¼ì²â
 		updateFrame();						//¸üĞÂÖ¡Í¼		
-		Util::myprintf(L"bullet current frameIndex: %d,x: %d,y: %d\n",currentFrmIndex,X,Y);
+		//Util::myprintf(L"bullet current frameIndex: %d,x: %d,y: %d\n",currentFrmIndex,X,Y);
 	}
 	else
 	{
