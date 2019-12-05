@@ -107,6 +107,7 @@ bool Koopa::CollideWith(T_Sprite* target, int distance)
 						(dynamic_cast<Player*>(target))->startJump();
 						(dynamic_cast<Player*>(target))->stopBooting();
 						hideInshell();
+						//die(1);
 					}					
 				}				
 			break;

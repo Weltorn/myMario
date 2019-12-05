@@ -6,7 +6,7 @@
 Minion::Minion(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	:T_Sprite(imgPath, frameWidth, frameHeight)
 {
-	gravity = 4;
+	gravity = 8;
 	frameFrequence = 12;
 	inEvent = false;
 }
@@ -447,7 +447,7 @@ void  Minion::gravityEffect()
 {
 	float currentGravity = gravity;		//µ¥»÷ÌøÔ¾	
 	
-	if (!onPlantform&&(GetTickCount() - timer)* currentGravity / 270 >6-abs(speedY))
+	if (!onPlantform&&(GetTickCount() - timer)* currentGravity / 200 >4-abs(speedY))
 	{
 		speedY -= 1;
 		timer = GetTickCount();

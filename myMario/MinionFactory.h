@@ -3,6 +3,7 @@
 #include "Goomba.h"
 #include "Koopa.h"
 #include "PlayerBullet.h"
+#include "RedMushroom.h"
 
 class MinionFactory
 {

@@ -725,13 +725,15 @@ void MarioGame::LoadGameLevel(int level)
 
 	if (gameScene == NULL) gameScene = GameScene::getInstance();
 //	if (gameMenu == NULL) gameMenu = new T_Menu();
-	gameScene->appendMinion(MINION_TYPE::MINION_GOOMBA,1100,200);
-	gameScene->appendMinion(MINION_TYPE::MINION_KOOPA, 1500, 200);
+	
 	//LoadSound(m_hWnd);
 	LoadImageRes();
 //	LoadMenu();
 	LoadMap();
 	LoadPlayer();
+	gameScene->appendMinion(MINION_TYPE::MINION_GOOMBA, 1100, 200);
+	gameScene->appendMinion(MINION_TYPE::MINION_KOOPA, 1500, 200);
+	gameScene->appendMinion(MINION_TYPE::MINION_REDMUSHROOM, 1600, 200);
 }
 
 // 清除关卡数据

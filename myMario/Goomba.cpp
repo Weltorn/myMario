@@ -50,7 +50,8 @@ bool Goomba::CollideWith(T_Sprite* target, int distance)
 			{
 				(dynamic_cast<Player*>(target))->startJump();
 				(dynamic_cast<Player*>(target))->stopBooting();
-				die(2);	//被压扁
+				//die(2);	//被压扁
+				die(1);
 			}
 			break;
 		case DIR_DOWN:
@@ -112,7 +113,7 @@ void Goomba::turnOverAnimate()
 	case 0:
 		SetRotation(TRANS_VFLIP_NOROT);	//垂直翻转
 		onPlantform = false;
-		speedY = 6;
+		speedY = 4;
 		speedX = 2;
 		++currentStep;
 		break;
