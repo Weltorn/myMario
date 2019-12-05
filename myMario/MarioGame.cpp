@@ -812,7 +812,7 @@ void MarioGame::DisplayInfo(HDC hdc)
 		content.push_back(L" ");
 		content.push_back(L"NOV 2019");
 
-		for (int i = 0; i < content.size(); i++)
+		for (unsigned int i = 0; i < content.size(); i++)
 		{
 			T_Graph::PaintText(hdc, textRect, content[i].c_str(), FontHeight, fontName.c_str(),
 				Color::White, FontStyleBold, StringAlignmentNear);
@@ -846,7 +846,7 @@ void MarioGame::ShowTitleInfo(HDC hdc) {
 	content.push_back(L"1-1");
 	content.push_back(T_Util::int_to_wstring(400));
 
-	for (int i = 0; i < content.size(); i++)
+	for (unsigned int i = 0; i < content.size(); i++)
 	{
 		if (i == 5) {	//金币数前需要打印一个图片
 			statusCoin->Draw(hdc);

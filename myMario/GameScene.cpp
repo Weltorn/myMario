@@ -172,33 +172,23 @@ bool GameScene::LoadTxtMap(const char* txtmap_path)
 				else if (currentlayerName == minionName &&
 					currentlayerName != L"" && minionName != L"")
 				{
-					int a = 0;
-					for (int i = 0; i < layerInfo.data.size(); i++)
+					// 根据txt文件生成所有怪物
+					for (unsigned int i = 0; i < layerInfo.data.size(); i++)
 					{
-						for (int j = 0; j < layerInfo.data[0].size(); j++)
+						for (unsigned int j = 0; j < layerInfo.data[0].size(); j++)
 						{
-							if (layerInfo.data[i][j] == 1)
-							{
+							switch (layerInfo.data[i][j]) {
+							case 1:
 								appendMinion(MINION_TYPE::MINION_GOOMBA, 32 * j, 32 * (i - 1));
-								a++;
+								break;
+							case 1897:
+								appendMinion(MINION_TYPE::MINION_KOOPA, 32 * j, 32 * (i - 1));
+								break;
 							}
-							if (a > 5)
-								return true;
-
-							//switch (layerInfo.data[j][i]) {
-							//case 1:			
-							//	appendMinion(MINION_TYPE::MINION_GOOMBA, 32 * j, 32 * i);
-							//	break;
-							
 						}
 					
 					}
 					continue;
-					// 根据txt文件生成所有怪物
-					//	gameScene->appendMinion(MINION_TYPE::MINION_GOOMBA,1100,200);
-				//	continue;
-				//	mapLayer.z_order = layerCount;
-				//	mapLayer.layer->setZorder(layerCount);
 				}
 				//如果为普通砖层,则z_order为LAYER_MAX
 				else if (currentlayerName == normalBrickName &&
@@ -220,11 +210,11 @@ bool GameScene::LoadTxtMap(const char* txtmap_path)
 				{
 					mapLayer.z_order = LAYER_MAX;
 					mapLayer.layer->setZorder(LAYER_MAX);
-				//	pMask = (GameMap*)mapLayer.layer;
+					dynamic_cast<GameMap *>(mapLayer.layer)->CreateBricks(PROP_BRICK);
+					pPropBrick = (GameMap*)mapLayer.layer;
 					mapLayer.layer->SetLayerTypeID(LAYER_PROP_BRICK);
 					mapLayer.type_id = LAYER_PROP_BRICK;
 					layerInfo.type_id = LAYER_PROP_BRICK;
-					//continue;
 				}
 				else
 				{
@@ -397,6 +387,9 @@ void  GameScene::update()
 	// 更新不同砖块层
 	if (pNormalBrick->IsVisible())
 		pNormalBrick->update();
+	if (pPropBrick->IsVisible())
+		pPropBrick->update();
+
 
 	//更新子弹图层
 	

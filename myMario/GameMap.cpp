@@ -35,33 +35,6 @@ void GameMap::update()
 		// 更新活跃状态砖块
 		if (pBricks[i]->IsActive()) {
 			updated = dynamic_cast<NormalBrick *>(pBricks[i])->Bounce();
-		//	int lastY = dynamic_cast<NormalBrick *>(pBricks[i])->getLastY();
-		//	int Y = pBricks[i]->GetY();
-		//	//上移
-		//	if (Y == 288 && lastY!=Y)
-		//	{
-		//		//pBricks[i]->setlast
-		//		dynamic_cast<NormalBrick *>(pBricks[i])->SetLastY(Y);		// 记录移动前的坐标位置
-		//		pBricks[i]->SetActive(false);
-		//	}
-		//	else if (Y <= lastY && Y >= 280)
-		//	{
-		//		dynamic_cast<NormalBrick *>(pBricks[i])->setLastY(Y);		// 记录移动前的坐标位置
-		//		int a = dynamic_cast<NormalBrick *>(pBricks[i])->getLastY();
-		//		pBricks[i]->SetY(Y - pBricks[i]->GetHeight() / 16);			// 上移1/6个身位
-		//	}
-		//	else
-		//	{
-		//		dynamic_cast<NormalBrick *>(pBricks[i])->setLastY(Y);		// 记录移动前的坐标位置
-		//		pBricks[i]->SetY(Y + pBricks[i]->GetHeight() / 16);			// 上移1/6个身位
-		//	}
-		//	
-		//	updated = true;
-		//	// 下移
-		///*	else if (Y > lastY)
-		//	{
-		//		
-		//	}*/    
 		}
 			
 	}
@@ -70,14 +43,29 @@ void GameMap::update()
 //根据参数type以及地图数据 生成指定的砖对象并存放于pBricks中
 void GameMap::CreateBricks(BRICK_TYPE type)
 {
-	for (unsigned int i = 0; i < layer_data.size(); i++)
-	{
-		for (unsigned int j = 0; j < layer_data[0].size(); j++)
+	switch (type) {
+	case NORMAL_BRICK:
+		for (unsigned int i = 0; i < layer_data.size(); i++)
 		{
-			if(layer_data[i][j] != 0)
-				pBricks.push_back(BrickFactory::getBrick(type, j, i));
+			for (unsigned int j = 0; j < layer_data[0].size(); j++)
+			{
+				if (layer_data[i][j] != 0)
+					pBricks.push_back(BrickFactory::getBrick(type, j, i));
+			}
 		}
+		break;
+	case LAYER_PROP_BRICK:
+		for (unsigned int i = 0; i < layer_data.size(); i++)
+		{
+			for (unsigned int j = 0; j < layer_data[0].size(); j++)
+			{
+				if (layer_data[i][j] != 0)
+					pBricks.push_back(BrickFactory::getBrick(type, j, i));
+			}
+		}
+		break;
 	}
+
 }
 
 // 重新绘制当前图层全部图块

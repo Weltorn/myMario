@@ -261,13 +261,14 @@ void Player::update()
 {
 	if (!inEvent)
 	{
-		if (checkOnplantForm(T_Scene::getBarrier()) || checkOnplantForm(T_Scene::getNormalBrick()))
+		if (checkOnplantForm(T_Scene::getBarrier()) || checkOnplantForm(T_Scene::getNormalBrick()) || checkOnplantForm(T_Scene::getPropBrick()))
 			onPlantform = true;
 		else
 			onPlantform = false;
 		updatePosition();	//更新玩家坐标
-		CollideWith(T_Scene::getBarrier());	//玩家与障碍层碰撞检测
-		CollideWith(T_Scene::getNormalBrick());	//玩家与障碍层碰撞检测
+		CollideWith(T_Scene::getBarrier());		//玩家与障碍层碰撞检测
+		CollideWith(T_Scene::getNormalBrick());	//玩家与砖层碰撞检测
+		CollideWith(T_Scene::getPropBrick());	//玩家与砖层碰撞检测
 		updateFrame();		//更新帧图
 	}
 	else
