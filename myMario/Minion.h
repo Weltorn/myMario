@@ -13,6 +13,7 @@ enum MINION_TYPE
 
 	MINION_GOOMBA,				// °åÀõ×Ð£¨Ä¢¹½Ò»ÑùµÄ¹ÖÎï£©
 	MINION_KOOPA,				// ¿âÅÁ¹ê
+	MINION_PLAYERBULLET,
 };
 
 class Minion :
@@ -36,7 +37,7 @@ protected:
 	int currentStep;	
 public:
 	Minion(LPCTSTR imgPath, int frameWidth, int frameHeight);
-	~Minion();
+	virtual ~Minion();
 	virtual string ClassName() { return "Minion"; }
 	MINION_TYPE getMinionType() { return minionType; }
 	void setMinionType(MINION_TYPE minionType) {
@@ -65,7 +66,13 @@ public:
 	bool isInEvent() { return inEvent; }
 	virtual void startEvent(int eventId);
 	virtual void playAnimation();
-	virtual void Draw(HDC hdc)override {}
+	virtual void Draw(HDC hdc)override;
+	virtual void die(int type)
+	{
+		SetDead(true);
+		active = false;
+	}
+	
 
 };
 

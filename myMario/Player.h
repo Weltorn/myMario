@@ -29,6 +29,7 @@ typedef struct {
 	int jumpFrame;			//跳跃帧
 	int deathFrame;			//死亡帧
 	int levelUpFrame;		//升级帧
+	int fireBallFrame;		//发射炮弹帧
 }PLAYERFRAME;
 
 //玩家能力设置
@@ -54,15 +55,7 @@ typedef struct {
 }COLLIDBLOCK;
 typedef vector<COLLIDBLOCK> COLLIDBLOCKS;
 
-enum EVENTTYPE
-{
-	PLAYER_DEATH,
-	PLAYER_LEVELUP,
-	PLAYER_LEVELDOWN,
-	PLAYER_AFTERPOLE,
-	NPC_DEATH_CRASH,
-	NPC_DEATH_TURNOVER
-};
+
 
 class Player :
 	public T_Sprite
@@ -73,7 +66,6 @@ private:
 	PLAYERSTATUS playerStatus;		//角色展示状态
 	bool starStatus;				//是否无敌（星星）状态
 	int currentFrmIndex;
-	int frameFrequence;
 		
 	//PLAYER MODE
 	PLAYERMODE* currentMode;
@@ -85,7 +77,7 @@ private:
 	unsigned eventTimer;
 	bool inEvent;					//是否在游戏事件中
 	int eventId;					//变大、变小、死亡
-	int currentStep;
+	int currentStep;				//目前事件进度
 
 	// ----- MOVE STATUS
 	bool bMove;		//水平移动状态
@@ -93,24 +85,31 @@ private:
 	bool bJump;		//跳跃状态
 	bool bSlide;	//减速滑行状态
 	bool dirChanged;//滑行状态改变方向
+	bool bSafe;		//降级后的安全状态,不会与怪物相撞
+	unsigned safeTime;
+	unsigned blinkCount;	//控制安全状态闪烁频率
 
 	// -----JUMP STATUS
 	bool onPlantform;
 	int jumpStatus;		//跳跃状态0：上升，1：下降
 	bool isBooting;		//是否跳跃加速状态
 	int startHeight;	//跳跃起始高度
-	unsigned jumpTimer;		//计时器
+	unsigned jumpTimer;		//计时器,控制加速时间
 		
 	// ----- MOVE	
 	int currentMaxSpeedX;
 	bool bSpeedUp;		//是否处于加速状态
 	float friction;		//水平摩擦，控制惯性滑行距离	
 	float gravity;			//基础重力加速度
-	unsigned moveTimer;		//计时器
+	unsigned moveTimer;		//计时器,控制加速时间
 
+	// -----FIREBALL
+	bool onCreateFireBall;
+	unsigned fireballCD;
+	unsigned fireballTimer;
 public:
 	Player(LPCTSTR imgPath, int frameWidth = 0, int frameHeight = 0);
-	~Player();
+	virtual ~Player();
 	virtual string ClassName() { return "Player"; }
 
 	void setLifeCount(int lifeCount) { this->lifeCount = lifeCount; }
@@ -128,15 +127,14 @@ public:
 	void resetSpeedup();		//恢复为正常移动状态
 	void stopMove(bool immediately);			//停止水平移动，immediately：是否含惯性处理
 	
-
+	//发射炮弹
+	void createFireBall();
 	//------JUMP
 	bool isJump() { return bJump; }
 	void startJump();		//起跳，设置为加速状态
 	void resetJump();		//落地，设置竖直静止
 	void gravityEffect();
 
-
-	
 	//垂直加速状态设置
 	bool getBooting() { return isBooting; }
 	void stopBooting()
@@ -174,6 +172,7 @@ public:
 	bool isOnPlantform() { return onPlantform; }
 	//是否加速状态（shift）
 	bool isSpeedUp() { return currentMaxSpeedX == currentMode->maxRunSpeedX; }
+	bool isSafe() { return bSafe; }
 	//更新玩家坐标
 	void updatePosition();
 	void updatePositionY();			//竖直移动

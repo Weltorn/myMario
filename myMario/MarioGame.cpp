@@ -39,7 +39,7 @@ void MarioGame::GameLogic()
 		}
 		case GAME_RUN:			//游戏进行时界面
 		{
-			GameKeyAction();
+			//GameKeyAction();
 			gameTime = GetTickCount();		//更新游戏已运行时间	
 
 			//更新玩家	
@@ -257,7 +257,7 @@ void MarioGame::GameKeyAction(int Action)
 				}
 				if (keys[VK_S])
 				{
-					if (!keys[VK_A] && !keys[VK_D] && !keys[VK_L]&&!player->isSliding()) {
+					if (!keys[VK_A] && !keys[VK_D] && !keys[VK_L]&&!player->isSliding() && !player->isJump()) {
 						if (!preS)
 						{
 							player->setSquat(true);
@@ -276,33 +276,39 @@ void MarioGame::GameKeyAction(int Action)
 					}
 				}
 				if (keys[VK_L])
-				{
-					Util::myprintf(L"Squat: %d,isJump: %d,preSpace: %d,isOnPlantform: %d\n",
-						player->getSquat() , player->isJump() , preL, player->isOnPlantform());
+				{					
 					if (!player->isSliding() && !player->getSquat()&& !player->isJump()&&!preL&&player->isOnPlantform())
 					{
 						player->startJump();
 						preL = true;
 					}
 				}
+				if (keys[VK_SPACE])
+				{						
+					if (!player->isSliding() && !player->getSquat() && !preSpace)
+					{
+						player->createFireBall();
+						preSpace = true;
+					}
+				}				
 			}
 			else if (Action == KEY_UP)	//释放键
 				{
-					if (!keys[VK_A])
+					if (preA&&!keys[VK_A])
 					{
 						preA = false;
 						if (player->GetDir() == DIR_LEFT) {
 							player->stopMove(false);
 						}
 					}
-					if (!keys[VK_D])
+					if (preD  && !keys[VK_D])
 					{
 						preD = false;
 						if (player->GetDir() == DIR_RIGHT) {
 							player->stopMove(false);
 						}
 					}
-					if (!keys[VK_S])
+					if (preS && !keys[VK_S])
 					{
 						preS = false;
 						if (player->getSquat() == true)
@@ -310,7 +316,7 @@ void MarioGame::GameKeyAction(int Action)
 							player->setSquat(false);
 						}
 					}
-					if (!keys[VK_CAPITAL])
+					if (preCapital && !keys[VK_CAPITAL])
 					{
 						preCapital = false;
 						if (player->isSpeedUp() == true)
@@ -318,7 +324,7 @@ void MarioGame::GameKeyAction(int Action)
 							player->resetSpeedup();
 						}
 					}
-					if (!keys[VK_L])
+					if (preL && !keys[VK_L])
 					{
 						preL = false;
 						if (player->getBooting())
@@ -328,6 +334,10 @@ void MarioGame::GameKeyAction(int Action)
 								player->SetSpeedY(3);
 							}
 						}
+					}
+					if (preSpace && !keys[VK_SPACE])
+					{
+						preSpace = false;
 					}
 				}
 		}
@@ -464,6 +474,7 @@ void MarioGame::LoadPlayer()
 	player_frame.squatHeight = 32;
 	player_frame.stopFrame = 0;
 	player_frame.deathFrame = 9;
+	player_frame.fireBallFrame = 16;
 
 	player_mode.frameMode = player_frame;
 	player_mode.basicJumpSpeedY = 8;
@@ -713,9 +724,10 @@ void MarioGame::LoadGameLevel(int level)
 	SetFrame(FRAME_SPEED);
 	gameScene = NULL;
 
-	if (gameScene == NULL) gameScene = new GameScene();
+	if (gameScene == NULL) gameScene = GameScene::getInstance();
 //	if (gameMenu == NULL) gameMenu = new T_Menu();
 	gameScene->appendMinion(MINION_TYPE::MINION_GOOMBA,1100,200);
+	gameScene->appendMinion(MINION_TYPE::MINION_KOOPA, 1500, 200);
 	//LoadSound(m_hWnd);
 	LoadImageRes();
 //	LoadMenu();

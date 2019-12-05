@@ -1,5 +1,6 @@
 #include "GameScene.h"
 #include "Util.h"
+GameScene* GameScene::instance=NULL;
 
 GameScene::GameScene()
 	:T_Scene()
@@ -15,6 +16,32 @@ GameScene::~GameScene()
 		delete (*p)->GetSequence();	//释放帧序列
 		delete *p;					//释放精灵类对象
 	}
+	delete instance;
+}
+
+void GameScene::appendMinion(MINION_TYPE type, int px, int py, int dir )
+{
+	GAMELAYER gameLayer;
+	Minion *minion = MinionFactory::getMinion(type, px, py);
+	minion->SetDir(dir);
+	gameLayer.layer = minion;
+	gameLayer.type_id = LAYER_TYPE::LAYER_NPC;
+	gameLayer.z_order = getSceneLayers()->size() + 1;
+	gameLayer.layer->setZorder(gameLayer.z_order);
+	Append(gameLayer);
+	pMinions.push_back(minion);
+}
+void GameScene::appendPlayerBullet(int px, int py, int dir)
+{
+	GAMELAYER gameLayer;
+	Minion *bullet = MinionFactory::getMinion(MINION_TYPE::MINION_PLAYERBULLET, px, py);
+	bullet->SetDir(dir);
+	gameLayer.layer = bullet;
+	gameLayer.type_id = LAYER_TYPE::LAYER_PLY_BOMB;
+	gameLayer.z_order = getSceneLayers()->size() + 1;
+	gameLayer.layer->setZorder(gameLayer.z_order);
+	Append(gameLayer);
+	pPlayerBullets.push_back(bullet);
 }
 // 加载参数指定的地图文件，解析其中的地图数据，并保存到场景图层中
 //根据图层信息，生成砖块等对象，保存到GameMap中
@@ -371,6 +398,24 @@ void  GameScene::update()
 	if (pNormalBrick->IsVisible())
 		pNormalBrick->update();
 
+	//更新子弹图层
+	
+	LPlayerBullet::iterator bp1;
+	LPlayerBullet::iterator bp2;
+	for (bp1 = pPlayerBullets.begin(); bp1 != pPlayerBullets.end(); )
+	{
+		if (!(*bp1)->IsDead())
+		{
+			(*bp1)->update();
+			bp1++;
+		}
+		else if ((*bp1)->IsDead())		//死亡，删除对象
+		{
+			bp2 = bp1;
+			(*bp2)->SetLayerTypeID(LAYER_TYPE::LAYER_NONE);		//设置为无效图层
+			bp1 = pPlayerBullets.erase(bp2);
+		}
+	}
 	//更新怪物图层
 	LMinion::iterator p1;
 	LMinion::iterator p2;
@@ -384,6 +429,7 @@ void  GameScene::update()
 		else if ((*p1)->IsDead())		//怪物死亡，删除对象
 		{		
 			p2 = p1;
+			(*p2)->SetLayerTypeID(LAYER_TYPE::LAYER_NONE);		//设置为无效图层
 			p1 = pMinions.erase(p2);
 		}
 	}
@@ -392,7 +438,7 @@ void  GameScene::update()
 	LMinion::iterator pm;
 	for (pm = pMinions.begin(); pm != pMinions.end(); pm++)
 	{
-		if((*pm)->IsActive() && pPlayer->IsActive())
+		if((*pm)->IsActive() && pPlayer->IsActive()&& !pPlayer->isSafe())
 			(*pm)->CollideWith(pPlayer);	//设置怪物、玩家碰撞后状态（如死亡、升/降级）
 	}
 	// 如果图层发生过任何变化

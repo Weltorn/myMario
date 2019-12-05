@@ -37,6 +37,7 @@ protected:
 	BYTE	frameAlpha;				// 帧图片透明度(255不透明, 0完全透明)
 
 	int		frameCount;				// 用于维护自己独立的帧计数器
+	int		frameFrequence;			//帧图更新倍率
 
 	//……………………………………………………………………………………
 	// 与角色状态相关的属性
@@ -146,8 +147,8 @@ public:
 	int getLastX() { return lastX; }
 	int getLastY() { return lastY; }
 	// 判断怪物与目标矩形的碰撞方向（相对于怪物的方向）
-	GAME_DIR getCollideDir(RECT target);
-	GAME_DIR getCollideDir(T_Sprite* target, int distance=0);
+	GAME_DIR getCollideDir(RECT target,bool horizontalFirst = true);
+	GAME_DIR getCollideDir(T_Sprite* target, int distance=0,bool horizontalFirst=true);
 	// 计算扩大或收缩后的碰撞检测区宽高(px、py为正值放大、负值缩小，单位为像素)
 	void AdjustCollideRect(int px=0, int py=0);	
 	// 获得缩放后的实际碰撞检测矩形区域
@@ -167,8 +168,10 @@ public:
 	void LoopFrame(bool ahead = true);
 	// 往前或往后循环播放所有帧 times为引擎帧刷新速率与角色自定义帧刷新速率之比
 	void LoopFrame(int times, bool ahead = true);
+	
 	// 往前或往后循环播放一轮所有帧
-	bool LoopFrameOnce(bool ahead = true);				
+	bool LoopFrameOnce(bool ahead = true);	
+	bool LoopFrameOnce(int times, bool ahead = true);
 	// 获取原始帧的长度
 	int GetRawFrames(){ return rawFrames; }	
 	// 计算帧序列数组长度
