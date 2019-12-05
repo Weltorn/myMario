@@ -5,6 +5,7 @@
 #include "PlayerBullet.h"
 #include "RedMushroom.h"
 #include "Star.h"
+#include "Flower.h"
 
 
 class MinionFactory

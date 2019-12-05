@@ -69,7 +69,7 @@ Minion* MinionFactory::getMinion(MINION_TYPE type, int px, int py)
 		break;
 	case MINION_FLOWER:
 	{
-		minion = new Star(L".\\res\\sprite\\minion\\flower.png", 28, 32);
+		minion = new Flower(L".\\res\\sprite\\minion\\flower.png", 32, 32);
 		minion_Info.Active = true;
 		minion_Info.Dead = false;
 		minion_Info.Dir = DIR_NONE;
