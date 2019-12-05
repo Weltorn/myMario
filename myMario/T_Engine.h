@@ -56,7 +56,7 @@ public:
 	static void setGameState(int state) { GameState = state; }
 	static int getGameState() { return GameState; }
 	// 获取游戏帧刷新间隔时间
-	int GetInterval() { return IntervalTime; }
+	int GetInterval() { return IntervalTime; } 
 	// 设置游戏帧刷新间隔时间
 	void SetFrame(int fps) { IntervalTime = 1000 / fps; }
 	// 获取窗口是否为焦点状态

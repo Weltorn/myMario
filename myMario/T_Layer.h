@@ -33,8 +33,10 @@ public:
 	int GetHeight(){ return Height; }
 	
 	void SetPosition(int x, int y){ X = x; Y = y; }
-	int GetX(){ return X; }
-	int GetY(){ return Y; }
+	int GetX() { return X; }
+	int GetY() { return Y; }
+	void SetX(int x) { X = x; }
+	void SetY(int y) { Y = y; }
 
 	void SetVisible(bool visible){ Visible = visible; }
 	bool IsVisible(){ return Visible; }

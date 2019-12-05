@@ -3,6 +3,7 @@
 #include "GameMap.h"
 #include "MinionFactory.h"
 #include "PlayerBullet.h"
+#include "Brick.h"
 typedef vector<Minion*> LMinion;
 typedef vector<Minion*> LPlayerBullet;
 class GameScene :
@@ -11,7 +12,7 @@ class GameScene :
 private:
 	static GameScene* instance;
 	LMinion pMinions;				// 怪物、奖励指针，包含在sceneLayers中
-	LPlayerBullet pPlayerBullets;	//玩家炮弹
+	LPlayerBullet pPlayerBullets;	// 玩家炮弹
 	GameScene();
 public:
 	virtual ~GameScene();
@@ -28,4 +29,6 @@ public:
 
 	void appendMinion(MINION_TYPE type, int px, int py, int dir = DIR_LEFT);
 	void appendPlayerBullet(int px, int py, int dir);
+
+	void WakeMinion() {}			// 唤醒怪物
 };

@@ -34,18 +34,20 @@ void MarioGame::GameLogic()
 	{
 		case GAME_START:		//游戏开始菜单
 		{
+			gameScene->update();
 			//gameMenu->update();
 			break;
 		}
-		case GAME_RUN:			//游戏进行时界面
+		case GAME_RUN:				//游戏进行时界面
 		{
 			//GameKeyAction();
-			gameTime = GetTickCount();		//更新游戏已运行时间	
+			if (T_Util::Timer(1))	//更新游戏已运行时间	
+				gameTime++;			//计数君
 
 			//更新玩家	
-			if (player->IsVisible())	//未死亡或播放死亡动画未播放完
-				player->update();
-			if (player->IsDead())	//玩家死亡，死亡动画播放完
+			if (player->IsVisible())					//未死亡或播放死亡动画未播放完
+				player->update();	
+			if (player->IsDead())						//玩家死亡，死亡动画播放完
 			{
 				if (player->getLifeCount() == 0)
 				{
@@ -59,7 +61,7 @@ void MarioGame::GameLogic()
 				}
 			}
 			gameScene->update();						//更新地图、怪物、玩家状态
-			gameScene->ScrollScene(player);			//根据玩家位置，滚动场景
+			gameScene->ScrollScene(player);				//根据玩家位置，滚动场景
 			
 			break;
 		}
@@ -83,7 +85,6 @@ void MarioGame::GameLogic()
 		}
 		case GAME_ABOUT:		//游戏制作信息界面
 		{
-			
 			//背景颜色变换
 			T_Util::ChangeRGB(&red,&green,&blue,&lastRed,&lastBlue,&lastGreen,&changeIndex);
 			// 坐标处理
@@ -101,7 +102,7 @@ void MarioGame::GamePaint(HDC hdc)
 	{
 	case GAME_START:		//游戏开始菜单
 	{
-		T_Graph::PaintBlank(hdc, 0, 0, wnd_width, wnd_height, RGB(93, 148, 252), 255);
+		T_Graph::PaintBlank(hdc, 0, 0, wnd_width, wnd_height, bkColor, 255);
 		gameScene->Draw(hdc);
 		gameMenu->DrawMenu(hdc);
 		DisplayInfo(hdc);		//显示顶部游戏状态信息
@@ -109,8 +110,8 @@ void MarioGame::GamePaint(HDC hdc)
 	}
 	case GAME_RUN:			//游戏进行时界面
 	{
-		T_Graph::PaintBlank(hdc,0,0,wnd_width,wnd_height,RGB(100,200,200),255);
-		gameScene->Draw(hdc);
+		T_Graph::PaintBlank(hdc,0,0,wnd_width,wnd_height, bkColor,255);
+		gameScene->Draw(hdc);	//<=39ms?
 		DisplayInfo(hdc);		//显示顶部游戏状态信息
 
 		break;
@@ -395,28 +396,15 @@ void MarioGame::GameMouseAction(int x, int y, int Action)
 // 加载游戏地图场景,可包括背景、障碍、遮罩层
 void MarioGame::LoadMap()
 {
-	if (!gameScene->LoadTxtMap("res\\map\\marioMap.txt"))
+	if (!gameScene->LoadTxtMap("res\\map\\marioMapReDraw.txt"))
 	{
 		Util::myprintf(L"Load map failure!\n");
 		exit(1);
 	}
 
 	gameScene->RePosition(wnd_width,wnd_height);
-	//scn_width = gameScene->getBarrier()->GetWidth();
-	//scn_height = gameScene->getBarrier()->GetHeight();
 
-	//// 视图初始位置以地图作为参照
-	//int scn_x = 0;
-	//int scn_y = -gameScene->getBarrier()->getTileHeight()/2;
-	//// 将游戏地图初始化
-	//gameScene->InitScene(scn_x, scn_y, scn_width, scn_height, wnd_width, wnd_height);
-
-	//// 将所有地图图层定位
-	//SCENE_LAYERS::iterator p;
-	//for (p = gameScene->getSceneLayers()->begin(); p != gameScene->getSceneLayers()->end(); p++)
-	//{
-	//	if (p->layer->ClassName() == "T_Map") p->layer->SetPosition(scn_x, scn_y);
-	//}
+	bkColor = RGB(125,148,254);
 }
 
  //加载游戏玩家角色
@@ -631,8 +619,8 @@ void MarioGame::LoadGameMenu()
 		}
 		
 		// 与场景相关的变量
-		red = green = blue = 11;
 		gameScene->SetScenePos(-1, 0);	//场景重新定位
+		red = green = blue = 11;
 		changeIndex = 0;
 	}
 }
@@ -747,7 +735,7 @@ void MarioGame::ClearGameLevel()
 // 根据游戏状态，显示信息
 void MarioGame::DisplayInfo(HDC hdc)
 {
-	int FontHeight = 16;	 // 字号
+	REAL FontHeight = 16.0;	 // 字号 
 	wstring fontName = L"Comic Sans Ms"; // 字体
 	RectF textRect;			 // 文字域
 	vector<wstring> content; // 文字内容
@@ -767,19 +755,19 @@ void MarioGame::DisplayInfo(HDC hdc)
 		statusMario->Draw(hdc);												// 马里奥
 		
 		// 关卡信息
-		textRect.X = (REAL)statusMario->GetX()*1.0 - 2 * statusMario->GetWidth();
-		textRect.Y = (REAL)statusMario->GetY()*1.0 - 2 * statusMario->GetHeight(); 
-		textRect.Width = wnd_width;
-		textRect.Height = 30;
+		textRect.X = (REAL)(statusMario->GetX()*1.0 - 2 * statusMario->GetWidth());
+		textRect.Y = (REAL)(statusMario->GetY()*1.0 - 2 * statusMario->GetHeight()); 
+		textRect.Width = (REAL)wnd_width;
+		textRect.Height = (REAL)30;
 		content.push_back(L" WORLD 1-1 ");
 		T_Graph::PaintText(hdc, textRect, content[0].c_str(), FontHeight, fontName.c_str(),
 			Color::White, FontStyleBold, StringAlignmentNear);
 
 		// 马里奥生命信息														
-		textRect.X = statusMario->GetX() + statusMario->GetWidth();
-		textRect.Y = statusMario->GetY();// statusMario->GetHeight()/3;
-		textRect.Width = wnd_width*1.0;
-		textRect.Height = 30;
+		textRect.X = (REAL)(statusMario->GetX() + statusMario->GetWidth());
+		textRect.Y = (REAL)(statusMario->GetY());// statusMario->GetHeight()/3;
+		textRect.Width = (REAL)(wnd_width*1.0);
+		textRect.Height = (REAL)30; 
 		content.push_back(L" X ");
 		content[1].append(T_Util::int_to_wstring(player->getLifeCount()));
 		T_Graph::PaintText(hdc, textRect, content[1].c_str(), FontHeight, fontName.c_str(),	
@@ -790,7 +778,7 @@ void MarioGame::DisplayInfo(HDC hdc)
 		textRect.Y = (REAL)7*wnd_height/8;
 		textRect.Width = (REAL)wnd_width;
 		textRect.Height = (REAL)30;
-		content.push_back(L"REMEMBER THAT YOU CAN RUN WITH LSHIFT");
+		content.push_back(L"REMEMBER THAT YOU CAN RUN WITH CPAS");
 		T_Graph::PaintText(hdc, textRect, content[2].c_str(), FontHeight, fontName.c_str(),	
 			Color::White, FontStyleBold, StringAlignmentNear);
 		break;
@@ -801,10 +789,10 @@ void MarioGame::DisplayInfo(HDC hdc)
 	case GAME_ABOUT:
 
 		//制作信息
-		textRect.X = (REAL)wnd_width/5.0;
-		textRect.Y = (REAL)wnd_height/6.0;
-		textRect.Width = (REAL)wnd_width * 1.0;
-		textRect.Height = (REAL)wnd_height / 4.0;
+		textRect.X = (REAL)wnd_width/5;
+		textRect.Y = (REAL)wnd_height/6;
+		textRect.Width = (REAL)wnd_width;
+		textRect.Height = (REAL)wnd_height / 4;
 
 		
 		content.push_back(L"MARIO V1.0  - C++ ");
@@ -815,7 +803,7 @@ void MarioGame::DisplayInfo(HDC hdc)
 		content.push_back(L" ");
 		content.push_back(L"NOV 2019");
 
-		for (int i = 0; i < content.size(); i++)
+		for (unsigned int i = 0; i < content.size(); i++)
 		{
 			T_Graph::PaintText(hdc, textRect, content[i].c_str(), FontHeight, fontName.c_str(),
 				Color::White, FontStyleBold, StringAlignmentNear);
@@ -828,13 +816,11 @@ void MarioGame::DisplayInfo(HDC hdc)
 // 显示顶端状态栏
 void MarioGame::ShowTitleInfo(HDC hdc) {
 
-	int FontHeight = 16;	 // 字号
+	REAL FontHeight = 16.0;	 // 字号
 	wstring fontName = L"Comic Sans Ms"; // 字体
 	RectF textRect;			 // 文字域
 	vector<wstring> content; // 文字内容
 
-
-	FontHeight = 16;
 	textRect.X = STATUS_BEGIN_X;
 	textRect.Y = STATUS_BEGIN_Y;
 	textRect.Width = (float)STATUS_TEXT_WIDTH;
@@ -849,13 +835,13 @@ void MarioGame::ShowTitleInfo(HDC hdc) {
 	content.push_back(T_Util::int_to_wstring(00));
 	content.push_back(T_Util::int_to_wstring(00));
 	content.push_back(L"1-1");
-	content.push_back(T_Util::int_to_wstring(400));
+	content.push_back(T_Util::int_to_wstring(400 - gameTime));
 
-	for (int i = 0; i < content.size(); i++)
+	for (unsigned int i = 0; i < content.size(); i++)
 	{
 		if (i == 5) {	//金币数前需要打印一个图片
 			statusCoin->Draw(hdc);
-			statusCoin->LoopFrame(20,true);	//如此裸露的维护帧计数器。。。。
+			statusCoin->LoopFrame(15,true);	//如此裸露的维护帧计数器。。。。
 		}	
 		
 		T_Graph::PaintText(hdc, textRect, content[i].c_str(), FontHeight, fontName.c_str(),

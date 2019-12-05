@@ -53,25 +53,25 @@ private:
 	//...
 	//图片
 	T_Sprite* statusCoin;							// 状态栏小金币图片
-	T_Sprite* statusMario;							// 
+	T_Sprite* statusMario;							// 关卡升级界面 居中的马里奥图片
 	//...
 	
 	
 	// 与游戏对象类相关的变量
-	Player* player;								// 游戏玩家
-	GameScene* gameScene;						// 游戏场景
-	Color bkColor;								// 游戏背景色
+	Player* player;									// 游戏玩家
+	GameScene* gameScene;							// 游戏场景
+	COLORREF bkColor;									// 游戏背景色
 
 
 	//------------------与菜单相关的变量-----------------------------------
-	GameMenu* gameMenu;							// 游戏菜单
+	GameMenu* gameMenu;								// 游戏菜单
 
 	//与 MAIN_MENU 相关的变量
-	GAMELAYER marioBoard;						// 超级大的棕色牌子
+	GAMELAYER marioBoard;							// 超级大的棕色牌子
 
 	//与 ABOUT_MENU 相关的变量
-	int changeIndex;							// 变换的颜色索引	0-R 1-G 2-B
-	double red, green, blue;					// 三原色 用于控制背景色改变
+	int changeIndex;								// 变换的颜色索引	0-R 1-G 2-B
+	double red, green, blue;						// 三原色 用于控制背景色改变
 	double lastRed, lastGreen, lastBlue;
 
 	//---------------------------------------------------------

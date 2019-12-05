@@ -8,7 +8,7 @@ class GameMenu :
 {
 protected:
 	int fontHeight;				//菜单项的字体大小
-	int beginTick;
+//	int beginTick;
 //	int nowTick;				
 
 public:

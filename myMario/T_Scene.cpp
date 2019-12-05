@@ -14,6 +14,8 @@
 T_Map* T_Scene::pBarrier = NULL;			// 碰撞图层指针，包含在sceneLayers中
 T_Map* T_Scene::pMask = NULL;			// 遮罩层指针，包含在sceneLayers中
 Player* T_Scene::pPlayer = NULL;				// 玩家指针，包含在sceneLayers中
+T_Map* T_Scene::pNormalBrick = NULL;			// 碰撞图层指针，包含在sceneLayers中
+T_Map* T_Scene::pPropBrick = NULL;			// 碰撞图层指针，包含在sceneLayers中
 
 // 构造函数
 T_Scene::T_Scene()

@@ -284,7 +284,7 @@ void T_Engine::StartEngine()
 
 	// 游戏主循环
 	while (TRUE)
-	{
+	{  
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			// 如果侦测到WM_QUIT则退出游戏循环

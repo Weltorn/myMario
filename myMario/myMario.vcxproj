@@ -117,7 +117,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Flower.cpp" />
+    <ClCompile Include="Brick.cpp" />
+    <ClCompile Include="BrickFactory.cpp" />
     <ClCompile Include="GameMap.cpp" />
     <ClCompile Include="GameMenu.cpp" />
     <ClCompile Include="GameScene.cpp" />
@@ -127,7 +128,9 @@
     <ClCompile Include="MarioGame.cpp" />
     <ClCompile Include="Minion.cpp" />
     <ClCompile Include="MinionFactory.cpp" />
+    <ClCompile Include="NormalBrick.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PropBrick.cpp" />
     <ClCompile Include="PlayerBullet.cpp" />
     <ClCompile Include="RedMushroom.cpp" />
     <ClCompile Include="Star.cpp" />
@@ -144,7 +147,8 @@
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Flower.h" />
+    <ClInclude Include="Brick.h" />
+    <ClInclude Include="BrickFactory.h" />
     <ClInclude Include="GameConfig.h" />
     <ClInclude Include="GameMap.h" />
     <ClInclude Include="GameMenu.h" />
@@ -154,7 +158,9 @@
     <ClInclude Include="MarioGame.h" />
     <ClInclude Include="Minion.h" />
     <ClInclude Include="MinionFactory.h" />
+    <ClInclude Include="NormalBrick.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PropBrick.h" />
     <ClInclude Include="PlayerBullet.h" />
     <ClInclude Include="RedMushroom.h" />
     <ClInclude Include="resource.h" />
