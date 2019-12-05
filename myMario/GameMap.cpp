@@ -5,7 +5,7 @@
 GameMap::GameMap(LAYERINFO layerInfo)
 	:T_Map(layerInfo)
 {
-
+	init = false;
 }
 
 GameMap::GameMap(LPCTSTR imgFilepath)
@@ -21,59 +21,59 @@ GameMap::~GameMap()
 
 void GameMap::update()
 {	
-	//更新砖块状态
-	for (int i = 0; i < pBricks.size(); i++)
-	{
-		// 设置Mario新碰撞到的砖块Active属性
-		for (int j = 0; j < collideBlocks.size(); j++)
+	//更新普通砖块状态
+	//string name = ClassName();
+	int layerID = GetLayerTypeID();
+	switch (layerID) {
+	case LAYER_NORMAL_BRICK:
+		for (unsigned int i = 0; i < pBricks.size(); i++)
 		{
-			// 更具行、列索引找到指定砖块 且若该砖块不处于活跃状态
-			if (collideBlocks[j].col == pBricks[i]->getCol() && collideBlocks[j].row == pBricks[i]->getRow() && pBricks[i]->IsActive() == false)
-				pBricks[i]->SetActive(true);
-		}
+			// 设置Mario新碰撞到的砖块Active属性
+			for (unsigned int j = 0; j < collideBlocks.size(); j++)
+			{
+				// 更具行、列索引找到指定砖块 且若该砖块不处于活跃状态
+				if (collideBlocks[j].col == pBricks[i]->getCol() && collideBlocks[j].row == pBricks[i]->getRow() && pBricks[i]->IsActive() == false)
+					pBricks[i]->SetActive(true);
+			}
 
-		// 更新活跃状态砖块
-		if (pBricks[i]->IsActive()) {
-			int lastY = dynamic_cast<NormalBrick *>(pBricks[i])->getLastY();
-			int Y = pBricks[i]->GetY();
-			//上移
-			if (Y == 288 && lastY!=Y)
-			{
-				dynamic_cast<NormalBrick *>(pBricks[i])->setLastY(Y);		// 记录移动前的坐标位置
-				pBricks[i]->SetActive(false);
+			// 更新活跃状态砖块
+			if (pBricks[i]->IsActive()) {
+				updated = dynamic_cast<NormalBrick *>(pBricks[i])->Bounce();
 			}
-			else if (Y <= lastY && Y >= 280)
-			{
-				dynamic_cast<NormalBrick *>(pBricks[i])->setLastY(Y);		// 记录移动前的坐标位置
-				pBricks[i]->SetY(Y - pBricks[i]->GetHeight() / 8);			// 上移1/6个身位
-			}
-			else
-			{
-				dynamic_cast<NormalBrick *>(pBricks[i])->setLastY(Y);		// 记录移动前的坐标位置
-				pBricks[i]->SetY(Y + pBricks[i]->GetHeight() / 8);			// 上移1/6个身位
-			}
-			
-			updated = true;
-			// 下移
-		/*	else if (Y > lastY)
-			{
-				
-			}*/
 		}
-			
+		break;
+	case LAYER_PROP_BRICK:
+		for (unsigned int i = 0; i < pBricks.size(); i++)
+			pBricks[i]->LoopFrame(15,true);		//	慢速闪烁 这里刷新所有砖的帧数，若局部刷新则会导致闪动画面不一致
+		updated = true;
 	}
+
 }
 
 //根据参数type以及地图数据 生成指定的砖对象并存放于pBricks中
 void GameMap::CreateBricks(BRICK_TYPE type)
 {
-	for (int i = 0; i < layer_data.size(); i++)
-	{
-		for (int j = 0; j < layer_data[0].size(); j++)
+	switch (type) {
+	case NORMAL_BRICK:
+		for (unsigned int i = 0; i < layer_data.size(); i++)
 		{
-			if(layer_data[i][j] != 0)
-				pBricks.push_back(BrickFactory::getBrick(type, j, i));
+			for (unsigned int j = 0; j < layer_data[0].size(); j++)
+			{
+				if (layer_data[i][j] != 0)
+					pBricks.push_back(BrickFactory::getBrick(type, j, i));
+			}
 		}
+		break;
+	case PROP_BRICK:
+		for (unsigned int i = 0; i < layer_data.size(); i++)
+		{
+			for (unsigned int j = 0; j < layer_data[0].size(); j++)
+			{
+				if (layer_data[i][j] != 0)
+					pBricks.push_back(BrickFactory::getBrick(type, j, i));
+			}
+		}
+		break;
 	}
 
 }
@@ -87,41 +87,60 @@ void GameMap::Redraw(HDC hdc)
 
 		int width = (int)GetWidth();
 		int height = (int)GetHeight();
-
 		SelectObject(dc_buf, hbmp_old);
-		DeleteObject(hbmp_layer);
-		hbmp_layer = NULL;
-		hbmp_layer = T_Graph::CreateBlankBitmap(width, height, Color::White);
-		hbmp_old = (HBITMAP)SelectObject(dc_buf, hbmp_layer);
 
-		if (Visible == true)
-		{
-			int tileIndex = 0;
-
-			int tX = 0, tY = 0;
-			int r = 0, c = 0;
-			int img_col = 0, img_row = 0;
-
-			int tileImageWidth = graph->GetImageWidth();
-			HDC memDC = CreateCompatibleDC(hdc);
-			HBITMAP OldMemBmp = (HBITMAP)SelectObject(memDC, graph->GetBmpHandle());
-
-			for (int i = 0; i < pBricks.size(); i++)
-			{
-				pBricks[i]->Draw(dc_buf);
-
-			}
-			//还原：使用原来对象替换内存设备中的位图对象
-			SelectObject(memDC, OldMemBmp);
-			DeleteDC(memDC);//删除内存设备
-			DeleteObject(OldMemBmp);//删除位图对象
-			updated = false;
+		if (!init) {
+			DeleteObject(hbmp_layer);
+			hbmp_layer = NULL;
+			hbmp_layer = T_Graph::CreateBlankBitmap(width, height, Color::White);	//这句代码能花12ms...
 		}
 
+		hbmp_old = (HBITMAP)SelectObject(dc_buf, hbmp_layer);
+		HDC memDC = CreateCompatibleDC(hdc);
+		HBITMAP OldMemBmp = (HBITMAP)SelectObject(memDC, graph->GetBmpHandle());
 
+		switch (GetLayerTypeID()) 
+		{
+		case LAYER_NORMAL_BRICK:
+			if (Visible == true)
+			{
+				for (unsigned int i = 0; i < pBricks.size(); i++)
+				{
+					if (!init)// 先将所有对象绘制buffer中
+						pBricks[i]->Draw(dc_buf);
+					else
+					{
+						if (pBricks[i]->IsActive())						// 只更新活跃状态的砖块
+						{
+							// 绘制背景色填补空缺
+							T_Graph::PaintBlank(dc_buf, pBricks[i]->getLastX(), pBricks[i]->getLastY(), pBricks[i]->GetWidth(), pBricks[i]->GetHeight(), RGB(125, 148, 254), 255);	//
+							pBricks[i]->Draw(dc_buf);				
+						}
+					}
+				}	
+			}
+			break;
+		case LAYER_PROP_BRICK:
 
-
+			if (Visible == true)
+			{
+				for (unsigned int i = 0; i < pBricks.size(); i++)
+				{
+					// 只更新玩家可见区域范围内的砖块
+					int mapX = -GetX();
+					int brickX = pBricks[i]->GetX();
+		
+					if(brickX >= mapX && brickX <= mapX + WIN_WIDTH)
+						pBricks[i]->Draw(dc_buf);
+				}			
+			}	
+			break;
+		}
+		init = true;	// 已经绘制完所有砖 + 位图创建完毕
 		updated = false;
+		SelectObject(memDC, OldMemBmp);
+		DeleteDC(memDC);//删除内存设备
+		DeleteObject(OldMemBmp);//删除位图对象
 	}
 
 	// 由图块构成的图层
@@ -154,29 +173,34 @@ void GameMap::Redraw(HDC hdc)
 				{
 					int imgTotalCols = tileImageWidth / tile_width;
 					tileIndex = layer_data[r][c];
-					//得到图片上的行列号
-					if (first_gid == 1)
-					{
+					 
+					// 有内容才画出来
+					if (tileIndex != 0) {
 						//得到图片上的行列号
-						img_col = (tileIndex - 1) % imgTotalCols;
-						img_row = (tileIndex - 1) / imgTotalCols;
-					}
-					else
-					{
-						img_col = tileIndex % imgTotalCols;
-						img_row = tileIndex / imgTotalCols;
-					}
+						if (first_gid == 1)
+						{
+							//得到图片上的行列号
+							img_col = (tileIndex - 1) % imgTotalCols;
+							img_row = (tileIndex - 1) / imgTotalCols;
+						}
+						else
+						{
+							img_col = tileIndex % imgTotalCols;
+							img_row = tileIndex / imgTotalCols;
+						}
 
-					BLENDFUNCTION frame_bf;
-					frame_bf.BlendOp = AC_SRC_OVER;
-					frame_bf.BlendFlags = 0;
-					frame_bf.SourceConstantAlpha = 255;
-					frame_bf.AlphaFormat = AC_SRC_ALPHA;
-					AlphaBlend(
-						dc_buf, tX, tY, tile_width, tile_height,
-						memDC, img_col*tile_width, img_row*tile_height,
-						tile_width, tile_height, frame_bf
-					);
+						BLENDFUNCTION frame_bf;
+						frame_bf.BlendOp = AC_SRC_OVER;
+						frame_bf.BlendFlags = 0;
+						frame_bf.SourceConstantAlpha = 255;
+						frame_bf.AlphaFormat = AC_SRC_ALPHA;
+						AlphaBlend(
+							dc_buf, tX, tY, tile_width, tile_height,
+							memDC, img_col*tile_width, img_row*tile_height,
+							tile_width, tile_height, frame_bf
+						);
+					}
+				
 				}
 			}
 			//还原：使用原来对象替换内存设备中的位图对象
@@ -206,8 +230,6 @@ void GameMap::Draw(HDC hdc)
 			Redraw(hdc);
 		}
 		if (updated == false) {
-	//		if(collideBlocks.size() != 0)
-				update();
 			BLENDFUNCTION frame_bf;
 			frame_bf.BlendOp = AC_SRC_OVER;
 			frame_bf.BlendFlags = 0;
@@ -218,7 +240,7 @@ void GameMap::Draw(HDC hdc)
 				hdc, (int)X, (int)Y, (int)GetWidth(), (int)GetHeight(),
 				dc_buf, 0, 0, (int)GetWidth(), (int)GetHeight(), frame_bf
 			);
-		}
+		}      
 
 	}
 	//绘制由Tiles组成的地图图块

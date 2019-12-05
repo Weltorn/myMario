@@ -29,7 +29,7 @@ static const int WIN_WIDTH		 = 802;				// 默认游戏窗口宽
 static const int WIN_HEIGHT		 = 453;				// 默认游戏窗口高
 static const COLORREF WIN_BKCLR = RGB(50, 50, 50);	// 默认窗口背景色(更新: 2019-09-28)
 
-static const int FRAME_SPEED	 = 100;				// 默认游戏帧频
+static const int FRAME_SPEED	 = 75;				// 默认游戏帧频
 
 static const int MENU_WIDTH		 = 200;				// 默认菜单宽
 static const int MENU_HEIGHT	 = 60;				// 默认菜单高
@@ -117,6 +117,8 @@ enum LAYER_TYPE
 	LAYER_NONE,					// 游戏中非游戏对象
 	LAYER_NORMAL_BRICK,
 	LAYER_PROP_BRICK,
+	LAYER_BRICK,
+	LAYER_AWARD					//奖励包括金币、蘑菇、星星
 };
 // 图层类型
 enum VK_KEYVALUE
@@ -180,4 +182,14 @@ typedef struct
 	Color	focusTextColor;		// 焦点菜单文字颜色
 }MENU_INFO;
 
+enum EVENTTYPE
+{
+	PLAYER_DEATH,
+	PLAYER_LEVELUP,
+	PLAYER_LEVELDOWN,
+	PLAYER_AFTERPOLE,
+	NPC_DEATH_CRASH,
+	NPC_DEATH_TURNOVER,
+	BULLET_EXPLODE
+};
 #endif

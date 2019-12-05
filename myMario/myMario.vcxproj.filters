@@ -13,78 +13,99 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="源文件\引擎文件">
+      <UniqueIdentifier>{21b1fe11-9c93-4b94-a42f-1ffe63c9ffcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\游戏文件">
+      <UniqueIdentifier>{46e319f3-c307-492c-9c9d-3286d96f5785}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="MarioGame.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="T_AI.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\引擎文件</Filter>
     </ClCompile>
     <ClCompile Include="T_Audio.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\引擎文件</Filter>
     </ClCompile>
     <ClCompile Include="T_Display.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\引擎文件</Filter>
     </ClCompile>
     <ClCompile Include="T_Engine.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\引擎文件</Filter>
     </ClCompile>
     <ClCompile Include="T_Graph.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\引擎文件</Filter>
     </ClCompile>
     <ClCompile Include="T_Map.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\引擎文件</Filter>
     </ClCompile>
     <ClCompile Include="T_Menu.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\引擎文件</Filter>
     </ClCompile>
     <ClCompile Include="T_Scene.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\引擎文件</Filter>
     </ClCompile>
     <ClCompile Include="T_Sprite.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\引擎文件</Filter>
     </ClCompile>
     <ClCompile Include="T_Util.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\引擎文件</Filter>
     </ClCompile>
     <ClCompile Include="Util.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Minion.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="MinionFactory.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="GameScene.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\引擎文件</Filter>
     </ClCompile>
     <ClCompile Include="GameMap.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\引擎文件</Filter>
     </ClCompile>
     <ClCompile Include="GameMenu.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\引擎文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GameScene.cpp">
+      <Filter>源文件\引擎文件</Filter>
     </ClCompile>
     <ClCompile Include="Brick.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\游戏文件</Filter>
     </ClCompile>
     <ClCompile Include="BrickFactory.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="NormalBrick.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="PropBrick.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\游戏文件</Filter>
     </ClCompile>
     <ClCompile Include="Goomba.cpp">
+      <Filter>源文件\游戏文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Koopa.cpp">
+      <Filter>源文件\游戏文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>源文件\游戏文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MarioGame.cpp">
+      <Filter>源文件\游戏文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Minion.cpp">
+      <Filter>源文件\游戏文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MinionFactory.cpp">
+      <Filter>源文件\游戏文件</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalBrick.cpp">
+      <Filter>源文件\游戏文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>源文件\游戏文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerBullet.cpp">
+      <Filter>源文件\游戏文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PropBrick.cpp">
+      <Filter>源文件\游戏文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RedMushroom.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Star.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Flower.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -168,6 +189,21 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Goomba.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerBullet.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Koopa.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RedMushroom.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Star.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Flower.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

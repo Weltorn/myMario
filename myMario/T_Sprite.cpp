@@ -55,7 +55,7 @@ T_Sprite::T_Sprite(LPCTSTR imgPath, int frameWidth, int frameHeight)
 
 T_Sprite::~T_Sprite(void)
 {	
-	delete frameSequence;
+	
 }
 
 void T_Sprite::Initiate(SPRITEINFO spInfo)
@@ -143,18 +143,60 @@ void T_Sprite::LoopFrame(int times, bool ahead)
 		}
 	}
 }
-bool T_Sprite::LoopFrameOnce(bool ahead)
+bool T_Sprite::LoopFrameOnce(int times, bool ahead)
 {
+	frameCount++;
 	loopForward = ahead;
 	if(totalFrames<=0) return true;//非帧图，返回
 	if(totalFrames>0)
 	{
 		if(ahead == true)
 		{
+			if (frameCount > times) {
+				forward = forward + 1;
+				if (forward > totalFrames - 1)
+				{
+					forward = 0;
+					return true;//播放完一轮所有帧
+				}
+				else
+				{
+					return false;
+				}
+				frameCount = 0;
+			}			
+		}
+		if(ahead == false)
+		{
+			if (frameCount > times) {
+				backward = backward - 1;
+				if (backward < 0)
+				{
+					backward = totalFrames - 1;
+					return true;//播放完一轮所有帧
+				}
+				else
+				{
+					return false;
+				}
+				frameCount = 0;
+			}			
+		}
+	}
+	return false;
+}
+bool T_Sprite::LoopFrameOnce(bool ahead)
+{
+	loopForward = ahead;
+	if (totalFrames <= 0) return true;//非帧图，返回
+	if (totalFrames>0)
+	{
+		if (ahead == true)
+		{
 			forward = forward + 1;
-			if(forward > totalFrames-1) 
+			if (forward > totalFrames - 1)
 			{
-				forward = 0; 
+				forward = 0;
 				return true;//播放完一轮所有帧
 			}
 			else
@@ -162,12 +204,12 @@ bool T_Sprite::LoopFrameOnce(bool ahead)
 				return false;
 			}
 		}
-		if(ahead == false)
+		if (ahead == false)
 		{
 			backward = backward - 1;
-			if(backward < 0) 
+			if (backward < 0)
 			{
-				backward = totalFrames-1;
+				backward = totalFrames - 1;
 				return true;//播放完一轮所有帧
 			}
 			else
@@ -396,7 +438,7 @@ int T_Sprite::GetDir(POINT mousePT)
 }
 
 // 判断怪物与目标矩形的碰撞方向（相对于怪物的方向）
-GAME_DIR T_Sprite::getCollideDir(RECT target)
+GAME_DIR T_Sprite::getCollideDir(RECT target, bool horizontalFirst)
 {
 	RECT oldRect = *this->GetCollideRect();
 	RECT currentRect = *this->GetCollideRect();
@@ -405,27 +447,95 @@ GAME_DIR T_Sprite::getCollideDir(RECT target)
 	oldRect.top = this->GetCollideRect()->top - (Y - lastY);
 	oldRect.bottom = this->GetCollideRect()->bottom - (Y - lastY);
 
-	if (oldRect.left >= target.right && this->GetCollideRect()->left <= target.right)
+	GAME_DIR dir  = DIR_NONE;
+	int oldSpeedX = abs(X - lastX);
+	int oldSpeedY = abs(Y - lastY);
+	int distanceX = 0;
+	int distanceY = 0;
+	if (oldSpeedX == 0 && oldSpeedY == 0)	//初始化时碰撞
 	{
-		return DIR_LEFT;
+		return dir;
 	}
-	if (oldRect.right <= target.left && this->GetCollideRect()->right >= target.left)
+	if (oldRect.left >= target.right && currentRect.left <= target.right)
 	{
-		return DIR_RIGHT;
+		dir= DIR_LEFT;
 	}
-	if (oldRect.top >= target.bottom && this->GetCollideRect()->top <= target.bottom)
+	if (oldRect.right <= target.left && currentRect.right >= target.left)
 	{
-		return DIR_UP;
+		dir = DIR_RIGHT;
 	}
-	if (oldRect.bottom <= target.top && this->GetCollideRect()->bottom >= target.top)
+	if (oldRect.top >= target.bottom && currentRect.top <= target.bottom)
 	{
-		return DIR_DOWN;
+		if (dir == DIR_LEFT)
+		{
+			distanceY = oldRect.top - target.bottom;
+			distanceX = oldRect.left- target.right;
+			if (oldSpeedX*distanceY >= oldSpeedY*distanceX)
+			{
+				dir = DIR_UP;
+				if (horizontalFirst&&oldSpeedX*distanceY == oldSpeedY*distanceX)
+				{
+					dir = DIR_LEFT;
+				}
+			}
+		}
+		else if (dir == DIR_RIGHT)
+		{
+			distanceY = oldRect.top - target.bottom;
+			distanceX = target.right-oldRect.left;
+			if (oldSpeedX*distanceY >= oldSpeedY*distanceX)
+			{
+				dir = DIR_UP;
+				if (horizontalFirst&&oldSpeedX*distanceY == oldSpeedY*distanceX)
+				{
+					dir = DIR_RIGHT;
+				}
+			}
+		}
+		else
+		{
+			dir = DIR_UP;
+		}		
 	}
-	return DIR_NONE;
+	if (oldRect.bottom <= target.top && currentRect.bottom >= target.top)
+	{
+		if (dir == DIR_LEFT)
+		{
+			distanceY = target.top - oldRect.bottom;
+			distanceX = oldRect.left-target.right;
+			if (oldSpeedX*distanceY >= oldSpeedY*distanceX)
+			{
+				dir = DIR_DOWN;
+				if (horizontalFirst&&oldSpeedX*distanceY == oldSpeedY*distanceX)
+				{
+					dir = DIR_LEFT;
+				}
+			}
+		}
+		else if (dir == DIR_RIGHT)
+		{
+			distanceY = target.top - oldRect.bottom;
+			distanceX = target.left-oldRect.right;
+			if (oldSpeedX*distanceY >= oldSpeedY*distanceX)
+			{
+				dir = DIR_DOWN;
+				if (horizontalFirst&&oldSpeedX*distanceY == oldSpeedY*distanceX)
+				{
+					dir = DIR_RIGHT;
+				}
+			}
+		}
+		else
+		{
+			dir = DIR_DOWN;
+		}		
+	}
+	return dir;
 }
 
-// 判断怪物与目标的碰撞方向（相对于怪物的方向）
-GAME_DIR T_Sprite::getCollideDir(T_Sprite* target, int distance)
+
+// 判断与目标的碰撞方向（相对于自己的方向）
+GAME_DIR T_Sprite::getCollideDir(T_Sprite* target, int distance,bool horizontalFirst)
 {
 	RECT currentRect = *this->GetCollideRect();
 	RECT oldRect = currentRect;
@@ -447,24 +557,94 @@ GAME_DIR T_Sprite::getCollideDir(T_Sprite* target, int distance)
 	oldTargetRect.top = targetRect.top - (target->GetY() - target->getLastY());
 	oldTargetRect.bottom = targetRect.bottom - (target->GetY() - target->getLastY());
 
+	GAME_DIR dir = DIR_NONE;
+	//合成相对速度
+	int oldSpeedX = abs(X - lastX+target->GetX()-target->getLastX());
+	int oldSpeedY = abs(Y - lastY + target->GetY() - target->getLastY());
+	int distanceX = 0;
+	int distanceY = 0;
+	if (oldSpeedX == 0 && oldSpeedY == 0)	//初始化时碰撞
+	{
+		return dir;
+	}
 	if (oldRect.left >= oldTargetRect.right && currentRect.left <= targetRect.right)
 	{
-		return DIR_LEFT;
+		dir = DIR_LEFT;
 	}
 	if (oldRect.right <= oldTargetRect.left && currentRect.right >= targetRect.left)
 	{
-		return DIR_RIGHT;
+		dir = DIR_RIGHT;
 	}
 	if (oldRect.top >= oldTargetRect.bottom && currentRect.top <= targetRect.bottom)
 	{
-		return DIR_UP;
+		if (dir == DIR_LEFT)
+		{
+			distanceY = oldRect.top - oldTargetRect.bottom;
+			distanceX = oldRect.left - oldTargetRect.right;
+			if (oldSpeedX*distanceY >= oldSpeedY*distanceX)
+			{
+				dir = DIR_UP;
+				if (horizontalFirst&&oldSpeedX*distanceY == oldSpeedY*distanceX)
+				{
+					dir = DIR_LEFT;
+				}
+			}
+		}
+		else if (dir == DIR_RIGHT)
+		{
+			distanceY = oldRect.top - oldTargetRect.bottom;
+			distanceX = oldTargetRect.right - oldRect.left;
+			if (oldSpeedX*distanceY >= oldSpeedY*distanceX)
+			{
+				dir = DIR_UP;
+				if (horizontalFirst&&oldSpeedX*distanceY == oldSpeedY*distanceX)
+				{
+					dir = DIR_RIGHT;
+				}
+			}
+		}
+		else
+		{
+			dir = DIR_UP;
+		}
 	}
 	if (oldRect.bottom <= oldTargetRect.top && currentRect.bottom >= targetRect.top)
 	{
-		return DIR_DOWN;
+		if (dir == DIR_LEFT)
+		{
+			distanceY = oldTargetRect.top - oldRect.bottom;
+			distanceX = oldRect.left - oldTargetRect.right;
+			if (oldSpeedX*distanceY >= oldSpeedY*distanceX)
+			{
+				dir = DIR_DOWN;
+				if (horizontalFirst&&oldSpeedX*distanceY == oldSpeedY*distanceX)
+				{
+					dir = DIR_LEFT;
+				}
+			}
+		}
+		else if (dir == DIR_RIGHT)
+		{
+			distanceY = oldTargetRect.top - oldRect.bottom;
+			distanceX = oldTargetRect.left - oldRect.right;
+			if (oldSpeedX*distanceY >= oldSpeedY*distanceX)
+			{
+				dir = DIR_DOWN;
+				if (horizontalFirst&&oldSpeedX*distanceY == oldSpeedY*distanceX)
+				{
+					dir = DIR_RIGHT;
+				}
+			}
+		}
+		else
+		{
+			dir = DIR_DOWN;
+		}
 	}
-	return DIR_NONE;
+	return dir;
 }
+
+
 
 // 检测地图碰撞
 bool T_Sprite::CollideWith(IN T_Map* map)

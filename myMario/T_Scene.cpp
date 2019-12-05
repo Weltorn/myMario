@@ -15,6 +15,7 @@ T_Map* T_Scene::pBarrier = NULL;			// 碰撞图层指针，包含在sceneLayers中
 T_Map* T_Scene::pMask = NULL;			// 遮罩层指针，包含在sceneLayers中
 Player* T_Scene::pPlayer = NULL;				// 玩家指针，包含在sceneLayers中
 T_Map* T_Scene::pNormalBrick = NULL;			// 碰撞图层指针，包含在sceneLayers中
+T_Map* T_Scene::pPropBrick = NULL;			// 碰撞图层指针，包含在sceneLayers中
 
 // 构造函数
 T_Scene::T_Scene()
@@ -605,13 +606,26 @@ bool T_Scene::LoadTxtMap(const char* txtmap_path)
 // 整个游戏场景的绘制
 void T_Scene::Draw(HDC hdc)
 {	
-	SCENE_LAYERS::iterator p;
-	for (p = sceneLayers.begin(); p != sceneLayers.end(); p++) 
-	{			
-		// 如果图层可见,将其绘制出来
-		if((*p).layer->IsVisible() == true)
+	SCENE_LAYERS::iterator p1;
+	SCENE_LAYERS::iterator p2;
+	for (p1 = sceneLayers.begin(); p1 != sceneLayers.end(); ) 
+	{	
+		//判断是否为无效图层
+		if ((*p1).layer->GetLayerTypeID() != LAYER_TYPE::LAYER_NONE)
 		{
-			(*p).layer->Draw(hdc);//调用图层自己的绘制方法
+			// 如果图层可见,将其绘制出来
+			if ((*p1).layer->IsVisible() == true)
+			{
+				//Util::myprintf(L"layer type id %d\n", (*p1).layer->GetLayerTypeID());
+				(*p1).layer->Draw(hdc);//调用图层自己的绘制方法
+			}
+			p1++;
+		}
+		else if((*p1).layer->GetLayerTypeID() == LAYER_TYPE::LAYER_NONE)
+		{	//删除无效图层
+			p2 = p1;
+			delete (*p1).layer;
+			p1 = sceneLayers.erase(p2);
 		}
 	}
 }

@@ -21,6 +21,7 @@ private:
 	bool preD;
 	bool preL;
 	bool preCapital;
+	bool preSpace;
 
 
 	//游戏常量
@@ -59,7 +60,7 @@ private:
 	// 与游戏对象类相关的变量
 	Player* player;									// 游戏玩家
 	GameScene* gameScene;							// 游戏场景
-	Color bkColor;									// 游戏背景色
+	COLORREF bkColor;									// 游戏背景色
 
 
 	//------------------与菜单相关的变量-----------------------------------
@@ -103,7 +104,7 @@ public:
 	void playerRelife()
 	{
 		//清除按键状态
-		preA = preS = preD = preL = preCapital = false;
+		preA = preS = preD = preL = preCapital= preSpace = false;
 		
 		player->stopEvent();
 		player->SetPosition(wnd_width / 5, 200);

@@ -108,9 +108,9 @@ void GameMenu::DrawMenu(HDC hdc, int bkgX, int bkgY, BYTE btnTrans, bool startSt
 				{
 					double num = wcslen(item);					// 字符数
 					//一个字符大约占16个像素(每个字母占的像素宽不一样，计算时取的是19)
-					REAL a = Rec.Width / 2.0;					// 文字域的半宽
+					REAL a = (REAL)Rec.Width / 2.0;					// 文字域的半宽
 					int b = ROUND((num / 2.0)) * 19;			// 一半文字所占的像素
-					int destX = x + a - b;						// 小蘑菇的起始坐标
+					int destX = (int)(x + a - b);						// 小蘑菇的起始坐标
 					int destY = y + h / 2 - BtnDIB.GetImageHeight() / 2;
 					BtnDIB.PaintRegion(BtnDIB.GetBmpHandle(), hdc, destX, destY, 0, 0, BtnDIB.GetImageWidth(), BtnDIB.GetImageHeight(), 1, 0, btnTrans);
 				}

@@ -1,20 +1,62 @@
-#include "Minion.h"
+#include "PlayerBullet.h"
 #include "T_Scene.h"
 #include "GameMap.h"
 
 
-Minion::Minion(LPCTSTR imgPath, int frameWidth, int frameHeight)
-	:T_Sprite(imgPath, frameWidth, frameHeight)
+PlayerBullet::PlayerBullet(LPCTSTR imgPath, int frameWidth, int frameHeight)
+	:Minion(imgPath, frameWidth, frameHeight)
 {
-	gravity = 8;
-	frameFrequence = 12;
-	inEvent = false;
-}
-Minion::~Minion()
-{
+	frameFrequence = 6;
+	gravity = 20;
 }
 
-bool Minion::CollideWith(IN T_Map* map)
+
+PlayerBullet::~PlayerBullet()
+{
+	delete frameSequence;
+}
+void PlayerBullet::gravityEffect()
+{
+	float currentGravity = gravity;		//单击跳跃	
+
+	if ((GetTickCount() - timer)* currentGravity / 270 >6 - abs(speedY))
+	{
+		speedY -= 1;
+		if (speedY >= 12)
+		{
+			speedY = 12;
+		}
+		timer = GetTickCount();
+	}
+}
+//竖直移动
+void PlayerBullet::updatePositionY()
+{
+	gravityEffect();		//重力作用	
+	Y = Y - speedY;
+}
+void PlayerBullet::updatePosition()
+{
+	updatePositionX();
+	updatePositionY();
+}
+void PlayerBullet::update()
+{
+	if (!inEvent)
+	{
+		updatePosition();					//更新坐标
+		CollideWith(T_Scene::getBarrier());		//与障碍层碰撞检测
+		CollideWith(T_Scene::getNormalBrick());	//与砖层碰撞检测
+		CollideWith(T_Scene::getPropBrick());	//与砖层碰撞检测
+		updateFrame();						//更新帧图		
+		//Util::myprintf(L"bullet current frameIndex: %d,x: %d,y: %d\n",currentFrmIndex,X,Y);
+	}
+	else
+	{
+		playAnimation();
+	}
+}
+bool PlayerBullet::CollideWith(IN T_Map* map)
 {
 	bool isCollide = false;
 	// 如果背景为图片则不检测地图碰撞
@@ -85,6 +127,8 @@ bool Minion::CollideWith(IN T_Map* map)
 	int startCol = (spLeft <= mapLeft) ? 0 : (spLeft - mapLeft) / tW;
 	int endCol = (spRight < mapRight) ? (spRight - 1 - mapLeft) / tW : tNumCols - 1;
 
+	// 根据角色矩形上、下、左、右的矩形区域判断哪个矩形区域为障碍
+
 	if (speedY <= 0)
 	{
 		for (int row = startRow; row <= endRow; ++row)
@@ -99,42 +143,33 @@ bool Minion::CollideWith(IN T_Map* map)
 						isCollide = true;
 						mapBlockPT.x = col;	// 记录当前障碍图块的列
 						mapBlockPT.y = row;	// 记录当前障碍图块的行
-						Util::myprintf(L"mioion map collide now------------------\n");
-						//碰撞的地图块
+											//碰撞的地图块
 						RECT blockRect = { col*map->getTileWidth() + (map->GetX()) ,row*map->getTileHeight() + (map->GetY()),
 							(col + 1)*map->getTileWidth() + (map->GetX()),(row + 1)*map->getTileHeight() + (map->GetY()) };
 
 						int x = GetX(), y = GetY();
-						GAME_DIR DIR = getCollideDir(blockRect);
+						GAME_DIR DIR = getCollideDir(blockRect, false);
 						switch (DIR)
 						{
 						case DIR_LEFT:
-							x = map->GetX() + (col + 1)*map->getTileWidth();
-							y = GetY();
-							dir = DIR_RIGHT;
-							break;
 						case DIR_RIGHT:
-							x = map->GetX() + col*map->getTileWidth() - GetRatioSize().cx;
-							y = GetY();
-							dir = DIR_LEFT;
+							startEvent(EVENTTYPE::BULLET_EXPLODE);
 							break;
 						case DIR_UP:
 							x = GetX();
 							y = map->GetY() + (row + 1)*map->getTileHeight();		//紧靠障碍下侧
+							SetPosition(x, y);
 							speedY = -abs(speedY);
 							break;
 						case DIR_DOWN:
 							x = GetX();
-							y = map->GetY() + (row)*map->getTileHeight() - GetRatioSize().cy;  //紧靠障碍上侧
-							onPlantform = true;
-							speedY = 0;
+							y = map->GetY() + (row)*map->getTileHeight() - (GetRatioSize().cy + colideHeight) / 2;  //紧靠障碍上侧
+							SetPosition(x, y);
+							speedY = 4;
 							break;
 						default:
-							x = lastX;
-							y = lastY;
+							startEvent(EVENTTYPE::BULLET_EXPLODE);
 						}
-						// 将角色定位在障碍物边界
-						SetPosition(x, y);
 					}
 				}
 			}
@@ -148,42 +183,33 @@ bool Minion::CollideWith(IN T_Map* map)
 						isCollide = true;
 						mapBlockPT.x = col;	// 记录当前障碍图块的列
 						mapBlockPT.y = row;	// 记录当前障碍图块的行
-						Util::myprintf(L"mioion map collide now------------------\n");
-						//碰撞的地图块
+											//碰撞的地图块
 						RECT blockRect = { col*map->getTileWidth() + (map->GetX()) ,row*map->getTileHeight() + (map->GetY()),
 							(col + 1)*map->getTileWidth() + (map->GetX()),(row + 1)*map->getTileHeight() + (map->GetY()) };
 
 						int x = GetX(), y = GetY();
-						GAME_DIR DIR = getCollideDir(blockRect);
+						GAME_DIR DIR = getCollideDir(blockRect, false);
 						switch (DIR)
 						{
 						case DIR_LEFT:
-							x = map->GetX() + (col + 1)*map->getTileWidth();
-							y = GetY();
-							dir = DIR_RIGHT;
-							break;
 						case DIR_RIGHT:
-							x = map->GetX() + col*map->getTileWidth() - GetRatioSize().cx;
-							y = GetY();
-							dir = DIR_LEFT;
+							startEvent(EVENTTYPE::BULLET_EXPLODE);
 							break;
 						case DIR_UP:
 							x = GetX();
 							y = map->GetY() + (row + 1)*map->getTileHeight();		//紧靠障碍下侧
+							SetPosition(x, y);
 							speedY = -abs(speedY);
 							break;
 						case DIR_DOWN:
 							x = GetX();
-							y = map->GetY() + (row)*map->getTileHeight() - GetRatioSize().cy;  //紧靠障碍上侧
-							onPlantform = true;
-							speedY = 0;
+							y = map->GetY() + (row)*map->getTileHeight() - (GetRatioSize().cy + colideHeight) / 2;  //紧靠障碍上侧
+							SetPosition(x, y);
+							speedY = 4;
 							break;
 						default:
-							x = lastX;
-							y = lastY;
+							startEvent(EVENTTYPE::BULLET_EXPLODE);
 						}
-						// 将角色定位在障碍物边界
-						SetPosition(x, y);
 					}
 				}
 			}
@@ -203,42 +229,33 @@ bool Minion::CollideWith(IN T_Map* map)
 						isCollide = true;
 						mapBlockPT.x = col;	// 记录当前障碍图块的列
 						mapBlockPT.y = row;	// 记录当前障碍图块的行
-						Util::myprintf(L"mioion map collide now------------------\n");
-						//碰撞的地图块
+											//碰撞的地图块
 						RECT blockRect = { col*map->getTileWidth() + (map->GetX()) ,row*map->getTileHeight() + (map->GetY()),
 							(col + 1)*map->getTileWidth() + (map->GetX()),(row + 1)*map->getTileHeight() + (map->GetY()) };
 
 						int x = GetX(), y = GetY();
-						GAME_DIR DIR = getCollideDir(blockRect);
+						GAME_DIR DIR = getCollideDir(blockRect, false);
 						switch (DIR)
 						{
 						case DIR_LEFT:
-							x = map->GetX() + (col + 1)*map->getTileWidth();
-							y = GetY();
-							dir = DIR_RIGHT;
-							break;
 						case DIR_RIGHT:
-							x = map->GetX() + col*map->getTileWidth() - GetRatioSize().cx;
-							y = GetY();
-							dir = DIR_LEFT;
+							startEvent(EVENTTYPE::BULLET_EXPLODE);
 							break;
 						case DIR_UP:
 							x = GetX();
 							y = map->GetY() + (row + 1)*map->getTileHeight();		//紧靠障碍下侧
+							SetPosition(x, y);
 							speedY = -abs(speedY);
 							break;
 						case DIR_DOWN:
 							x = GetX();
-							y = map->GetY() + (row)*map->getTileHeight() - GetRatioSize().cy;  //紧靠障碍上侧
-							onPlantform = true;
-							speedY = 0;
+							y = map->GetY() + (row)*map->getTileHeight() - (GetRatioSize().cy + colideHeight) / 2;  //紧靠障碍上侧
+							SetPosition(x, y);
+							speedY = 4;
 							break;
 						default:
-							x = lastX;
-							y = lastY;
+							startEvent(EVENTTYPE::BULLET_EXPLODE);
 						}
-						// 将角色定位在障碍物边界
-						SetPosition(x, y);
 					}
 				}
 			}
@@ -252,181 +269,111 @@ bool Minion::CollideWith(IN T_Map* map)
 						isCollide = true;
 						mapBlockPT.x = col;	// 记录当前障碍图块的列
 						mapBlockPT.y = row;	// 记录当前障碍图块的行
-						Util::myprintf(L"mioion map collide now------------------\n");
-						//碰撞的地图块
+											//碰撞的地图块
 						RECT blockRect = { col*map->getTileWidth() + (map->GetX()) ,row*map->getTileHeight() + (map->GetY()),
 							(col + 1)*map->getTileWidth() + (map->GetX()),(row + 1)*map->getTileHeight() + (map->GetY()) };
 
 						int x = GetX(), y = GetY();
-						GAME_DIR DIR = getCollideDir(blockRect);
+						GAME_DIR DIR = getCollideDir(blockRect, false);
 						switch (DIR)
 						{
 						case DIR_LEFT:
-							x = map->GetX() + (col + 1)*map->getTileWidth();
-							y = GetY();
-							dir = DIR_RIGHT;
-							break;
 						case DIR_RIGHT:
-							x = map->GetX() + col*map->getTileWidth() - GetRatioSize().cx;
-							y = GetY();
-							dir = DIR_LEFT;
+							startEvent(EVENTTYPE::BULLET_EXPLODE);
 							break;
 						case DIR_UP:
 							x = GetX();
 							y = map->GetY() + (row + 1)*map->getTileHeight();		//紧靠障碍下侧
+							SetPosition(x, y);
 							speedY = -abs(speedY);
 							break;
 						case DIR_DOWN:
 							x = GetX();
-							y = map->GetY() + (row)*map->getTileHeight() - GetRatioSize().cy;  //紧靠障碍上侧
-							onPlantform = true;
-							speedY = 0;
+							y = map->GetY() + (row)*map->getTileHeight() - (GetRatioSize().cy + colideHeight) / 2;  //紧靠障碍上侧
+							SetPosition(x, y);
+							speedY = 4;
 							break;
 						default:
-							x = lastX;
-							y = lastY;
+							startEvent(EVENTTYPE::BULLET_EXPLODE);
 						}
-						// 将角色定位在障碍物边界
-						SetPosition(x, y);
 					}
 				}
 			}
 		}
-	}	
+	}
 	return isCollide;
 }
+bool PlayerBullet::CollideWith(T_Sprite* target, int distance)
+{
+	bool isCollide = false;
+	//计算参与碰撞检测的角色矩形区域
+	RECT targetRect = *(target->GetCollideRect());
+	RECT hitRec;
+	hitRec.left = targetRect.left - distance;
+	hitRec.top = targetRect.top - distance;
+	hitRec.right = targetRect.right + distance;
+	hitRec.bottom = targetRect.bottom + distance;
 
-
-bool Minion::CollideWith(T_Sprite* target, int distance)
-{
-	return false;
-}
-
-void Minion::updatePosition()
-{
-	updatePositionX();
-	updatePositionY();
-}
-//竖直移动
-void Minion::updatePositionY()
-{
-	gravityEffect();		//重力作用	
-	Y = Y - speedY;
-}
-//水平移动						
-void Minion::updatePositionX()
-{
-	int ispeedX;
-	//根据方向设置速度符号
-	if (dir == DIR_LEFT)
-		ispeedX = -abs(speedX);
-	else if (dir == DIR_RIGHT)
-		ispeedX = abs(speedX);
-	
-	X += ispeedX;
-}
-//更新帧图
-void Minion::updateFrame()
-{
-	//朝向控制
-	if (dir == DIR_LEFT)
-	{		
-		frameRotate = TRANS_HFLIP_NOROT;
-	}
-	else if (dir == DIR_RIGHT)
-	{	
-		frameRotate = TRANS_NONE;
-	}
-
-	//帧图选择
-	LoopFrame(frameFrequence,true);
-	currentFrmIndex = frameSequence[forward];
-}
-void Minion::update()
-{
-	if (!inEvent)
+	RECT* thisRect = this->GetCollideRect();
+	//判断是否碰撞
+	if (thisRect->left <= hitRec.right &&hitRec.left <= thisRect->right &&
+		thisRect->top <= hitRec.bottom &&hitRec.top <= thisRect->bottom)
 	{
-		if (checkOnplantForm(T_Scene::getBarrier()) || checkOnplantForm(T_Scene::getNormalBrick()) || checkOnplantForm(T_Scene::getPropBrick()))
-			onPlantform = true;
+		isCollide = true;
+		int x = GetX(), y = GetY();
+		MINION_TYPE type = dynamic_cast<Minion*>(target)->getMinionType();
+		if (type == MINION_TYPE::MINION_GOOMBA || type == MINION_TYPE::MINION_KOOPA)
+		{
+			target->SetDir(GetDir());
+			dynamic_cast<Minion*>(target)->startEvent(EVENTTYPE::NPC_DEATH_TURNOVER);
+			startEvent(EVENTTYPE::BULLET_EXPLODE);
+		}	
+	}
+	return isCollide;
+}
+void PlayerBullet::playAnimation()
+{
+	switch (eventId)
+	{
+	case BULLET_EXPLODE:
+		explode();
+		break;
+	default:
+		inEvent = false;
+		eventId = -1;
+		break;
+	}
+}
+void PlayerBullet::explode()
+{
+	switch (currentStep)
+	{
+	case 0:
+		active = false;
+		SetSequence(explodeFrmSequence, 3);
+		forward = 0;
+		SetAlpha(200);
+		++currentStep;
+		break;
+	case 1:
+		if (!LoopFrameOnce(6))
+		{
+			currentFrmIndex = frameSequence[forward];
+		}
 		else
-			onPlantform = false;
-		if (onPlantform)		//在平台上，竖直速度为零
 		{
-			speedY = 0;
+			++currentStep;
 		}
-		updatePosition();	//更新玩家坐标
-		CollideWith(T_Scene::getBarrier());		//玩家与障碍层碰撞检测
-		CollideWith(T_Scene::getNormalBrick());	//玩家与砖层碰撞检测
-		CollideWith(T_Scene::getPropBrick());	//玩家与砖层碰撞检测
-		updateFrame();		//更新帧图				//更新帧图		
-	}
-	else
-	{
-		playAnimation();
+		break;
+	default:
+		//动画结束
+		dead = true;
+		Visible = false;
+		break;
 	}
 }
 
-//检查是否在平台上
-bool Minion::checkOnplantForm(T_Map* map)
-{
-	if ((Y + GetRatioSize().cy - map->GetY()) % map->getTileHeight() < 2)
-	{
-		//怪物下方的地图块
-		int row = (Y + GetRatioSize().cy - map->GetY()) / map->getTileHeight();
-		int startCol = (X - map->GetX() + 1) / map->getTileWidth();
-		int endCol = (X + GetRatioSize().cx - map->GetX() - 1) / map->getTileWidth();
-
-		//是否超出地图范围
-		if (row > map->getMapRows() - 1 || row < 0 || startCol<0 || endCol>map->getMapCols() - 1)
-		{
-			onPlantform = false;
-			return onPlantform;
-		}
-		//检查怪物下方的地图块
-		for (int i = startCol; i <= endCol; i++)
-		{
-			if (map->getTile(i, row) != 0)
-			{
-				onPlantform = true;
-				return onPlantform;
-			}
-		}
-	}
-	onPlantform = false;
-	return onPlantform;
-}
-
-//重力作用
-void  Minion::gravityEffect()
-{
-	float currentGravity = gravity;		//单击跳跃	
-	
-	if (!onPlantform&&(GetTickCount() - timer)* currentGravity / 200 >4-abs(speedY))
-	{
-		speedY -= 1;
-		timer = GetTickCount();
-	}	
-}
-
-
-// 开始事件
-void Minion::startEvent(int eventId)
-{
-	this->eventId = eventId;
-	inEvent = true;
-	currentStep = 0;
-	eventTimer = GetTickCount();
-
-	speedX = 0;
-	speedY = 0;
-}
-
-//播放事件动画
-void Minion::playAnimation()
-{	
-}
-
-void Minion::Draw(HDC hdc)
+void PlayerBullet::Draw(HDC hdc)
 {
 	lastX = X;
 	lastY = Y;
