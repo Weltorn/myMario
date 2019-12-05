@@ -144,14 +144,14 @@ void  Player::gravityEffect()
 	{
 		currentGravity = gravity*0.8f;	//重力增大，加快下落
 	}	
-		if (!onPlantform && (GetTickCount() - jumpTimer)* currentGravity / 270 >currentMode->basicJumpSpeedY- abs(speedY) )
-		{
-			speedY -= 1;	//四舍五入
-		}
-		if (speedY < 0)		//速度小于零（向下），设置为下落状态
-		{
-			jumpStatus = 1;
-		}
+	if (!onPlantform && (GetTickCount() - jumpTimer)* currentGravity / 270 >currentMode->basicJumpSpeedY- abs(speedY) )
+	{
+		speedY -= 1;	//四舍五入
+	}
+	if (speedY < 0)		//速度小于零（向下），设置为下落状态
+	{
+		jumpStatus = 1;
+	}
 		
 	//Util::myprintf(L"current SpeedY: %d\n", speedY);
 	
@@ -200,15 +200,15 @@ void Player::updateFrame()
 	{
 		if (bSlide&&dirChanged)		//急停帧
 		{
-			currentFrmIndex = currentMode->frameMode.speedDownFrame;
+			currentFrmIndex = currentFrame->speedDownFrame;
 		}
 		else {					//静止帧
-			currentFrmIndex = currentMode->frameMode.stopFrame;
+			currentFrmIndex = currentFrame->stopFrame;
 		}
 	}
 	if (currentMode->canSquat && bSquat)
 	{
-		currentFrmIndex = currentMode->frameMode.squatFrame;
+		currentFrmIndex = currentFrame->squatFrame;
 	}
 	if ((bMove && !bJump) || (bSlide && !dirChanged))
 	{
@@ -226,11 +226,11 @@ void Player::updateFrame()
 	}
 	if (bJump)
 	{
-		currentFrmIndex = currentMode->frameMode.jumpFrame;
+		currentFrmIndex = currentFrame->jumpFrame;
 	}	
 	if (onCreateFireBall)
 	{
-		currentFrmIndex = currentMode->frameMode.fireBallFrame;
+		currentFrmIndex = currentFrame->fireBallFrame;
 		//从发射炮弹状态恢复
 		if (fireballTimer+200<GetTickCount())
 		{
@@ -363,16 +363,27 @@ void  Player::createFireBall()
 		onCreateFireBall = true;
 	}	
 }
-void Player::initBigRedMode(PLAYERMODE* bigRedMode)
+void Player::initBigNormalMode(PLAYERMODE* bigNormalMode)
 {
 	this->bigNormalMode = (PLAYERMODE*)malloc(sizeof(PLAYERMODE));
-	memcpy(this->bigNormalMode, bigRedMode, sizeof(PLAYERMODE));
+	memcpy(this->bigNormalMode, bigNormalMode, sizeof(PLAYERMODE));
 
 }
 void Player::initNormalMode(PLAYERMODE* normalMode)
 {
 	this->normalMode = (PLAYERMODE*)malloc(sizeof(PLAYERMODE));
 	memcpy(this->normalMode, normalMode, sizeof(PLAYERMODE));
+}
+
+void Player::initSmallFrameMode(PLAYERFRAME* smallFrame)
+{
+	this->smallFrame = (PLAYERFRAME*)malloc(sizeof(PLAYERFRAME));
+	memcpy(this->smallFrame, smallFrame, sizeof(PLAYERFRAME));
+}
+void Player::initBigFrameMode(PLAYERFRAME* bigFrame)
+{
+	this->bigFrame = (PLAYERFRAME*)malloc(sizeof(PLAYERFRAME));
+	memcpy(this->bigFrame, bigFrame, sizeof(PLAYERFRAME));
 }
 void  Player::setPlayerMode(PLAYERSTATUS status)
 {
@@ -387,6 +398,7 @@ void  Player::setPlayerMode(PLAYERSTATUS status)
 			Util::myprintf(L"Player::setPlayerMode : normalMode == NULL\n");
 		}
 		currentMode = normalMode;
+		currentFrame = smallFrame;
 		playerStatus = status;
 		break;
 	}
@@ -396,27 +408,28 @@ void  Player::setPlayerMode(PLAYERSTATUS status)
 			Util::myprintf(L"Player::setPlayerMode : bigNormalMode == NULL\n");
 		}
 		currentMode = bigNormalMode;
+		currentFrame = bigFrame;
 		playerStatus = status;
 		break;
 	}	
 	}
 
 	//更新T_Sprite属性
-	SetImage(&(currentMode->frameMode.img));
-	SetWidth(currentMode->frameMode.frameWidth);
-	SetHeight(currentMode->frameMode.frameHeight);
+	SetImage(&(currentFrame->img));
+	SetWidth(currentFrame->frameWidth);
+	SetHeight(currentFrame->frameHeight);
 	colideWidth = GetRatioSize().cx;
 	colideHeight = GetRatioSize().cy;
 
-	frameCols = currentMode->frameMode.img.GetImageWidth() / GetWidth();		// 动画帧图片总列数
-	frameRows = currentMode->frameMode.img.GetImageHeight() / GetHeight();		// 动画帧图片总行数
+	frameCols = currentFrame->img.GetImageWidth() / GetWidth();		// 动画帧图片总列数
+	frameRows = currentFrame->img.GetImageHeight() / GetHeight();		// 动画帧图片总行数
 	
 	rawFrames = frameCols*frameRows;							// 记录原始动画总帧数
 	forward = 0;												// 当前帧计数初始化
 	backward = totalFrames - 1;
 
 	//初始化运动帧
-	SetSequence(currentMode->frameMode.runFrmSequence, currentMode->frameMode.nRunFrames);	
+	SetSequence(currentFrame->runFrmSequence, currentFrame->nRunFrames);
 	loopForward = true;
 	
 	//恢复静止状态		
@@ -431,9 +444,9 @@ void Player::Draw(HDC hdc) {
 	Util::myprintf(L"player x: %d,player y: %d\n",X-GameScene::getInstance()->getSceneX(),Y - GameScene::getInstance()->getSceneY());
 	if (bSquat)
 	{
-		spImg.PaintRegion(spImg.GetBmpHandle(),hdc,X,Y,currentMode->frameMode.frameWidth *currentFrmIndex,
-			currentMode->frameMode.frameHeight - currentMode->frameMode.squatHeight,
-			currentMode->frameMode.frameWidth, currentMode->frameMode.squatHeight,frameRatio, frameRotate, frameAlpha);
+		spImg.PaintRegion(spImg.GetBmpHandle(),hdc,X,Y, currentFrame->frameWidth *currentFrmIndex,
+			currentFrame->frameHeight - currentFrame->squatHeight,
+			currentFrame->frameWidth, currentFrame->squatHeight,frameRatio, frameRotate, frameAlpha);
 	}
 	else if (bJump)
 	{
@@ -842,7 +855,7 @@ void Player::playAnimation()
 
 void Player::deathAnimation()
 {
-	currentFrmIndex = currentMode->frameMode.deathFrame;	//设置死亡帧
+	currentFrmIndex = currentFrame->deathFrame;	//设置死亡帧
 	switch (currentStep)
 	{
 	case 0:
@@ -879,8 +892,8 @@ void Player::levelUpAnimation()
 		{
 			X -= (GetCollideRect()->right) % GameScene::getInstance()->getBarrier()->getTileWidth();
 		}
-		Y -= bigNormalMode->frameMode.frameHeight - normalMode->frameMode.frameHeight;	//调整玩家高度（不同状态帧图存在高度差，以玩家下边界为基准）
-		SetSequence(currentMode->frameMode.levelUpFrmSequence , currentMode->frameMode.nlevelUpFrames);
+		Y -= bigFrame->frameHeight - smallFrame->frameHeight;	//调整玩家高度（不同状态帧图存在高度差，以玩家下边界为基准）
+		SetSequence(currentFrame->levelUpFrmSequence , currentFrame->nlevelUpFrames);
 		forward = 0;		
 		SetAlpha(200);
 		++currentStep;
@@ -893,7 +906,7 @@ void Player::levelUpAnimation()
 		}
 		else
 		{
-			currentFrmIndex = currentMode->frameMode.stopFrame;
+			currentFrmIndex = currentFrame->stopFrame;
 			++currentStep;
 		}
 		break;
@@ -901,7 +914,7 @@ void Player::levelUpAnimation()
 		//动画结束
 		active = true;
 		SetAlpha(255);
-		SetSequence(currentMode->frameMode.runFrmSequence, currentMode->frameMode.nRunFrames);
+		SetSequence(currentFrame->runFrmSequence, currentFrame->nRunFrames);
 		forward = 0;
 		stopEvent();
 		break;
@@ -913,7 +926,7 @@ void Player::levelDownAnimation()
 	{
 	case 0:		
 		active = false;
-		SetSequence(currentMode->frameMode.levelUpFrmSequence, currentMode->frameMode.nlevelUpFrames);
+		SetSequence(currentFrame->levelUpFrmSequence, currentFrame->nlevelUpFrames);
 		forward = 0;
 		SetAlpha(200);
 		++currentStep;
@@ -926,7 +939,7 @@ void Player::levelDownAnimation()
 		}
 		else
 		{
-			currentFrmIndex = currentMode->frameMode.stopFrame;
+			currentFrmIndex = currentFrame->stopFrame;
 			++currentStep;
 		}
 		break;
@@ -936,9 +949,9 @@ void Player::levelDownAnimation()
 		bSafe = true;
 		startTime = GetTickCount();	//安全时间开始计时
 		SetAlpha(255);
-		Y += bigNormalMode->frameMode.frameHeight - Height;	//调整玩家高度（不同状态帧图存在高度差，以玩家下边界为基准）
+		Y += bigFrame->frameHeight - Height;	//调整玩家高度（不同状态帧图存在高度差，以玩家下边界为基准）
 		setPlayerMode(PLAYER_NORMAL);
-		SetSequence(currentMode->frameMode.runFrmSequence, currentMode->frameMode.nRunFrames);
+		SetSequence(currentFrame->runFrmSequence, currentFrame->nRunFrames);
 		forward = 0;
 		stopEvent();
 		break;

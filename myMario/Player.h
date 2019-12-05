@@ -34,7 +34,7 @@ typedef struct {
 
 //玩家能力设置
 typedef struct {
-	PLAYERFRAME frameMode;
+
 	// ----- MOVE
 	int maxMoveSpeedX;		//最大行走速度
 	int maxRunSpeedX;		//最大奔跑速度（shift）
@@ -45,6 +45,7 @@ typedef struct {
 	int maxBootTime;		//最大加速时间（按住跳跃键的有效时间）
 
 	bool canSquat;			//是否可下蹲
+	bool canCreateFireBall;	//是否可发射火球
 }PLAYERMODE;
 
 //碰撞块
@@ -67,6 +68,11 @@ private:
 	bool starStatus;				//是否无敌（星星）状态
 	int currentFrmIndex;
 		
+	//FRAME MODE
+	PLAYERFRAME* currentFrame;
+	PLAYERFRAME* bigFrame;
+	PLAYERFRAME* smallFrame;
+
 	//PLAYER MODE
 	PLAYERMODE* currentMode;
 	PLAYERMODE* normalMode;
@@ -117,8 +123,12 @@ public:
 	int  getPlayerStatus() { return playerStatus; }
 
 	//PLAYER FRAME
-	void initBigRedMode(PLAYERMODE* bigRedMode);
+	void initBigNormalMode(PLAYERMODE* bigRedMode);
 	void initNormalMode(PLAYERMODE* normalMode);
+	void initSmallFrameMode(PLAYERFRAME* smallFrame);
+	void initBigFrameMode(PLAYERFRAME* bigFrame);
+	//设置玩家模式（普通、吃了红色蘑菇、吃了绿色蘑菇）
+	void setPlayerMode(PLAYERSTATUS status);
 
 	//运动控制方法
 	// ----- MOVE
@@ -154,14 +164,14 @@ public:
 		}
 		else if (this->bSquat == false && bSquat == true)//蹲下
 		{
-			this->Y = this->Y+(currentMode->frameMode.frameHeight- currentMode->frameMode.squatHeight);		//蹲下和站起来帧图的高度差
-			SetHeight(currentMode->frameMode.squatHeight);
+			this->Y = this->Y+(currentFrame->frameHeight- currentFrame->squatHeight);		//蹲下和站起来帧图的高度差
+			SetHeight(currentFrame->squatHeight);
 			this->bSquat = bSquat;
 		}
 		else if (this->bSquat == true && bSquat == false)//站起来
 		{
-			this->Y = this->Y - (currentMode->frameMode.frameHeight - currentMode->frameMode.squatHeight);	// 蹲下和站起来帧图的高度差
-			SetHeight(currentMode->frameMode.frameHeight);
+			this->Y = this->Y - (currentFrame->frameHeight - currentFrame->squatHeight);	// 蹲下和站起来帧图的高度差
+			SetHeight(currentFrame->frameHeight);
 			this->bSquat = bSquat;
 		}
 	}
@@ -182,8 +192,7 @@ public:
 	
 	//根据根据玩家状态信息，更新位置、帧图，检测地图碰撞
 	virtual void update();
-	//设置玩家模式（普通、吃了红色蘑菇、吃了绿色蘑菇）
-	void setPlayerMode(PLAYERSTATUS status);
+	
 
 	//玩家绘制方法
 	virtual void Draw(HDC hdc);

@@ -415,7 +415,7 @@ void MarioGame::LoadPlayer()
 	PLAYERFRAME player_frame;
 	PLAYERMODE player_mode;
 
-	player = new Player(L".\\res\\sprite\\sMario.png", 24, 32);	
+	player = new Player(L".\\res\\sprite\\sMario_all.png", 24, 32);	
 	int sRunSequence[3] = {4,5,6};
 	int bRunSequence[3] = { 1,2,3 };
 	int levelUpSequence[2] = {15,0};
@@ -441,7 +441,7 @@ void MarioGame::LoadPlayer()
 	// ----- 初始化马里奥的开始状态
 	player_frame.frameHeight = 32;
 	player_frame.frameWidth = 24;
-	player_frame.img = T_Graph(L".\\res\\sprite\\sMario.png");	
+	player_frame.img = T_Graph(L".\\res\\sprite\\sMario_all.png");	
 
 	player_frame.nRunFrames = 3;
 	player_frame.runFrmSequence = (int*)malloc(sizeof(int)*player_frame.nRunFrames);
@@ -462,21 +462,12 @@ void MarioGame::LoadPlayer()
 	player_frame.stopFrame = 0;
 	player_frame.deathFrame = 9;
 	player_frame.fireBallFrame = 16;
-
-	player_mode.frameMode = player_frame;
-	player_mode.basicJumpSpeedY = 8;
-	player_mode.basicSpeedX = 0;
-	player_mode.canSquat = false;
-	player_mode.maxBootTime = 1500;
-	player_mode.maxMoveSpeedX = 4;
-	player_mode.maxRunSpeedX = 6;
-	player->initNormalMode(&player_mode);
-
+	player->initSmallFrameMode(&player_frame);
 
 	// ----- 初始化马里奥嗑药后的状态
 	player_frame.frameHeight = 64;
 	player_frame.frameWidth = 32;
-	player_frame.img = T_Graph(L".\\res\\sprite\\bMario.png");
+	player_frame.img = T_Graph(L".\\res\\sprite\\bMario_all.png");
 	
 	player_frame.nRunFrames = 3;
 	player_frame.runFrmSequence = (int*)malloc(sizeof(int)*player_frame.nRunFrames);
@@ -495,15 +486,25 @@ void MarioGame::LoadPlayer()
 	player_frame.squatHeight = 64*2/3;
 	player_frame.stopFrame = 0;
 	player_frame.levelUpFrame = 15;
+	player_frame.fireBallFrame = 16;
+	player->initBigFrameMode(&player_frame);
 
-	player_mode.frameMode = player_frame;
+	//玩家小型状态
+	player_mode.basicJumpSpeedY = 8;
+	player_mode.basicSpeedX = 0;
+	player_mode.canSquat = false;
+	player_mode.maxBootTime = 1500;
+	player_mode.maxMoveSpeedX = 4;
+	player_mode.maxRunSpeedX = 6;
+	player->initNormalMode(&player_mode);
+	//玩家吃红色蘑菇后状态
 	player_mode.basicJumpSpeedY = 8;
 	player_mode.basicSpeedX = 0;
 	player_mode.canSquat = true;
 	player_mode.maxBootTime = 1500;
 	player_mode.maxMoveSpeedX = 4;
 	player_mode.maxRunSpeedX = 6;
-	player->initBigRedMode(&player_mode);
+	player->initBigNormalMode(&player_mode);
 
 	//player->setPlayerMode(PLAYER_NORMAL);
 	player->setPlayerMode(PLAYER_BIGNORMAL);
