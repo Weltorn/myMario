@@ -22,7 +22,7 @@ MarioGame::~MarioGame(void)
 void MarioGame::GameInit() 
 {
 	gameLevel = 1;
-	GameState = GAME_RUN;			//调试 ABOUT_MENU
+	GameState = GAME_START;			//调试 ABOUT_MENU
 	LoadGameLevel(gameLevel);		//加载关卡资源、地图、玩家
 	LoadGameMenu();					//加载主菜单	
 }
@@ -34,18 +34,20 @@ void MarioGame::GameLogic()
 	{
 		case GAME_START:		//游戏开始菜单
 		{
+			gameScene->update();
 			//gameMenu->update();
 			break;
 		}
-		case GAME_RUN:			//游戏进行时界面
+		case GAME_RUN:				//游戏进行时界面
 		{
 			//GameKeyAction();
-			gameTime = GetTickCount();		//更新游戏已运行时间	
+			if (T_Util::Timer(1))	//更新游戏已运行时间	
+				gameTime++;			//计数君
 
 			//更新玩家	
-			if (player->IsVisible())	//未死亡或播放死亡动画未播放完
-				player->update();
-			if (player->IsDead())	//玩家死亡，死亡动画播放完
+			if (player->IsVisible())					//未死亡或播放死亡动画未播放完
+				player->update();	
+			if (player->IsDead())						//玩家死亡，死亡动画播放完
 			{
 				if (player->getLifeCount() == 0)
 				{
@@ -59,7 +61,7 @@ void MarioGame::GameLogic()
 				}
 			}
 			gameScene->update();						//更新地图、怪物、玩家状态
-			gameScene->ScrollScene(player);			//根据玩家位置，滚动场景
+			gameScene->ScrollScene(player);				//根据玩家位置，滚动场景
 			
 			break;
 		}
@@ -403,21 +405,6 @@ void MarioGame::LoadMap()
 	gameScene->RePosition(wnd_width,wnd_height);
 
 	bkColor = RGB(125,148,254);
-	//scn_width = gameScene->getBarrier()->GetWidth();
-	//scn_height = gameScene->getBarrier()->GetHeight();
-
-	//// 视图初始位置以地图作为参照
-	//int scn_x = 0;
-	//int scn_y = -gameScene->getBarrier()->getTileHeight()/2;
-	//// 将游戏地图初始化
-	//gameScene->InitScene(scn_x, scn_y, scn_width, scn_height, wnd_width, wnd_height);
-
-	//// 将所有地图图层定位
-	//SCENE_LAYERS::iterator p;
-	//for (p = gameScene->getSceneLayers()->begin(); p != gameScene->getSceneLayers()->end(); p++)
-	//{
-	//	if (p->layer->ClassName() == "T_Map") p->layer->SetPosition(scn_x, scn_y);
-	//}
 }
 
  //加载游戏玩家角色
@@ -844,7 +831,7 @@ void MarioGame::ShowTitleInfo(HDC hdc) {
 	content.push_back(T_Util::int_to_wstring(00));
 	content.push_back(T_Util::int_to_wstring(00));
 	content.push_back(L"1-1");
-	content.push_back(T_Util::int_to_wstring(400));
+	content.push_back(T_Util::int_to_wstring(400 - gameTime));
 
 	for (unsigned int i = 0; i < content.size(); i++)
 	{
