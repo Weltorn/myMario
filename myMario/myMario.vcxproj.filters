@@ -87,6 +87,9 @@
     <ClCompile Include="Star.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Flower.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MarioGame.h">
@@ -168,6 +171,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Star.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Flower.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

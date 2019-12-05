@@ -20,6 +20,7 @@ Minion* MinionFactory::getMinion(MINION_TYPE type, int px, int py)
 	int mushRoomSequence[1] = { 0 };
 	int GoombaSequence[2] = { 0,1 };
 	int fireBallSequence[4] = { 0,1,2,3 };
+	int flowerSequence[4] = { 0,1,2,3 };
 	switch (type)
 	{
 	case MINION_STAR:	
@@ -67,6 +68,26 @@ Minion* MinionFactory::getMinion(MINION_TYPE type, int px, int py)
 	case MINION_GREENMUSHROOM:
 		break;
 	case MINION_FLOWER:
+	{
+		minion = new Star(L".\\res\\sprite\\minion\\flower.png", 28, 32);
+		minion_Info.Active = true;
+		minion_Info.Dead = false;
+		minion_Info.Dir = DIR_NONE;
+		minion_Info.Rotation = TRANS_NONE;
+		minion_Info.Ratio = 1.0f;
+		minion_Info.Level = 0;
+		minion_Info.Score = 0;
+		minion_Info.SpeedX = 3;
+		minion_Info.SpeedY = 0;
+		minion_Info.Alpha = 255;
+		minion_Info.X = px;
+		minion_Info.Y = py;
+		minion_Info.Visible = true;
+		minion->Initiate(minion_Info);
+		minion->SetSequence(flowerSequence, 4);
+		minion->SetLayerTypeID(LAYER_TYPE::LAYER_AWARD);
+		minion->setMinionType(MINION_TYPE::MINION_FLOWER);
+	}
 		break;
 	case MINION_GOOMBA:
 	{
