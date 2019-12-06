@@ -32,8 +32,8 @@ typedef struct {
 	int fireBallFrame;		//发射炮弹帧
 
 	//颜色控制
-	int totalColor;
-	int initColor;
+	unsigned totalColor;
+	unsigned initColor;
 }PLAYERFRAME;
 
 //玩家能力设置
@@ -69,7 +69,7 @@ private:
 	// ----- PLAYER STATUS
 	int lifeCount;					//生命值
 	PLAYERSTATUS playerStatus;		//角色展示状态
-	bool starStatus;				//是否无敌（星星）状态
+	
 		
 	//FRAME MODE
 	PLAYERFRAME* currentFrame;
@@ -95,9 +95,17 @@ private:
 	bool bJump;		//跳跃状态
 	bool bSlide;	//减速滑行状态
 	bool dirChanged;//滑行状态改变方向
+
 	bool bSafe;		//降级后的安全状态,不会与怪物相撞
 	unsigned safeTime;
 	unsigned blinkCount;	//控制安全状态闪烁频率
+
+	bool	 bColorful;				//是否无敌（星星）状态
+	unsigned colorfulTime;			//彩色效果时间
+	unsigned colorMaintain;		//控制单个颜色已保持帧数
+	unsigned colorMaintainMax;		//控制单个颜色最大保持帧数
+	unsigned oldColor;			//彩色效果开始前的颜色
+
 
 	// -----JUMP STATUS
 	bool onPlantform;
@@ -132,7 +140,13 @@ public:
 	void initFrameMode(int frameType,PLAYERFRAME* bigFrame);
 	//设置玩家模式（普通、吃了红色蘑菇、吃了绿色蘑菇）
 	void setPlayerMode(PLAYERSTATUS status);
-
+	//设置玩家无敌状态
+	void setColorful()
+	{
+		bSafe = false;		//退出保护模式
+		bColorful = true;
+	}
+	bool isColorful() { return bColorful; }
 	//运动控制方法
 	// ----- MOVE
 	void startMove();			//设置为正常移动状态
@@ -213,7 +227,7 @@ public:
 	void stopEvent()
 	{
 		inEvent = false;
-		currentStep = -1;		
+		currentStep = 0;		
 
 		//解除运动状态
 		onPlantform = false;

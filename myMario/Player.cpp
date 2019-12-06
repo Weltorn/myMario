@@ -10,7 +10,6 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	inEvent = false;
 	eventId = -1;
 	playerStatus = PLAYER_NONE;		//角色模式
-	starStatus = false;					//是否无敌（星星）状态
 	frameFrequence = 4;
 	
 	// ---初始化位置
@@ -41,6 +40,12 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 
 	safeTime = 5000;		//变小后的安全时间
 	blinkCount = 0;
+
+	bColorful=false;				//是否无敌（星星）状态
+	colorfulTime=5000;			//彩色效果时间
+	colorMaintain = 0;		//控制单个颜色已保持帧数
+	colorMaintainMax = 4;		//控制单个颜色最大保持帧数
+	oldColor = PlayerColor;			//彩色效果开始前的颜色
 }
 
 
@@ -257,6 +262,27 @@ void Player::updateFrame()
 		}
 	}
 	//颜色选择
+	if (bColorful)
+	{
+		if (colorMaintain > colorMaintainMax)
+		{
+			PlayerColor++;
+			if (PlayerColor > currentFrame->totalColor-1)
+			{
+				PlayerColor = 0;
+			}
+			colorMaintain = 0;
+		}
+		else
+		{
+			colorMaintain++;
+		}
+		if (GetTickCount() >= startTime + colorfulTime)
+		{
+			PlayerColor = oldColor;
+			bColorful = false;
+		}
+	}
 	currentFrmIndex += PlayerColor*frameCols;
 
 	//Util::myprintf(L"currentFrmIndex: %d-------------------------------------\n", currentFrmIndex);
@@ -362,8 +388,7 @@ void  Player::createFireBall()
 			bulletX = X + GetRatioSize().cx-8;
 		}
 		bulletY = Y + GetRatioSize().cy / 4-8;
-		//GameScene::getInstance()->appendPlayerBullet(bulletX, bulletY, GetDir());
-		GameScene::getInstance()->appendMinion(MINION_TYPE::BRICK_PIECE, bulletX, bulletY,dir);
+		GameScene::getInstance()->appendPlayerBullet(bulletX, bulletY, GetDir());
 		fireballTimer = GetTickCount();
 		onCreateFireBall = true;
 	}	
