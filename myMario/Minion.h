@@ -14,6 +14,7 @@ enum MINION_TYPE
 	MINION_GOOMBA,				// 板栗仔（蘑菇一样的怪物）
 	MINION_KOOPA,				// 库帕龟
 	MINION_PLAYERBULLET,
+	BRICK_PIECE
 };
 
 class Minion :
@@ -24,7 +25,6 @@ protected:
 
 	//状态信息
 	bool onPlantform;		//是否在支持物上
-//	int currentFrmIndex;
 
 	// ----- MOVE		
 	float gravity;			//基础重力加速度

@@ -1,5 +1,5 @@
 #include "Minion.h"
-#include "T_Scene.h"
+#include "GameScene.h"
 #include "GameMap.h"
 
 
@@ -312,6 +312,11 @@ void Minion::updatePositionY()
 {
 	gravityEffect();		//重力作用	
 	Y = Y - speedY;
+	//超出地图，死亡
+	if (Y > GameScene::getInstance()->getlastSceneY() + GameScene::getInstance()->getBarrier()->GetHeight())
+	{
+		die(0);
+	}
 }
 //水平移动						
 void Minion::updatePositionX()

@@ -362,7 +362,8 @@ void  Player::createFireBall()
 			bulletX = X + GetRatioSize().cx-8;
 		}
 		bulletY = Y + GetRatioSize().cy / 4-8;
-		GameScene::getInstance()->appendPlayerBullet(bulletX, bulletY, GetDir());
+		//GameScene::getInstance()->appendPlayerBullet(bulletX, bulletY, GetDir());
+		GameScene::getInstance()->appendMinion(MINION_TYPE::BRICK_PIECE, bulletX, bulletY,dir);
 		fireballTimer = GetTickCount();
 		onCreateFireBall = true;
 	}	

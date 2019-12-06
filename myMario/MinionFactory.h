@@ -6,6 +6,7 @@
 #include "RedMushroom.h"
 #include "Star.h"
 #include "Flower.h"
+#include "BrickPiece.h"
 
 
 class MinionFactory

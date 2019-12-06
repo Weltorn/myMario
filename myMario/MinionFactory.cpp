@@ -156,6 +156,29 @@ Minion* MinionFactory::getMinion(MINION_TYPE type, int px, int py)
 		minion->setMinionType(MINION_TYPE::MINION_PLAYERBULLET);
 	}
 		break;
+	case BRICK_PIECE:
+	{
+		minion = new BrickPiece(L".\\res\\sprite\\fireball.png", 32, 32);
+		minion_Info.Active = true;
+		minion_Info.Dead = false;
+		//minion_Info.Dir = DIR_RIGHT;
+		minion_Info.Dir = DIR_LEFT;
+		minion_Info.Rotation = TRANS_NONE;
+		minion_Info.Ratio = 1.0f;
+		minion_Info.Level = 0;
+		minion_Info.Score = 0;
+		minion_Info.SpeedX = 3;
+		minion_Info.SpeedY = 4;
+		minion_Info.Alpha = 255;
+		minion_Info.X = px;
+		minion_Info.Y = py;
+		minion_Info.Visible = true;
+		minion->Initiate(minion_Info);
+		//minion->SetSequence(fireBallSequence, 4);
+		minion->SetLayerTypeID(LAYER_TYPE::LAYER_EXPLOSION);
+		minion->setMinionType(MINION_TYPE::BRICK_PIECE);
+	}
+		break;
 	}
 	return minion;
 }
