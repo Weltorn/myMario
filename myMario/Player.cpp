@@ -42,9 +42,9 @@ Player::Player(LPCTSTR imgPath, int frameWidth, int frameHeight)
 	blinkCount = 0;
 
 	bColorful=false;				//是否无敌（星星）状态
-	colorfulTime=5000;			//彩色效果时间
-	colorMaintain = 0;		//控制单个颜色已保持帧数
-	colorMaintainMax = 4;		//控制单个颜色最大保持帧数
+	colorfulTime=10000;				//彩色效果时间
+	colorMaintain = 0;				//控制单个颜色已保持帧数
+	colorMaintainMax = 6;			//控制单个颜色最大保持帧数
 	oldColor = PlayerColor;			//彩色效果开始前的颜色
 }
 
@@ -388,7 +388,7 @@ void  Player::createFireBall()
 			bulletX = X + GetRatioSize().cx-8;
 		}
 		bulletY = Y + GetRatioSize().cy / 4-8;
-		GameScene::getInstance()->appendPlayerBullet(bulletX, bulletY, GetDir());
+		GameScene::getInstance()->appendMinion(MINION_TYPE::MINION_PLAYERBULLET,bulletX, bulletY, GetDir());
 		fireballTimer = GetTickCount();
 		onCreateFireBall = true;
 	}	
@@ -935,9 +935,7 @@ void Player::levelUpAnimation()
 	{
 	case 0:
 		active = false;		
-		setPlayerMode(PLAYER_BIGNORMAL);
-		//检测碰撞（防止变大后嵌入到障碍物中）
-		
+		//检测碰撞（防止变大后嵌入到障碍物中）		
 		if ((GetCollideRect()->left - GameScene::getInstance()->getSceneX()) % GameScene::getInstance()->getBarrier()->getTileWidth() != 0)
 		{
 			if (CollideWith(GameScene::getInstance()->getBarrier())||

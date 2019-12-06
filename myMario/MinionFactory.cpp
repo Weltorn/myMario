@@ -41,7 +41,7 @@ Minion* MinionFactory::getMinion(MINION_TYPE type, int px, int py)
 		minion_Info.Visible = true;
 		minion->Initiate(minion_Info);
 		minion->SetSequence(starSequence, 1);
-		minion->SetLayerTypeID(LAYER_TYPE::LAYER_AWARD);
+		minion->SetLayerTypeID(LAYER_TYPE::LAYER_BONUS);
 		minion->setMinionType(MINION_TYPE::MINION_STAR);
 	}
 		break;
@@ -62,7 +62,7 @@ Minion* MinionFactory::getMinion(MINION_TYPE type, int px, int py)
 		minion_Info.Visible = true;
 		minion->Initiate(minion_Info);
 		minion->SetSequence(mushRoomSequence, 1);
-		minion->SetLayerTypeID(LAYER_TYPE::LAYER_AWARD);
+		minion->SetLayerTypeID(LAYER_TYPE::LAYER_BONUS);
 		minion->setMinionType(MINION_TYPE::MINION_REDMUSHROOM);
 		break;
 	case MINION_GREENMUSHROOM:
@@ -85,7 +85,7 @@ Minion* MinionFactory::getMinion(MINION_TYPE type, int px, int py)
 		minion_Info.Visible = true;
 		minion->Initiate(minion_Info);
 		minion->SetSequence(flowerSequence, 4);
-		minion->SetLayerTypeID(LAYER_TYPE::LAYER_AWARD);
+		minion->SetLayerTypeID(LAYER_TYPE::LAYER_BONUS);
 		minion->setMinionType(MINION_TYPE::MINION_FLOWER);
 	}
 		break;

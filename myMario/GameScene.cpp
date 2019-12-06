@@ -25,24 +25,46 @@ void GameScene::appendMinion(MINION_TYPE type, int px, int py, int dir )
 	Minion *minion = MinionFactory::getMinion(type, px, py);
 	minion->SetDir(dir);
 	gameLayer.layer = minion;
-	gameLayer.type_id = LAYER_TYPE::LAYER_NPC;
+	
 	gameLayer.z_order = getSceneLayers()->size() + 1;
 	gameLayer.layer->setZorder(gameLayer.z_order);
+	switch (type)
+	{
+	case MINION_STAR:
+	case MINION_REDMUSHROOM:
+	case MINION_GREENMUSHROOM:
+	case MINION_FLOWER:
+		gameLayer.type_id = LAYER_TYPE::LAYER_BONUS;
+		pBonus.push_back(minion);
+		break;
+	case MINION_GOOMBA:
+	case MINION_KOOPA:
+		gameLayer.type_id = LAYER_TYPE::LAYER_NPC;
+		pMinions.push_back(minion);
+		break;
+	case MINION_PLAYERBULLET:
+		gameLayer.type_id = LAYER_TYPE::LAYER_PLY_BOMB;
+		pPlayerBullets.push_back(minion);
+		break;
+	case BRICK_PIECE:
+		gameLayer.type_id = LAYER_TYPE::LAYER_EXPLOSION;
+		pDecoration.push_back(minion);
+		break;
+	}
 	Append(gameLayer);
-	pMinions.push_back(minion);
 }
-void GameScene::appendPlayerBullet(int px, int py, int dir)
-{
-	GAMELAYER gameLayer;
-	Minion *bullet = MinionFactory::getMinion(MINION_TYPE::MINION_PLAYERBULLET, px, py);
-	bullet->SetDir(dir);
-	gameLayer.layer = bullet;
-	gameLayer.type_id = LAYER_TYPE::LAYER_PLY_BOMB;
-	gameLayer.z_order = getSceneLayers()->size() + 1;
-	gameLayer.layer->setZorder(gameLayer.z_order);
-	Append(gameLayer);
-	pPlayerBullets.push_back(bullet);
-}
+//void GameScene::appendPlayerBullet(int px, int py, int dir)
+//{
+//	GAMELAYER gameLayer;
+//	Minion *bullet = MinionFactory::getMinion(MINION_TYPE::MINION_PLAYERBULLET, px, py);
+//	bullet->SetDir(dir);
+//	gameLayer.layer = bullet;
+//	gameLayer.type_id = LAYER_TYPE::LAYER_PLY_BOMB;
+//	gameLayer.z_order = getSceneLayers()->size() + 1;
+//	gameLayer.layer->setZorder(gameLayer.z_order);
+//	Append(gameLayer);
+//	pPlayerBullets.push_back(bullet);
+//}
 // 加载参数指定的地图文件，解析其中的地图数据，并保存到场景图层中
 //根据图层信息，生成砖块等对象，保存到GameMap中
 bool GameScene::LoadTxtMap(const char* txtmap_path)
@@ -237,7 +259,35 @@ bool GameScene::LoadTxtMap(const char* txtmap_path)
 	delete[] l_str;
 	return true;
 }
-
+void  GameScene::updateObjectList(vector<Minion*> *LObj)
+{
+	//更新怪物图层
+	vector<Minion*>::iterator p1;
+	vector<Minion*>::iterator p2;
+	for (p1 = LObj->begin(); p1 != LObj->end(); )
+	{
+		if (!(*p1)->IsDead())
+		{
+			(*p1)->update();
+			p1++;
+		}
+		else if ((*p1)->IsDead())		//怪物死亡，删除对象
+		{
+			p2 = p1;
+			(*p2)->SetLayerTypeID(LAYER_TYPE::LAYER_NONE);		//设置为无效图层
+			p1 = LObj->erase(p2);
+		}
+	}
+}
+void GameScene::collideWithPlayer(vector<Minion*> *LObj)
+{
+	LMinion::iterator pm;
+	for (pm = LObj->begin(); pm != LObj->end(); pm++)
+	{
+		if ((*pm)->IsActive() && pPlayer->IsActive() && !pPlayer->isSafe())
+			(*pm)->CollideWith(pPlayer);	//设置怪物、玩家碰撞后状态（如死亡、升/降级）
+	}
+}
 void  GameScene::update() 
 {
 
@@ -251,49 +301,25 @@ void  GameScene::update()
 		pPropBrick->update();
 
 
-	//更新子弹图层
+	//更新子弹图层	
+	updateObjectList(&pPlayerBullets);
 	
-	LPlayerBullet::iterator bp1;
-	LPlayerBullet::iterator bp2;
-	for (bp1 = pPlayerBullets.begin(); bp1 != pPlayerBullets.end(); )
-	{
-		if (!(*bp1)->IsDead())
-		{
-			(*bp1)->update();
-			bp1++;
-		}
-		else if ((*bp1)->IsDead())		//死亡，删除对象
-		{
-			bp2 = bp1;
-			(*bp2)->SetLayerTypeID(LAYER_TYPE::LAYER_NONE);		//设置为无效图层
-			bp1 = pPlayerBullets.erase(bp2);
-		}
-	}
 	//更新怪物图层
-	LMinion::iterator p1;
-	LMinion::iterator p2;
-	for (p1 = pMinions.begin(); p1 != pMinions.end(); )
-	{
-		if (!(*p1)->IsDead())
-		{
-			(*p1)->update();
-			p1++;
-		}			
-		else if ((*p1)->IsDead())		//怪物死亡，删除对象
-		{		
-			p2 = p1;
-			(*p2)->SetLayerTypeID(LAYER_TYPE::LAYER_NONE);		//设置为无效图层
-			p1 = pMinions.erase(p2);
-		}
-	}
+	updateObjectList(&pMinions);
+
+	//更新奖励图层
+	updateObjectList(&pBonus);
+
+	//更新装饰图层
+	updateObjectList(&pDecoration);
+	
 	
 	////怪物与玩家的碰撞
-	LMinion::iterator pm;
-	for (pm = pMinions.begin(); pm != pMinions.end(); pm++)
-	{
-		if((*pm)->IsActive() && pPlayer->IsActive()&& !pPlayer->isSafe())
-			(*pm)->CollideWith(pPlayer);	//设置怪物、玩家碰撞后状态（如死亡、升/降级）
-	}
+	collideWithPlayer(&pMinions);
+	////奖励与玩家的碰撞
+	collideWithPlayer(&pBonus);
+
+	
 	// 如果图层发生过任何变化
 	if (LayerChanged == true)
 	{

@@ -144,7 +144,9 @@ public:
 	void setColorful()
 	{
 		bSafe = false;		//退出保护模式
+		startTime = GetTickCount();
 		bColorful = true;
+		oldColor = PlayerColor;
 	}
 	bool isColorful() { return bColorful; }
 	//运动控制方法

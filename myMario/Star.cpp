@@ -326,10 +326,10 @@ bool Star::CollideWith(T_Sprite* target, int distance)
 		thisRect->top <= hitRec.bottom &&hitRec.top <= thisRect->bottom)
 	{
 		isCollide = true;
-		int x = GetX(), y = GetY();
 		int type = (target)->GetLayerTypeID();
 		if (type == LAYER_TYPE::LAYER_PLY)
-		{
+		{					
+			(dynamic_cast<Player*>(target))->setColorful();
 			die();
 		}
 	}

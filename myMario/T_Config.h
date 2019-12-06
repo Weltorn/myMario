@@ -118,7 +118,7 @@ enum LAYER_TYPE
 	LAYER_NORMAL_BRICK,
 	LAYER_PROP_BRICK,
 	LAYER_BRICK,
-	LAYER_AWARD					//奖励包括金币、蘑菇、星星
+	LAYER_DECORATION			//装饰、效果图层
 };
 // 图层类型
 enum VK_KEYVALUE

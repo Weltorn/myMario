@@ -53,7 +53,10 @@ bool Koopa::CollideWith(T_Sprite* target, int distance)
 					{
 						//(dynamic_cast<Player*>(target))->playerDeath(false);
 						if ((dynamic_cast<Player*>(target))->getPlayerStatus() == PLAYERSTATUS::PLAYER_NORMAL)
+						{
+							(dynamic_cast<Player*>(target))->setPlayerMode(PLAYER_BIGRED);
 							(dynamic_cast<Player*>(target))->startEvent(EVENTTYPE::PLAYER_LEVELUP);
+						}
 						else
 							(dynamic_cast<Player*>(target))->startEvent(EVENTTYPE::PLAYER_LEVELDOWN);
 					}
@@ -68,7 +71,10 @@ bool Koopa::CollideWith(T_Sprite* target, int distance)
 				if (target->GetLayerTypeID() == LAYER_TYPE::LAYER_PLY&&target->IsActive())
 				{
 					if ((dynamic_cast<Player*>(target))->getPlayerStatus() == PLAYERSTATUS::PLAYER_NORMAL)
+					{
+						(dynamic_cast<Player*>(target))->setPlayerMode(PLAYER_BIGRED);
 						(dynamic_cast<Player*>(target))->startEvent(EVENTTYPE::PLAYER_LEVELUP);
+					}
 					else
 						(dynamic_cast<Player*>(target))->startEvent(EVENTTYPE::PLAYER_LEVELDOWN);
 				}			
@@ -92,9 +98,13 @@ bool Koopa::CollideWith(T_Sprite* target, int distance)
 					{
 						if (target->GetLayerTypeID() == LAYER_TYPE::LAYER_PLY&&target->IsActive())//…±À¿ÕÊº“
 						{
-							//(dynamic_cast<Player*>(target))->playerDeath(false);
+							
 							if ((dynamic_cast<Player*>(target))->getPlayerStatus() == PLAYERSTATUS::PLAYER_NORMAL)
+							{
+								//(dynamic_cast<Player*>(target))->playerDeath(false);
+								(dynamic_cast<Player*>(target))->setPlayerMode(PLAYER_BIGRED);
 								(dynamic_cast<Player*>(target))->startEvent(EVENTTYPE::PLAYER_LEVELUP);
+							}
 							else
 								(dynamic_cast<Player*>(target))->startEvent(EVENTTYPE::PLAYER_LEVELDOWN);
 						}
@@ -107,7 +117,6 @@ bool Koopa::CollideWith(T_Sprite* target, int distance)
 						(dynamic_cast<Player*>(target))->startJump();
 						(dynamic_cast<Player*>(target))->stopBooting();
 						hideInshell();
-						//die(1);
 					}					
 				}				
 			break;

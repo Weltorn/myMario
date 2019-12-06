@@ -36,7 +36,10 @@ bool RedMushroom::CollideWith(T_Sprite* target, int distance)
 		if (target->GetLayerTypeID() == LAYER_TYPE::LAYER_PLY&&target->IsActive())
 		{
 			if ((dynamic_cast<Player*>(target))->getPlayerStatus() == PLAYERSTATUS::PLAYER_NORMAL)
+			{
+				(dynamic_cast<Player*>(target))->setPlayerMode(PLAYER_NORMAL);
 				(dynamic_cast<Player*>(target))->startEvent(EVENTTYPE::PLAYER_LEVELUP);
+			}
 			else
 				(dynamic_cast<Player*>(target))->startEvent(EVENTTYPE::PLAYER_LEVELDOWN);
 			die(0);

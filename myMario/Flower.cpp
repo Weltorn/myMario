@@ -40,7 +40,10 @@ bool Flower::CollideWith(T_Sprite* target, int distance)
 		if (type == LAYER_TYPE::LAYER_PLY)
 		{
 			if ((dynamic_cast<Player*>(target))->getPlayerStatus() != PLAYERSTATUS::PLAYER_BIGRED)
+			{
+				(dynamic_cast<Player*>(target))->setPlayerMode(PLAYER_BIGRED);
 				(dynamic_cast<Player*>(target))->startEvent(EVENTTYPE::PLAYER_LEVELUP);
+			}
 			die(0);
 		}
 	}
