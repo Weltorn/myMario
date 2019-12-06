@@ -936,7 +936,8 @@ void Player::levelUpAnimation()
 	case 0:
 		active = false;		
 		//检测碰撞（防止变大后嵌入到障碍物中）		
-		if ((GetCollideRect()->left - GameScene::getInstance()->getSceneX()) % GameScene::getInstance()->getBarrier()->getTileWidth() != 0)
+		if ((GetCollideRect()->left - GameScene::getInstance()->getSceneX()) % GameScene::getInstance()->getBarrier()->getTileWidth() >
+			GameScene::getInstance()->getBarrier()->getTileWidth()- colideWidth)
 		{
 			if (CollideWith(GameScene::getInstance()->getBarrier())||
 				CollideWith(GameScene::getInstance()->getNormalBrick())||
